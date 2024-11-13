@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<Service_Academy1.Models.ProgramsModel>
+
+@{
     ViewData["Title"] = "Program Catalog Page";
 }
 
@@ -53,12 +55,19 @@
                         <div class="course-cards">
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "BISIG" })" class="card-link">
-                                    <img src="@Url.Content("~/Images/BISIG.jpg")" alt="BISIG">
-                                    <div class="course-label">BEGINNER</div>
-                                    <h5 class="card-title">BatStateU Inclusive Social Innovation for Regional Growth (BISIG)</h5>
+                                    <!--NO CHANGES MUST RETAIN SAME WITH OTHER -->
+                                    <img src="@Url.Content("~/Images/BISIG.jpg")" alt="BISIG"> <!--NO CHANGES MUST RETAIN-->
+                                    <h5 class="card-title">BatStateU Inclusive Social Innovation for Regional Growth (BISIG)</h5> <!--NO CHANGES MUST RETAIN-->
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_BISIG"]</span>
+                                    </i> 
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_BISIG"]</span>
+                                    </i> 
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -66,11 +75,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "LEAF" })" class="card-link">
                                     <img src="@Url.Content("~/Images/LEAF.jpg")" alt="ENCPR">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Livelihood and Other Entrepreneurship related on Agri-Fisheries (LEAF)</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_LEAF"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_LEAF"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -78,11 +93,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "Environment" })" class="card-link">
                                     <img src="@Url.Content("~/Images/ENRCPR.jpg")" alt="ENCPR">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Environment and Natural Resources Conservation,Protection and Rehabilitation</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_Environment"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_Environment"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                 </div>
@@ -92,11 +113,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "SAEI" })" class="card-link">
                                     <img src="@Url.Content("~/Images/SAEI.png")" alt="SAEI">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Smart Analytics for Engineering Innovation</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_SAEI"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_SAEI"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -104,11 +131,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "BINADI" })" class="card-link">
                                     <img src="@Url.Content("~/Images/BIDANI.png")" alt="BIDANI">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Adopt-A-Municipality / Social Development Through BINADI Implementation</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_BINADI"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_BINADI"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -116,11 +149,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "Outreach" })" class="card-link">
                                     <img src="@Url.Content("~/Images/CO.jpg")" alt="CO">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Community Outreach</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_Outreach"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_Outreach"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                 </div>
@@ -130,11 +169,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "TVET" })" class="card-link">
                                     <img src="@Url.Content("~/Images/TVET.jpg")" alt="TVET">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Technical-Vocational Education And Training (TVET)</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_TVET"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_TVET"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -142,11 +187,18 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "TTAU" })" class="card-link">
                                     <img src="@Url.Content("~/Images/TTAU.jpg")" alt="TTAU">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Technology Transfer, And Adoption / Utilization</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_TTAU"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_TTAU"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
+
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -154,11 +206,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "TAAS" })" class="card-link">
                                     <img src="@Url.Content("~/Images/TAAS.jpg")" alt="TAAS">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Technical Assistance And Advisory Services</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_TAAS"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_TAAS"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                 </div>
@@ -168,11 +226,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "PESODEV" })" class="card-link">
                                     <img src="@Url.Content("~/Images/PESODEV.jpg")" alt="PESODEV">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Parents' Empowerment Thru Social Development (PESODEV)</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_PESODEV"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_PESODEV"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -180,11 +244,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "GAD" })" class="card-link">
                                     <img src="@Url.Content("~/Images/GED.png")" alt="GAD">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Gender And Development</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_GAD"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_GAD"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
@@ -192,11 +262,17 @@
                             <div class="course-card">
                                 <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "DisasterRisk" })" class="card-link">
                                     <img src="@Url.Content("~/Images/DRRMDPR.jpg")" alt="DRRMDPR">
-                                    <div class="course-label">BEGINNER</div>
                                     <h5 class="card-title">Disaster Risk Reduction And Management And Disaster Preparedness And Response / Climate Change Adoption (DRRM and DPR / CCA)</h5>
                                 </a>
+                                <div class="program-icons">
+                                    <i class="fa-solid fa-graduation-cap" title="Active Programs">
+                                        <span class="program-count">@ViewData["Active_DisasterRisk"]</span>
+                                    </i>
+                                    <i class="fa-solid fa-clock" title="Deactivated Programs">
+                                        <span class="program-count">@ViewData["Deactivated_DisasterRisk"]</span>
+                                    </i>
+                                </div>
                             </div>
-                            <!-- Add more course cards as needed -->
                         </div>
                     </div>
                 </div>
