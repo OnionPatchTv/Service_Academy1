@@ -1,0 +1,161 @@
+﻿
+.container {
+    padding: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex: 1;
+}
+
+.dashboard, .programs {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+h3{
+    font-size: 25px;
+    padding-right: 30px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 25px;
+    flex: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .card h3 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .card .value {
+        font-size: 46px;
+        font-weight: 500;
+    }
+
+    .card .percentage {
+        color: green;
+        font-weight: 500;
+    }
+
+.engagement {
+    background-color: white;
+    border-radius: 10px;
+    padding: 50px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    position: relative;
+    text-align: center;
+}
+
+.chart-container {
+    width: 100%; /* Set the width to 100% of the parent container */
+    max-width: 1000px; /* Adjust the maximum width as needed */
+    margin: 0 auto; /* Center the canvas container */
+}
+
+canvas {
+    width: 100% !important; /* Make the canvas take the full width of its container */
+    height: auto !important; /* Maintain the aspect ratio */
+}
+
+
+.dropdown {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.programs-title {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.table {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table table th, .table table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+.square-card-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.square-card {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    text-align: center;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+    .square-card:hover {
+        transform: scale(1.05);
+    }
+
+    .square-card .title {
+        font-weight: 500;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .square-card .count {
+        font-size: 22px;
+        font-weight: 700;
+    }
+/* New Styles for the Bottom Charts Section */
+.bottom-charts {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 40px;
+}
+.form-select {
+    width: 300px; /* Set the desired width */
+    height: 40px; /* Set the desired height */
+    padding: 5px 10px; /* Add some padding for better spacing */
+    font-size: 16px; /* Set the font size */
+    border: 1px solid #ccc; /* Set the border color */
+    border-radius: 5px; /* Add rounded corners */
+    background-color: #fff; /* Background color */
+    color: #333; /* Text color */
+    appearance: none; /* Remove default styling for a more consistent look */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6"><polygon points="0,0 10,0 5,6" fill="#333"/></svg>'); /* Custom dropdown arrow */
+    background-repeat: no-repeat; /* Prevent repeating the arrow */
+    background-position: right 10px center; /* Position the arrow */
+    background-size: 10px; /* Size of the arrow */
+}
+
+    /* Optional: Add a hover effect */
+    .form-select:hover {
+        border-color: #FF6600; /* Change border color on hover */
+    }
+
+    /* Optional: Add focus effect */
+    .form-select:focus {
+        outline: none; /* Remove default outline */
+        border-color: #FF6600; /* Change border color on focus */
+        box-shadow: 0 0 5px rgba(255, 102, 0, 0.5); /* Add shadow effect */
+    }

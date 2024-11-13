@@ -1,0 +1,41 @@
+﻿@model Service_Academy1.Models.QuizModel
+@using Service_Academy1.Utilities
+@{
+    ViewData["Title"] = "Service Academy - Create Assessment";
+    var numberOfQuestions = ViewBag.NumberOfQuestions; // Pass number of questions
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/InstructorScript/AssessmentScript.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/InstructorStyle/AssessmentStyle.css">
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("ProgramStream", "Instructor", new { programId = Model.ProgramId })">Program Stream</a>
+    <span class="separator">&gt;</span>
+    <span>Quiz Creation</span>
+</div>
+
+<h2>@Model.QuizTitle</h2>
+<h4>@Model.QuizDirection</h4>
+
+<form asp-action="SaveQuestions" asp-controller="Assessment" method="post">
+    @for (int i = 0; i < numberOfQuestions; i++)
+    {
+        <div class="form-group">
+            <label for="question_@i">Question @(i + 1)</label>
+            <input type="text" class="form-control" id="question_@i" name="Questions[@i].Question" required />
+
+            <label for="correct_answer_@i">Correct Answer</label>
+            <input type="text" class="form-control" id="correct_answer_@i" name="Questions[@i].CorrectAnswer" required />
+        </div>
+    }
+    <input type="hidden" name="QuizId" value="@Model.QuizId" />
+    <button type="submit" class="btn btn-primary">Save Quiz</button>
+</form>
+

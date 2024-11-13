@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Batangas State University offers online courses to build skills and provide extension services to communities.">
+    <meta name="keywords" content="Batangas State University, online courses, community service, education, technology, research">
+    <title>@ViewData["Title"] - Service Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/GeneralStyle.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ServiceAcademy.styles.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
+    @using Service_Academy1.Utilities
+
+</head>
+<body>
+    <div class="header">
+        <a href="@Url.Action("Home", "Home")" class="logo-container">
+            <img src="~/Images/logo.png" alt="Logo" class="logo">
+            <span class="service-academy">Service Academy</span>
+        </a>
+        <nav class="nav-links">
+            @if (User.Identity.IsAuthenticated)
+            {
+                // Display specific links based on the user role
+                if (User.IsInRole("Student"))
+                {
+                    <a href="@Url.Action("Home", "Home")" class="@(Html.IsActive("Home", "Home") ? "active" : "")">Home</a>
+                    <a href="@Url.Action("ProgramCatalog", "Home")" class="@(ViewContext.RouteData.Values["action"].ToString() == "ProgramCatalog" || (ViewContext.RouteData.Values["action"].ToString() == "ProgramList" && ViewContext.RouteData.Values["controller"].ToString() == "ProgramList") ? "active" : "")">Programs</a>
+                    <a href="@Url.Action("Contact", "Home")" class="@(Html.IsActive("Contact", "Home") ? "active" : "")">Contact Us</a>
+                    <a href="@Url.Action("Faqs", "Home")" class="@(Html.IsActive("Faqs", "Home") ? "active" : "")">FAQs</a>
+                }
+                else if (User.IsInRole("Instructor"))
+                {
+
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    <a href="@Url.Action("Dashboard", "Admin")" class="@(Html.IsActive("Dashboard", "Admin") ? "active" : "")">Dashboard</a>
+                    <a href="@Url.Action("Analytics", "Admin")" class="@(Html.IsActive("Analytics", "Admin") ? "active" : "")">Analytics</a>
+                    <a href="@Url.Action("ManageAccount", "Admin")" class="@(Html.IsActive("ManageAccount", "Admin") ? "active" : "")">Manage Accounts</a>
+                    <a href="@Url.Action("ManageProgram", "Admin")" class="@(Html.IsActive("ManageProgram", "Admin") ? "active" : "")">Manage Programs</a>
+                }
+            }
+            else
+            {
+                <a href="@Url.Action("Home", "Home")" class="@(Html.IsActive("Home", "Home") ? "active" : "")">Home</a>
+                <a href="@Url.Action("ProgramCatalog", "Home")" class="@(ViewContext.RouteData.Values["action"].ToString() == "ProgramCatalog" || (ViewContext.RouteData.Values["action"].ToString() == "ProgramList" && ViewContext.RouteData.Values["controller"].ToString() == "ProgramList") ? "active" : "")">Programs</a>
+                <a href="@Url.Action("Contact", "Home")" class="@(Html.IsActive("Contact", "Home") ? "active" : "")">Contact Us</a>
+                <a href="@Url.Action("Faqs", "Home")" class="@(Html.IsActive("Faqs", "Home") ? "active" : "")">FAQs</a>
+            }
+
+        </nav>
+
+        <div class="nav-right">
+            @if (User.Identity.IsAuthenticated)
+            {
+                // Display specific links based on the user role
+                if (User.IsInRole("Student"))
+                {
+                    <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ||
+                  ViewContext.RouteData.Values["action"].ToString() == "StudentQuizView" ||
+                  ViewContext.RouteData.Values["action"].ToString() == "QuizResult" ||
+                  ViewContext.RouteData.Values["action"].ToString() == "MyLearningStream" ? "active" : "")">My Learning</a>
+                }
+                else if (User.IsInRole("Instructor"))
+                {
+                    <a href="@Url.Action("InstructorDashboard", "Instructor")" class="@(Html.IsActive("InstructorDashboard", "Instructor") ||
+                  ViewContext.RouteData.Values["action"].ToString() == "ProgramStream" ||
+                  ViewContext.RouteData.Values["action"].ToString() == "ProgramStreamManage" ||
+                  ViewContext.RouteData.Values["action"].ToString() == "ProgramCreation" ||
+                  ViewContext.RouteData.Values["action"].ToString() == "CreateAssessment" ||
+                  ViewContext.RouteData.Values["action"].ToString() == "ViewQuiz" ? "active" : "")">My Teaching</a>
+                }
+                else if (User.IsInRole("Admin"))
+                {
+
+                }
+                <div class="dropdown">
+                    <a class="dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i> @User.Identity.Name
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li>
+                            <a class="dropdown-item" href="@Url.Action("MyProfile", "Account")">Profile</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="@Url.Action("Logout", "Account")">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")">Learning</a>
+                <a href="@Url.Action("Login", "Account")" class="@(Html.IsActive("Login", "Account") ? "active" : "")">Login</a>
+                <a href="@Url.Action("Register", "Account")" class="@(Html.IsActive("Register", "Account") ? "active" : "")">Register</a>
+            }
+        </div>
+
+    </div>
+
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="logo">
+                    <img src="~/Images/logo.png" alt="Logo" class="logo">
+                    <span class="service-academy">Service Academy</span>
+                </div>
+                <ul class="footer-links">
+                    <li><a href="#">Learning Catalog</a></li>
+                    <li><a href="#">Find an Academy</a></li>
+                    <li><a href="#">Career Resources</a></li>
+                </ul>
+                <ul class="footer-links">
+                    <li><a href="#">Teach with Us</a></li>
+                    <li><a href="#">Partner with Us</a></li>
+                    <li><a href="#">Find a Partner</a></li>
+                </ul>
+                <ul class="footer-links">
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+                <div class="social-media">
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fas fa-times"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Service Academy. All rights reserved.</p>
+                <ul class="footer-bottom-links">
+                    <li><a href="#">Terms and Conditions</a></li>
+                    <li><a href="#">Privacy Statement</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">Data Protection</a></li>
+                    <li><a href="#">Trademarks</a></li>
+                    <li><a href="#">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

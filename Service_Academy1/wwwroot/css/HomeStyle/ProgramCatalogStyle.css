@@ -1,0 +1,165 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+h1 {
+    padding: 20px 30px;
+    font-size: 24px;
+}
+
+.layout {
+    display: flex;
+    padding: 20px 30px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 10px 0; /* Keep this for spacing between items */
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar ul li:hover {
+    background-color: #f0f0f0;
+    color: #ff782d;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #1a73e8;
+    font-weight: bold;
+}
+
+.sidebar ul li a:hover {
+    color: #0056b3;
+}
+
+.sidebar ul li.active {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.hidden {
+    display: none;
+}
+
+#show-more, #show-less {
+    cursor: pointer;
+    color: black;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 10px 0; /* Maintain padding for both buttons */
+}
+
+/* Show More button hover effect */
+#show-more:hover, #show-less:hover {
+    color: #ff782d; /* Change color on hover for both buttons */
+}
+
+/* Show More button styles */
+#show-more {
+    display: block; /* This is visible by default */
+}
+
+/* Show Less button styles */
+#show-less-item {
+    display: none; /* This is hidden by default */
+}
+
+/* Ensure no margin or padding causes gaps */
+#show-less-item {
+    margin: 0; /* Remove margin to eliminate any black space above */
+    padding: 0; /* Remove padding */
+}
+
+#show-less-item a {
+    color: black; /* Default link color */
+    display: block; /* Make the link fill the entire space */
+    padding: 10px 0; /* Add vertical padding to ensure the clickable area is larger */
+    text-decoration: none; /* Ensure no underline */
+}
+
+#show-less-item:hover {
+    color: #ff782d; /* Change color on hover */
+}
+
+/* Course Cards */
+.course-cards {
+    width: 100%;
+    max-width: 320px;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 370px;
+}
+
+.course-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.course-label {
+    background-color: #28a745;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 15px;
+    display: inline-block;
+}
+
+.course-card h5 {
+    margin: 15px 10px;
+    font-size: 16px;
+    height: 110px;
+    line-height: 1.2;
+}
+
+/* Enhanced Hover Effect for Course Cards */
+.course-card:hover {
+    transform: translateY(-10px);
+
+}
+
+/* Remove underline from links */
+a {
+    text-decoration: none;
+    color: inherit; /* To inherit the color of the parent element or set it to your preferred color */
+}
+
+/* Hover effects for links */
+    a:hover {
+        text-decoration: none;
+        color: #ff782d; /* Or any other color for hover state */
+    }

@@ -1,0 +1,60 @@
+﻿@model Service_Academy1.Models.StudentQuizResultModel
+
+@{
+    ViewData["Title"] = "Service Academy - Student Quiz";
+}
+
+@if (TempData["QuizErrorMessage"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["QuizErrorMessage"]
+    </div>
+}
+
+<h2>Quiz Result</h2>
+
+@if (Model != null)
+{
+    <h3>Quiz Title: @Model.Quiz?.QuizTitle</h3> <!-- Check for null Quiz -->
+    <p>Raw Score: @Model.RawScore</p>
+    <p>Total Score: @Model.TotalScore</p>
+    <p>Computed Score: @Model.ComputedScore</p>
+    <p>Remarks: @Model.Remarks</p>
+
+    <h4>Your Answers</h4>
+    <ul>
+        @if (Model.StudentAnswers != null && Model.StudentAnswers.Any())
+        {
+            @foreach (var answer in Model.StudentAnswers)
+            {
+                @if (answer?.Question != null)
+                {
+                    // Check if the student's answer is correct or incorrect
+                    var isCorrect = answer.IsCorrect ? "correct" : "incorrect";
+                    // Set appropriate class for highlighting
+                    var answerClass = isCorrect == "correct" ? "text-success" : "text-danger";
+                    // Get the correct answer text from the model
+                    var correctAnswerText = answer.Question.CorrectAnswer;
+
+                    <li class="@answerClass">
+                        <strong>@answer.Question.Question:</strong> @answer.Answer
+                        <!-- Display the correct answer next to the student's answer -->
+                        <span>(Correct Answer: @correctAnswerText)</span>
+                    </li>
+                }
+                else
+                {
+                    <li>Question not found.</li>
+                }
+            }
+        }
+        else
+        {
+            <li>No answers recorded.</li>
+        }
+    </ul>
+}
+else
+{
+    <p>Quiz result not found.</p>
+}

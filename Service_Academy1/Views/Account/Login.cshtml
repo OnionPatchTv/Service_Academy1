@@ -1,0 +1,73 @@
+﻿@model LoginViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Service Academy</title>
+    <link rel="stylesheet" href="~/css/AccountStyle/Account.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="overlay"></div>
+    <div id="loginForm">
+        <span class="close-btn" onclick="closeForm()">&times;</span>
+        <h1 class="title">Sign In</h1>
+
+        <form asp-action="Login" method="post">
+            <div class="container">
+                <p class="new-user">
+                    New to Service Academy?
+                    <a href="@Url.Action("Register", "Account")">Create an Account</a>
+                </p>
+                <label asp-for="Email"><b>Email</b></label>
+                <input asp-for="Email" type="text" placeholder="Enter Email Address" />
+
+                <label asp-for="Password"><b>Password</b></label>
+                <div class="password-container">
+                    <input asp-for="Password" type="password" placeholder="Enter Password" id="password" />
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">
+                        <i id="eye-icon" class="fas fa-eye"></i>
+                    </span>
+                </div>
+
+                <div class="remember-me">
+                    <input asp-for="RememberMe" type="checkbox" />
+                    <label asp-for="RememberMe">Remember Me</label>
+                    <a href="forgot-password.html" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn">Login</button>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        window.onload = function () {
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("loginForm").style.display = "block";
+        };
+
+        function closeForm() {
+            // Hides the form and overlay without redirecting
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("loginForm").style.display = "none";
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

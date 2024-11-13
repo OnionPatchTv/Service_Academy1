@@ -1,0 +1,243 @@
+/* General Body & Fonts */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+h2, h4 {
+    color: #343a40;
+}
+
+/* Navbar Styling */
+.navbar-brand {
+    font-weight: bold;
+}
+
+.navbar {
+    display: flex;
+    gap: 10px;
+    padding-left: 80px;
+}
+
+    .navbar a {
+        color: black;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 500;
+        position: relative;
+    }
+
+        .navbar a:not(:last-child)::after {
+            content: "|";
+            margin-left: 10px;
+            color: black;
+        }
+
+        .navbar a:hover {
+            color: #ddd;
+        }
+
+/* Sidebar */
+#sidebar {
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+    #sidebar .nav-item {
+        padding: 10px 0;
+    }
+
+    #sidebar .nav-link {
+        font-size: 1rem;
+        color: #333;
+        text-transform: uppercase;
+    }
+
+        #sidebar .nav-link:hover {
+            color: #ff782d;
+        }
+
+/* Main Content */
+main {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.content-section {
+    margin-top: 20px;
+}
+
+/* Program Overview Section */
+.program-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.program-item {
+    display: grid;
+    grid-template-columns: 1fr 0.5fr 1fr;
+    gap: 10px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .program-item h3 {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .program-item .status {
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+    button:hover {
+        background-color: #1f1f45;
+    }
+
+    button.btn-success {
+        background-color: #28a745;
+    }
+
+    button.btn-danger {
+        background-color: #dc3545;
+    }
+
+    button:disabled {
+        background-color: #e0e0e0;
+        cursor: not-allowed;
+    }
+
+/* Modal Styles */
+.modal-content {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h5 {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.modal-body {
+    font-size: 1rem;
+}
+
+/* Create Program Section */
+#programOverview {
+    margin-bottom: 30px;
+}
+
+#searchProgram {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+.program-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .program-form input, .program-form select, .program-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+    }
+
+    .program-form button {
+        background-color: var(--primary-color);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+    }
+
+        .program-form button:hover {
+            background-color: #1f1f45;
+        }
+
+/* Active Tab Highlight */
+a.active {
+    color: #ff782d;
+    font-weight: bold;
+    border-bottom: 2px solid #ff782d;
+}
+
+/* Breadcrumb Styles */
+.breadcrumb {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .breadcrumb a {
+        color: black;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+        .breadcrumb a:hover {
+            transform: scale(1.05);
+        }
+
+    .breadcrumb .separator {
+        margin: 0 8px;
+        color: #666;
+    }
+
+    .breadcrumb span {
+        color: #666;
+        font-weight: 300;
+    }
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .program-item {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,257 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1; /* Allow the container to grow and take available space */
+}
+
+.header {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    padding: 10px 2%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensures it's on top of other content */
+}
+
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Starts from above */
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Ends at its normal position */
+    }
+}
+
+/* Apply the animation to the body */
+body {
+    animation: fadeDown 1s ease-out;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    padding-left: 120px; /* Add padding to indent */
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Maintain text color */
+}
+
+.logo {
+    height: 40px; /* Increased height for the logo */
+    margin-right: 10px;
+}
+
+.service-academy {
+    font-size: 1.5em; /* Adjusted font size */
+    font-weight: bold;
+}
+
+/* Optional: Ensure no underline on hover */
+.logo-container:hover {
+    text-decoration: none;
+    color: black;
+}
+
+
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    background-color: #ffffff; /* Set the navigation bar background to white */
+    padding: 10px;
+}
+
+    .nav-links a {
+        color: black; /* Set the text color of the links to black */
+        padding: 10px 20px;
+        text-decoration: none;
+        background-color: white;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+        .nav-links a:hover {
+            background-color: #ddd;
+            color: #ff782d;
+        }
+
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    padding-right: 120px; /* Add padding to indent */
+}
+
+    .nav-right a {
+        color: rgb(0, 0, 0);
+        padding: 14px 10px;
+        text-decoration: none;
+    }
+
+        .nav-right a:hover {
+            background-color: #ddd;
+            color: #ff782d;
+        }
+
+
+a.active {
+    color: #ff782d; /* Change to any color you want to highlight the current tab */
+    font-weight: bold; /* You can also make it bold or apply other styles */
+    border-bottom: 2px solid #ff782d; /* Add a bottom border to indicate current page */
+}
+
+.breadcrumb {
+    margin-top: 10px; /* Adjust value to the amount of space you want */
+    padding: 15px 30px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .breadcrumb a {
+        color: black;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.3s ease; /* Add transition for transform */
+    }
+
+        .breadcrumb a:hover {
+            color: black;
+            text-decoration: none;
+            transform: scale(1.1); /* Slightly increase size on hover */
+        }
+
+    .breadcrumb .separator {
+        margin: 0 8px;
+        color: #666;
+        font-size: 16px;
+    }
+
+    .breadcrumb span {
+        color: #666;
+        font-weight: 400;
+    }
+
+.icon {
+    width: 32px;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.menu a {
+    margin-right: 20px;
+    color: #333;
+    text-decoration: none;
+}
+
+footer {
+    background-color: #1c1c1c;
+    color: #fff;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    margin-top: auto; /* Ensure footer is pushed to the bottom */
+    width: 100%; /* Make sure it stretches the full width */
+}
+
+.footer-container {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+/* Top section of the footer */
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #555;
+}
+
+/* Footer links */
+.footer-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .footer-links li {
+        margin-bottom: 10px;
+    }
+
+        .footer-links li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+            .footer-links li a:hover {
+                text-decoration: underline;
+            }
+
+/* Social media icons */
+.social-media a {
+    color: #fff;
+    margin-left: 15px;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+    .social-media a:hover {
+        color: #f1f1f1;
+    }
+
+/* Bottom section of the footer */
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+    .footer-bottom p {
+        margin: 10px 0;
+    }
+
+.footer-bottom-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+    .footer-bottom-links li {
+        margin: 0 15px;
+    }
+
+        .footer-bottom-links li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+            .footer-bottom-links li a:hover {
+                text-decoration: underline;
+            }

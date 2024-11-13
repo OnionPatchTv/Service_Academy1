@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "No Programs Available";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/ProgramStyle/NoProgramStyle.css">
+}
+
+<div style="text-align: center; margin-top: 50px;">
+    <h1>No Currently Programs Available!</h1>
+    <p>Sorry for the inconvenience.</p>
+    <i class="fas fa-robot" style="font-size: 100px;"></i> <!-- Font Awesome robot icon -->
+    <!-- Button to redirect back to the ProgramCatalog page -->
+    <br>
+    <button class="btn-home" onclick="window.location.href='@Url.Action("ProgramCatalog", "Home")'">
+        Back to Program Catalog
+    </button>
+</div>

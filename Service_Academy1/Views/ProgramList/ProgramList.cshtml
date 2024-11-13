@@ -1,0 +1,70 @@
+﻿@model Service_Academy1.Models.ProgramListViewModel
+
+@{
+    ViewData["Title"] = "Service Academy - Program Catalog Dashboard Page - Program List";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ProgramStyle/ProgramListStyle.css">
+}
+
+<main class="container-fluid">
+    <div class="main-content">
+        <div class="my-learning-container">
+            <img src="../Images/MyLearning.png" alt="My Learning" class="MyLearning">
+            <span class="myLearning">@ViewBag.AgendaTitle</span>
+        </div>
+        <div class="current-programs">
+            <p>@ViewBag.AgendaDescription</p>
+            <h2>Offered Programs</h2>
+            <div class="row full-width">
+                <!-- Main Content Area -->
+                <section>
+                    <div class="programs">
+                        <div class="program-box">
+                            <div class="program-filters">
+                                <div class="search-container">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Search">
+                                </div>
+                            </div>
+                            <div class="program-cards">
+                                @foreach (var program in Model.Programs)
+                                {
+                                    var programManagement = program.ProgramManagement?.OrderByDescending(pm => pm.StartDate).FirstOrDefault();
+
+                                    // Check if the user is enrolled in this program
+                                    var existingEnrollment = Model.UserEnrollments.FirstOrDefault(e => e.ProgramId == program.ProgramId);
+                                    bool canEnroll = existingEnrollment == null || existingEnrollment.EnrollmentStatus == "Denied";
+
+                                    <div class="program-card">
+                                        <div class="program-image">
+                                            <img src="@Url.Content(program.PhotoPath)" alt="@program.Title">
+                                        </div>
+                                        <div class="program-content">
+                                            <h3>@program.Title</h3>
+                                            <div class="description">
+                                                @program.Description
+                                            </div>
+                                            <div class="enroll">
+                                                <form method="post" action="@Url.Action("Enroll", "ProgramList")">
+                                                    <input type="hidden" name="programId" value="@program.ProgramId" />
+                                                    <button type="submit" class="btnEnroll @(programManagement?.IsActive == true && canEnroll ? "" : "disabled")" @(programManagement?.IsActive == true && canEnroll ? "" : "disabled")>
+                                                        Enroll Now
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+

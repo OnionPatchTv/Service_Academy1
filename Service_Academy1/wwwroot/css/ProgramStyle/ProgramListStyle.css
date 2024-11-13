@@ -1,0 +1,271 @@
+/* Reset and box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Root variables */
+:root {
+    --primary-color: #ff782d;
+    --secondary-color: #f4f4f4;
+    --card-bg-color: #f8f8f8;
+    --dropdown-bg-color: white;
+    --dropdown-hover-bg-color: #ddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --font-family: 'Poppins', sans-serif;
+}
+
+/* Body */
+body {
+    font-family: var(--font-family);
+}
+
+.my-learning-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.MyLearning {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.myLearning {
+    font-size: 28px;
+    color: #333;
+}
+/* Main Content */
+.programs {
+    width: 100%;
+    padding-top: 20px;
+}
+
+    .programs h2 {
+        margin-bottom: 25px; /* Space between header and box */
+    }
+
+.program-box {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+/* Program Filters */
+.program-filters {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between filter elements */
+}
+
+    .program-filters select,
+    .program-filters input {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding-right: 40px; /* Space for the dropdown icon */
+    }
+
+.search-container {
+    position: relative;
+}
+
+    .search-container i {
+        position: absolute;
+        left: 10px; /* Adjust to position the icon correctly */
+        top: 50%;
+        transform: translateY(-50%); /* Vertically center the icon */
+        color: var(--primary-color);
+    }
+
+    .search-container input {
+        padding-left: 40px; /* Space for the search icon */
+        width: 100%; /* Ensure it takes the full width of its container */
+    }
+
+/* Program Cards */
+.program-cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Program Card */
+.program-card {
+    background-color: var(--card-bg-color);
+    padding: 0; /* Remove padding for the image */
+    margin-top: 20px; /* Space between filters and program cards */
+    border-radius: 10px;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    overflow: hidden; /* Ensures the image stays within the card’s border radius */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    height: 370px; /* Fixed height for consistency */
+}
+
+/* Program Image */
+.program-image img {
+    width: 100%;
+    height: 150px; /* Fixed height for the image */
+    object-fit: cover; /* Ensure the image covers the area */
+    border-top-left-radius: 10px; /* Match the card’s border radius */
+    border-top-right-radius: 10px; /* Match the card’s border radius */
+    display: block; /* Remove bottom space */
+}
+
+/* Content Section */
+.program-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between elements */
+    flex: 1; /* Flexible container to fill available space */
+    position: relative; /* Allows absolute positioning if needed */
+}
+
+    .program-content h3 {
+        font-size: 1.2rem;
+        margin: 0;
+        color: black;
+        width: 100%; /* Full width */
+        height: 1.4em; /* Single-line height */
+        line-height: 1.4em;
+        display: inline-block; /* Keeps text within bounds */
+        text-decoration: none;
+    }
+
+    /* Status Section */
+    .program-content .enroll {
+        margin-top: auto; /* Positions status at the bottom */
+        font-size: 0.9rem; /* Slightly smaller text */
+        color: #ccc; /* Subtle gray text */
+        border-top: 1px solid #ddd; /* Optional separator */
+        padding-top: 10px; /* Space above status */
+    }
+
+
+.description {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Trainees */
+.trainees {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    padding-top: 50px;
+}
+
+    .trainees i {
+        color: #FF782D; /* Icon color */
+        font-size: 0.9rem; /* Match the size of the text */
+    }
+
+    .trainees::after {
+        content: "";
+        display: block;
+        border-top: 1px solid #ddd; /* Line below the trainees */
+        margin-top: 10px; /* Space between text and line */
+        margin-bottom: 20px; /* Space between line and icons */
+    }
+
+/* Icons Section */
+.program-icons {
+    position: absolute;
+    bottom: 15px; /* Space from the bottom of the card */
+    right: 30px; /* Space from the left edge of the card */
+    display: flex;
+    gap: 10px;
+}
+
+    .program-icons i {
+        color: var(--primary-color);
+        cursor: pointer;
+        font-size: 1.2rem; /* Adjust size as needed */
+    }
+
+/* Sidebar */
+.sidebar {
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+
+/* Upcoming Events */
+.upcoming-events {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    margin-top: 20px; /* Space between widgets */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .programs {
+        width: 100%;
+    }
+
+    .program-cards {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .program-filters {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .program-filters button {
+            width: 100%;
+        }
+}
+.btnEnroll {
+    background-color: #ff782d;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    .btnEnroll:hover:not(.disabled) { /* Prevent hover effect on disabled */
+        opacity: 0.9;
+        background-color: #cc5200;
+    }
+
+    .btnEnroll.disabled {
+        background-color: grey; /* or any other color */
+        cursor: not-allowed;
+        pointer-events: none; /* Prevent clicking */
+    }
+
+/* Ensure .main-content spans the full container width */
+.main-content {
+    width: 100%; /* Full width of the container */
+    padding: 15px; /* Optional: Add padding for spacing */
+    box-sizing: border-box;
+}
+
+/* Full-width row */
+.row.full-width {
+    width: 100%; /* Ensure the row spans the entire main-content width */
+    margin: 0; /* Remove any unintended margin */
+    padding: 0; /* Optional: Remove padding if not needed */
+    display: flex; /* Optional: Use flexbox for child alignment */
+    flex-wrap: wrap; /* Ensure content wraps if needed */
+}
+
+    /* Remove default Bootstrap column constraints (if using col-md-10) */
+    .row.full-width section {
+        flex: 1; /* Make section take the available space */
+        max-width: 100%; /* Prevent Bootstrap's default constraints */
+    }

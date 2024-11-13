@@ -1,0 +1,444 @@
+/* Reset and box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Root variables */
+:root {
+    --primary-color: #ff782d;
+    --secondary-color: #f4f4f4;
+    --card-bg-color: #f8f8f8;
+    --dropdown-bg-color: white;
+    --dropdown-hover-bg-color: #ddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --font-family: 'Poppins', sans-serif;
+}
+
+/* Body */
+body {
+    font-family: var(--font-family);
+}
+
+
+/* Main Content */
+.programs {
+    width: 100%;
+    padding-top: 20px;
+}
+
+    .programs h2 {
+        margin-bottom: 25px; /* Space between header and box */
+    }
+
+.program-box {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    margin-bottom: 30px;
+}
+
+/* Program Filters */
+.program-filters {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between filter elements */
+    flex-wrap: wrap;
+}
+
+    .program-filters select,
+    .program-filters input,
+    .program-filters button {
+        flex: 1; /* Makes each element take an equal width */
+        max-width: 100%; /* Ensures elements don’t exceed container width */
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    /* Increase the gap specifically between the 3rd and 4th item */
+    .program-filters > *:nth-child(2) {
+        margin-right: 120px; /* Adjust this value as needed */
+    }
+
+.search-container {
+    position: relative;
+}
+
+    .search-container i {
+        position: absolute;
+        left: 10px; /* Adjust to position the icon correctly */
+        top: 50%;
+        transform: translateY(-50%); /* Vertically center the icon */
+        color: var(--primary-color);
+    }
+
+    .search-container input {
+        padding-left: 40px;
+        width: 100%; /* Ensure it takes the full width of its container */
+    }
+
+.program-filters button {
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    font-weight: 400; /* Normal font weight */
+    max-width: 150px; /* Prevents button from getting too large */
+    width: 100%; /* Ensures it takes full width if available */
+    padding: 10px;
+}
+
+    .program-filters button:hover {
+        font-weight: bold; /* Make text bold on hover */
+    }
+
+/* Program Cards */
+.program-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Ensures cards are centered horizontally */
+    align-items: flex-start; /* Aligns cards at the top of the container */
+    gap: 20px; /* Space between cards */
+}
+.program-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+/* Program Card */
+.program-card {
+    cursor: pointer;
+    background-color: var(--card-bg-color);
+    padding: 0; /* Remove padding for the image */
+    margin-top: 20px; /* Space between filters and program cards */
+    border-radius: 10px;
+    width: 100%;
+    max-width: 300px; /* Maximum width of each card */
+    box-shadow: 0 4px 8px var(--shadow-color);
+    overflow: hidden; /* Ensures the image stays within the card’s border radius */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    height: 370px; /* Fixed height for consistency */
+}
+
+/* Program Image */
+.program-image img {
+    width: 100%;
+    height: 150px; /* Fixed height for the image */
+    object-fit: cover; /* Ensure the image covers the area */
+    border-top-left-radius: 10px; /* Match the card’s border radius */
+    border-top-right-radius: 10px; /* Match the card’s border radius */
+    display: block; /* Remove bottom space */
+}
+
+/* Content Section */
+.program-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between title, description, and trainees */
+    flex: 1; /* Take up available space */
+    position: relative; /* For positioning the line and icons */
+}
+
+    .program-content h3 {
+        font-size: 1.2rem;
+        margin: 0;
+        text-decoration: none;
+    }
+
+    .program-content a {
+        font-size: 1.2rem;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%; /* Ensures it takes the full width available */
+        height: 1.4em; /* Fixes to single line height */
+        line-height: 1.4em;
+        color: black; /* To inherit color from parent, if needed */
+        text-decoration: none; /* Optional: remove underline */
+        display: inline-block;
+    }
+
+
+.description {
+    font-size: 0.9rem;
+    color: #555;
+}
+.action-buttons {
+    margin-top: 40px; /* Space above the action buttons */
+    display: flex;
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 10px; /* Optional: Space between the buttons */
+    width: 100%; /* Make the container take up full width */
+}
+
+.btnActivate, .btnDeactivate {
+    padding: 10px 20px; /* Adjust button size */
+    font-size: 1rem; /* Adjust font size */
+    cursor: pointer;
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Make the buttons take up the full width of the container */
+    max-width: 200px; /* Optional: Set a maximum width for the buttons */
+}
+
+.btnActivate {
+    background-color: #55BE24; /* Green for activate */
+    color: white;
+}
+
+.btnDeactivate {
+    background-color: #E02200; /* Red for deactivate */
+    color: white;
+}
+
+/* Trainees */
+.trainees {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    padding-top: 50px;
+}
+
+    .trainees i {
+        color: #FF782D; /* Icon color */
+        font-size: 0.9rem; /* Match the size of the text */
+    }
+
+    .trainees::after {
+        content: "";
+        display: block;
+        border-top: 1px solid #ddd; /* Line below the trainees */
+        margin-top: 10px; /* Space between text and line */
+        margin-bottom: 20px; /* Space between line and icons */
+    }
+
+/* Icons Section */
+.program-icons {
+    position: absolute;
+    bottom: 15px; /* Space from the bottom of the card */
+    right: 15px; /* Space from the left edge of the card */
+    display: flex;
+    gap: 15px;
+}
+
+    .program-icons i.fas, .program-icons i.fa-solid {
+        color: var(--primary-color);
+        cursor: pointer;
+        font-size: 1.2rem; /* Slightly smaller icon size */
+        border: none;
+    }
+    /* Increase the gap between the 3rd and 4th item */ 
+    .program-icons > *:nth-child(3) { 
+        margin-left: 100px; /* This will create a wider gap between the "Pending" and "Archive" icons */   
+    }
+
+/* Activate Button */
+.archive-button, .delete-button {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.btnActivate {
+    background-color: #5cd03d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+    .btnActivate:hover {
+        background-color: #24af00; /* Darker shade of #5cd03d */
+    }
+
+/* Deactivate Button */
+.btnDeactivate {
+    background-color: #d03d3d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+    .btnDeactivate:hover {
+        background-color: #b60000; /* Darker shade of #d03d3d */
+    }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .programs {
+        width: 100%;
+    }
+
+    .program-cards {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .program-filters {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .program-filters button {
+            width: 100%; /* Make button take full width in smaller screens */
+            max-width: unset; /* Allow it to expand fully if needed */
+        }
+}
+/* Modal Overlay */
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+/* Modal Form */
+#modalForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Modal Input Fields */
+.modal-form input[type="text"],
+.modal-form input[type="password"],
+.modal-form input[type="date"],
+.modal-form select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Modal Buttons */
+.modal-form .btn {
+    background-color: #FF6600; /* Orange */
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    .modal-form .btn:hover {
+        opacity: 0.9;
+        background-color: #cc5200;
+    }
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.7rem; /* Adjust size as needed */
+    color: var(--primary-color); /* Use your primary color for consistency */
+    cursor: pointer;
+}
+
+    .close-btn:hover {
+        color: darkred; /* Change color on hover for feedback */
+    }
+
+.modal-form .btnYes {
+    background-color: #5cd03d;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    .modal-form .btnYes:hover {
+        opacity: 0.9;
+        background-color: #24af00;
+    }
+
+.modal-form .btnNo {
+    background-color: #d03d3d;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    .modal-form .btnNo:hover {
+        opacity: 0.9;
+        background-color: #b60000;
+    }
+
+/* Upcoming Events */
+.upcoming-events {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    margin-top: 20px; /* Space between widgets */
+    width: 100%; /* Ensure it takes up full width */
+    box-sizing: border-box; /* Include padding in width calculation */
+    overflow-wrap: break-word; /* Prevents text overflow */
+}
+
+    .upcoming-events h4 {
+        margin: 0 0 15px 0; /* Adds 15px space below */
+        font-size: 1.2em; /* Adjust font size if needed */
+    }
+
+
+
+
+.toggle-button {
+    width: 200px;
+    height: 60px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #5cd03d; /* Initial active color */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+    .toggle-button:active {
+        transform: scale(0.98);
+    }
+
+    .toggle-button.deactivated {
+        background-color: #d03d3d;
+        color: #fff;
+    }
+
+button.disabled {
+    background-color: #e0e0e0; /* Grey background */
+    color: #b0b0b0; /* Grey text */
+    cursor: not-allowed; /* Disable cursor */
+    border: 1px solid #d0d0d0; /* Grey border */
+}
+
+    button.disabled:hover {
+        background-color: #e0e0e0; /* Keep greyed-out on hover */
+        color: #b0b0b0;
+    }

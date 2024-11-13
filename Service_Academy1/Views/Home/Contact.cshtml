@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Contact Page";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/HomeStyle/ContactStyle.css">
+}
+<div class="container">
+    <section class="layout">
+        <h1>Contact Us</h1>
+        <p>If you have any questions or need further information, feel free to reach out to us using the contact form below.</p>
+
+        <div class="contact-container">
+            <!-- Contact Form -->
+            <form class="contact-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
+
+            <!-- Contact Information -->
+            <div class="contact-info">
+                <h3>Visit Us</h3>
+                <p>Batangas State University, Alangilan, Batangas City</p>
+                <p>Phone: +63 43 980 0385</p>
+                <p>Email: contact@batstateu.edu.ph</p>
+
+                <!-- Map -->
+                <div class="map">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3874.2273806836726!2d121.04107599999999!3d13.7593635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33bd722bc091c16f%3A0xd12418b025ac6c62!2sBatangas%20State%20University!5e0!3m2!1sen!2sph!4v1631174878264!5m2!1sen!2sph" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

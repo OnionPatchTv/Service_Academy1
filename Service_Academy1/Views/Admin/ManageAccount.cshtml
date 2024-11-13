@@ -1,0 +1,210 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model ManageAccountViewModel
+@inject UserManager<ApplicationUser> _userManager
+
+@{
+    ViewData["Title"] = "Manage Accounts";
+    //Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AdminStyle/ManageAccountStyle.css">
+}
+
+<div class="container">
+    <div class="container-fluid mt-4 mb-5">
+        <div class="row">
+            <!-- Main Section -->
+            <div class="col-lg-8">
+                <h2>Account Management</h2>
+
+                <!-- Success/Error Message Display -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+
+                <!-- Search and Filter Section -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <input type="text" id="searchAccount" class="form-control w-50" placeholder="Search by username, email, or full name..." onkeyup="filterAccounts()">
+                    <select id="filterRole" class="form-control w-25 ml-2" onchange="filterAccounts()">
+                        <option value="">Filter by Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Instructor">Instructor</option>
+                        <option value="Student">Student</option>
+                    </select>
+                </div>
+
+                <!-- Account List Table -->
+                <div class="table-responsive mt-4">
+                    <table id="accountTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Full Name</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Users != null && Model.Users.Count > 0)
+                            {
+                                @foreach (var user in Model.Users)
+                                {
+                                    <tr>
+                                        <td>@user.Email</td>
+                                        <td>@user.FullName</td>
+                                        <td>
+                                            @{
+                                                var roles = await _userManager.GetRolesAsync(user);
+                                                @string.Join(", ", roles)
+                                                ;
+                                            }
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editAccountModal" data-userid="@user.Id" data-username="@user.UserName" data-email="@user.Email" data-fullname="@user.FullName" data-role="@string.Join(", ", await _userManager.GetRolesAsync(user))">
+                                                Edit
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteAccount('@user.Id')">Delete</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5">No accounts found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Create New Account Form -->
+                <h2 class="mt-5">Create New Account</h2>
+                @await Html.PartialAsync("_CreateAccountForm", new CreateAccountViewModel())
+            </div>
+
+            <!-- Sidebar Section -->
+            <div class="col-lg-4">
+                <!-- Account Roles Info -->
+                <h4>Account Roles</h4>
+                <ul class="list-group mb-4">
+                    <li class="list-group-item"><strong>Administrator:</strong> Full permissions to manage LMS.</li>
+                    <li class="list-group-item"><strong>Instructor:</strong> Manage courses, enrollments, and grades.</li>
+                    <li class="list-group-item"><strong>Student:</strong> Access courses, view grades, and track progress.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Account Modal -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" role="dialog" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-action="EditAccount" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId" name="Id" value="">
+
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" id="editEmail" class="form-control" name="Email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" id="editFullName" class="form-control" name="FullName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editRole">Role</label>
+                        <select id="editRole" class="form-control" name="Role" required>
+                            <option value="Admin">Admin</option>
+                            <option value="Instructor">Instructor</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Search/filter accounts
+        function filterAccounts() {
+            var searchValue = document.getElementById('searchAccount').value.toLowerCase();
+            var roleFilter = document.getElementById('filterRole').value;
+            var table = document.getElementById('accountTable');
+            var rows = table.getElementsByTagName('tr');
+
+            for (var i = 1; i < rows.length; i++) {
+                var email = rows[i].cells[0].textContent.toLowerCase();
+                var fullName = rows[i].cells[1].textContent.toLowerCase();
+                var role = rows[i].cells[2].textContent;
+
+                if ((email.includes(searchValue) || fullName.includes(searchValue)) &&
+                    (role.includes(roleFilter) || roleFilter === '')) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        // Pre-fill the Edit Account Modal with user data
+        $('#editAccountModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var userId = button.data('userid');
+            var email = button.data('email');
+            var fullName = button.data('fullname');
+            var role = button.data('role');
+
+            var modal = $(this);
+            modal.find('#editUserId').val(userId);
+            modal.find('#editEmail').val(email);
+            modal.find('#editFullName').val(fullName);
+            modal.find('#editRole').val(role);
+        });
+
+        // AJAX call to delete an account
+        function deleteAccount(userId) {
+            if (confirm("Are you sure you want to delete this account?")) {
+                $.ajax({
+                    url: '/Admin/DeleteAccount',
+                    type: 'POST',
+                    data: { id: userId },
+                    success: function (result) {
+                        // Handle success (e.g., update the UI to remove the deleted row)
+                        alert('Success!');
+                        location.reload();
+                    },
+                    error: function (error) {
+                        // Handle error
+                        alert('Error occurred.');
+                    }
+                });
+            }
+        }
+    </script>
+}

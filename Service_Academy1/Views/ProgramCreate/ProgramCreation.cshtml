@@ -1,0 +1,95 @@
+﻿@model ProgramCreateViewModel
+
+@{
+    ViewData["Title"] = "Service Academy - Instructor Dashboard Page - Program Creation";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ProgramStyle/ProgramCreateStyle.css">
+}
+
+@section Scripts {
+    <script src="~/js/InstructorScript/ProgramCreateScript.js"></script>
+}
+
+<div class="container">
+    <div class="content">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Message"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <div class="breadcrumb">
+            <a href="@Url.Action("InstructorDashboard", "Instructor")">Dashboard</a>
+            <span class="separator">&gt;</span>
+            <span>Course Creation</span>
+        </div>
+
+        <section class="layout">
+            <div class="form-container">
+                <form id="programForm" asp-action="ProgramCreation" method="post" enctype="multipart/form-data">
+                    <div class="photo-upload">
+                        <div id="photoPreview" class="photo-preview">Add Photo</div>
+                        <label for="photoInput" class="photo-upload-btn">Upload Photo</label>
+                        <input type="file" id="photoInput" name="photoInput" class="photo-input" accept="image/*" required />
+                    </div>
+                    <div class="form-content">
+                        <h2>ADD PROGRAM</h2>
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            @Html.ValidationMessageFor(model => model.Title)
+                            <label asp-for="Title"><b>Program Title</b></label>
+                            <input asp-for="Title" class="form-control" placeholder="Program Title" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Program Instructor</b></label>
+                            <input type="text" class="form-control" value="@Model.InstructorName" readonly />
+                        </div>
+                        <!-- Dropdown for Agenda -->
+                        <div class="form-group">
+                            @Html.ValidationMessageFor(model => model.Agenda)
+                            <label asp-for="Agenda"><b>Agenda</b></label>
+                            <select asp-for="Agenda" class="form-control" required>
+                                <option value="">-- Select Agenda --</option>
+                                <option value="BISIG">BatStateU Inclusive Social Innovation for Regional Growth (BISIG)</option>
+                                <option value="LEAF">Livelihood and Other Entrepreneurship related on Agri-Fisheries (LEAF)</option>
+                                <option value="Environment">Environment and Natural Resources Conservation, Protection and Rehabilitation</option>
+                                <option value="SAEI">Smart Analytics for Engineering Innovation</option>
+                                <option value="BINADI">Adopt-A-Municipality / Social Development Through BINADI Implementation</option>
+                                <option value="Outreach">Community Outreach</option>
+                                <option value="TVET">Technical-Vocational Education And Training (TVET)</option>
+                                <option value="TTAU">Technology Transfer, And Adoption / Utilization</option>
+                                <option value="TAAS">Technical Assistance And Advisory Services</option>
+                                <option value="PESODEV">Parents' Empowerment Thru Social Development</option>
+                                <option value="GAD">Gender And Development</option>
+                                <option value="DisasterRisk">Disaster Risk Reduction And Management And Disaster Preparedness And Response / Climate Change Adoption</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.ValidationMessageFor(model => model.Description)
+                            <label asp-for="Description"><b>Program Description</b></label>
+                            <textarea asp-for="Description" class="form-control" placeholder="Program Description" required></textarea>
+                        </div>
+
+                        <!-- Hidden field for InstructorId -->
+                        <input type="hidden" asp-for="InstructorId" value="@Model.InstructorId" />
+
+                        <button type="submit" id="addProgramBtn" class="btn-add">Add Program</button>
+                    </div>
+                </form>
+
+            </div>
+        </section>
+    </div>
+</div>

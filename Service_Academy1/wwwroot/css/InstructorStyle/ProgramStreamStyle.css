@@ -1,0 +1,586 @@
+﻿/* Reset and box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Root variables */
+:root {
+    --primary-color: #2b2b5f;
+    --secondary-color: #f4f4f4;
+    --banner-bg-color: #4a4a7d; /* Banner background color */
+    --font-family: 'Poppins', sans-serif;
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Add shadow color variable */
+}
+
+/* Body */
+body {
+    font-family: var(--font-family);
+    background-color: var(--secondary-color);
+}
+
+/* Header styles */
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 50px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+}
+
+.logo a {
+    text-decoration: none;
+}
+
+.navbar {
+    display: flex;
+    gap: 10px;
+    margin: 10px;
+    padding-left: 80px;
+}
+
+    .navbar a {
+        color: black;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 500;
+        position: relative; /* Positioning for the separator */
+    }
+
+        .navbar a:not(:last-child)::after { /* Add separator after each item except the last */
+            content: "|"; /* Separator */
+            margin-left: 10px; /* Space between text and separator */
+            color: black; /* Color of the separator */
+        }
+
+        .navbar a:hover {
+            color: #ddd;
+        }
+
+.profile-picture img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+/* User Text */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+    .user-text p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+        .user-text p:first-child {
+            font-weight: bold;
+        }
+
+        .user-text p:last-child {
+            color: rgb(217, 217, 217);
+        }
+
+/* Logout Icon */
+.logout-icon {
+    position: relative;
+    cursor: pointer;
+}
+
+    .logout-icon i {
+        font-size: 1.2rem;
+        color: white;
+    }
+
+.logout-text {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: var(--dropdown-bg-color);
+    color: black;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px var(--shadow-color);
+    font-size: 0.9rem;
+}
+
+/* Show text on hover */
+.logout-icon:hover .logout-text {
+    display: block;
+}
+
+/* Class Banner Section */
+.class-banner {
+    background-color: #ebebeb; /* Gray background */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
+    width: 90%; /* Width of the banner */
+    margin: 10px auto; /* Center the banner horizontally and add margin on top and bottom */
+    border-radius: 10px; /* Optional rounded corners */
+    box-shadow: 0 4px 8px var(--shadow-color);
+    border: 2px solid #ccc; /* Add border to the banner */
+}
+
+/* Content Container */
+.banner-content {
+    width: 100%; /* Full width for the content */
+}
+
+/* Banner Image */
+.banner-image {
+    width: 100%; /* Full width for the image container */
+    height: 50%; /* Take half of the banner's height */
+}
+
+    .banner-image img {
+        width: 100%; /* Image stretches to fill its container */
+        height: auto; /* Maintain aspect ratio */
+        max-height: 300px; /* Set a maximum height */
+        object-fit: cover; /* Ensure the image covers the area without stretching */
+        border-top-left-radius: 10px; /* Rounded corners on the top left */
+        border-top-right-radius: 10px; /* Rounded corners on the top right */
+    }
+
+/* Banner Text */
+.banner-text {
+    width: 100%; /* Full width for the text */
+    height: 50%; /* Take the other half of the banner's height */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack text vertically */
+    justify-content: center; /* Center text vertically */
+    align-items: left; /* Align text to the left */
+    text-align: left; /* Align text to the left */
+    padding: 20px; /* Padding for the text section */
+}
+
+.class-title {
+    font-size: 2.5rem; /* Increased font size for title */
+    font-weight: bold; /* Bold text */
+    margin-bottom: 15px; /* Space between title and number */
+}
+
+.trainees-count {
+    font-size: 1.2rem; /* Font size for number of trainees */
+}
+
+.announcements {
+    margin-bottom: 20px !important; /* Forcing margin in case of overrides */
+    width: 80%;
+    margin: 0 auto; /* Center the announcements */
+    border: 2px solid #ccc; /* Add border to announcements */
+    border-radius: 10px; /* Rounded corners for announcements */
+    padding: 10px; /* Padding for visual spacing */
+}
+
+.announcement-container {
+    margin-bottom: 0;
+}
+
+.announcement-prompt {
+    background-color: #f1f1f1; /* Light gray background */
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center; /* Center text */
+    transition: background-color 0.2s;
+}
+
+    .announcement-prompt:hover {
+        background-color: #e1e1e1; /* Darker gray on hover */
+    }
+
+.announcement-input {
+    margin-top: 10px; /* Space above input */
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px var(--shadow-color);
+}
+
+.input-toolbar {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    margin-bottom: 10px; /* Space below toolbar */
+}
+
+    .input-toolbar button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007BFF; /* Bootstrap primary color */
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .input-toolbar button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+.editable-textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    resize: none; /* Prevent resizing */
+    min-height: 100px; /* Minimum height for the editable area */
+}
+
+.input-buttons {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    margin-top: 10px; /* Space above buttons */
+}
+
+.cancel-btn,
+.post-btn {
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #dc3545; /* Bootstrap danger color */
+    color: #fff;
+    cursor: pointer;
+}
+
+    .cancel-btn:hover {
+        background-color: #c82333; /* Darker red on hover */
+    }
+
+.post-btn {
+    background-color: #28a745; /* Bootstrap success color */
+}
+
+    .post-btn:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+
+.posts {
+    margin-top: 20px;
+}
+
+/* Individual Post Styling */
+.post {
+    background-color: #f9f9f9; /* Light background for posts */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px; /* Space between posts */
+    position: relative;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.post-user {
+    display: flex;
+    align-items: center;
+}
+
+.post-user-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Circular profile picture */
+    margin-right: 10px;
+}
+
+.post-user-name {
+    font-weight: bold;
+}
+
+.post-timestamp {
+    color: #888; /* Lighter color for timestamp */
+    font-size: 0.9em;
+}
+
+.post-content {
+    margin-top: 5px;
+}
+
+/* Content Sections */
+.content-sections {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 100px;
+    gap: 20px;
+}
+/* Container for the buttons to align them on the right */
+.button-container {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    width: 100%; /* Ensure it stretches across the container */
+    padding-right: 100px; /* Add space between button container and right edge */
+    margin-top: 20px; /* Adjust as needed for spacing */
+}
+
+/* Styling for Upload Module and Create Assessment buttons */
+.upload-module,
+.create-assessment {
+    background-color: #2b2b5f; /* Button background color */
+    color: #fff; /* Text color */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Button padding */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s ease; /* Smooth transition */
+    margin-left: 10px; /* Space between buttons */
+}
+
+    /* Hover effect */
+    .upload-module:hover,
+    .create-assessment:hover {
+        background-color: #242449; /* Darker shade on hover */
+        color: #ccc;
+    }
+
+    /* Disabled state */
+    .upload-module:disabled,
+    .create-assessment:disabled {
+        background-color: #a0a0a0; /* Grey color for disabled state */
+        cursor: not-allowed; /* Disabled cursor */
+    }
+
+/* Adjust widths for modules and module-viewer */
+.modules {
+    width: 20%; /* Set width to 20% */
+    background-color: var(--secondary-color); /* Optional background for visibility */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Padding inside modules section */
+    box-shadow: 0 4px 8px var(--shadow-color); /* Optional shadow */
+    border: 2px solid #ccc; /* Add border to modules */
+}
+
+.module-viewer {
+    width: 80%; /* Set width to 80% */
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    border: 2px solid #ccc; /* Add border to module viewer */
+}
+
+.module-list .module {
+    margin-bottom: 20px;
+}
+
+/* Base styles for the button */
+.module-title, .quiz-title {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    position: relative; /* Positioning for the icons */
+    display: flex;
+    align-items: center; /* Aligning icons and text */
+    justify-content: space-between; /* Ensuring icons are on the right */
+}
+
+    /* Adjust icon spacing using nth-child */
+    .module-title i:nth-child(1) {
+        margin-left: 35px; /* Custom spacing between the first icon and the text */
+    }
+
+    /* Icon styles */
+    .module-title i {
+        font-size: 18px;
+        color: white; /* Default icon color */
+        margin-left: 10px; /* Spacing between text and icons */
+        opacity: 0.6; /* Slightly transparent by default */
+        transition: opacity 0.3s, color 0.3s;
+    }
+
+    /* Hover effect for the module-title button */
+    .module-title:hover {
+        background-color: #2b2b5f; /* Define a hover color for the button */
+    }
+
+        /* Hover effect for icons within the button */
+        .module-title:hover i {
+            opacity: 1; /* Icons become fully visible */
+            color: #ccc; /* Change color on hover */
+        }
+
+/* Ensure the icons are correctly positioned on the right */
+.module-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+
+.module-viewer .viewer-content {
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .class-banner {
+        padding: 30px 20px;
+    }
+
+    .banner-content .class-title {
+        font-size: 1.5rem;
+    }
+
+    .banner-content .trainees-count {
+        font-size: 1rem;
+    }
+
+    .content-sections {
+        flex-direction: column;
+    }
+
+    .modules,
+    .module-viewer {
+        width: 100%; /* Full width on mobile */
+    }
+}
+
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.7rem; /* Adjust size as needed */
+    color: black; /* Use your primary color for consistency */
+    cursor: pointer;
+}
+
+    .close-btn:hover {
+        color: black; /* Change color on hover for feedback */
+    }
+
+/* Modal Overlay */
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+/* Modal Form */
+#modalForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Modal Input Fields */
+.modal-form input[type="text"],
+.modal-form input[type="password"],
+.modal-form input[type="date"],
+.modal-form select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Modal Buttons */
+.modal-form .btn {
+    background-color: #FF6600; /* Orange */
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    .modal-form .btn:hover {
+        opacity: 0.9;
+        background-color: #cc5200;
+    }
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.7rem; /* Adjust size as needed */
+    color: var(--primary-color); /* Use your primary color for consistency */
+    cursor: pointer;
+}
+
+    .close-btn:hover {
+        color: darkred; /* Change color on hover for feedback */
+    }
+
+.modal-form .btnYes {
+    background-color: #5cd03d;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    .modal-form .btnYes:hover {
+        opacity: 0.9;
+        background-color: #24af00;
+    }
+
+.modal-form .btnNo {
+    background-color: #d03d3d;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    .modal-form .btnNo:hover {
+        opacity: 0.9;
+        background-color: #b60000;
+    }

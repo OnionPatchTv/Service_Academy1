@@ -1,0 +1,139 @@
+﻿@model RegisterViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Service Academy</title>
+    <link rel="stylesheet" href="~/css/AccountStyle/Register.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body>
+    <div id="overlay"></div>
+    <div id="registerForm">
+        <span class="close-btn" onclick="closeForm()">&times;</span>
+        <h1 class="title">Service Academy</h1>
+        <form asp-action="Register" method="post">
+            <div class="container">
+                <!-- Full Name -->
+                <label asp-for="FullName"><b>Full Name</b></label>
+                <input asp-for="FullName" placeholder="Enter Full Name" />
+
+                <!-- Email -->
+                <label asp-for="Email"><b>Email</b></label>
+                <input asp-for="Email" type="email" placeholder="Enter Email" />
+
+                <!-- Password -->
+                <label asp-for="Password"><b>Password</b></label>
+                <div class="password-container">
+                    <input asp-for="Password" type="password" placeholder="Enter Password" id="password">
+                </div>
+
+                <!-- Confirm Password -->
+                <label asp-for="ConfirmPassword"><b>Confirm Password</b></label>
+                <div class="password-container">
+                    <input asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" id="confirmPassword">
+                </div>
+
+                <!-- Date of Birth and Gender (Same Line) -->
+                <div class="row">
+                    <div class="column">
+                        <label asp-for="DateOfBirth"><b>Date of Birth</b></label>
+                        <input asp-for="DateOfBirth" type="date" />
+                    </div>
+                    <div class="column">
+                        <label asp-for="Gender"><b>Gender</b></label>
+                        <select asp-for="Gender">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <label asp-for="Address"><b>Address</b></label>
+                <input asp-for="Address" type="text" placeholder="Enter Address" />
+
+                <!-- Role and Preferred Learning Style (Same Line) -->
+                <div class="row">
+                    <div class="column">
+                        <label asp-for="Role"><b>Role</b></label>
+                        <select asp-for="Role">
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                    <div class="column">
+                        <label asp-for="PreferredLearningStyle"><b>Preferred Learning Style</b></label>
+                        <select asp-for="PreferredLearningStyle">
+                            <option value="">Select a Learning Style</option>
+                            <option value="Visual">Visual</option>
+                            <option value="Auditory">Auditory</option>
+                            <option value="Kinesthetic">Kinesthetic</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Profession -->
+                <label asp-for="Profession"><b>Profession</b></label>
+                <input asp-for="Profession" type="text" placeholder="Enter Profession" />
+
+                <!-- Device/Platform Used -->
+                <label asp-for="DevicePlatformUsed"><b>Device/Platform Used</b></label>
+                <input asp-for="DevicePlatformUsed" type="text" placeholder="Enter Device/Platform Used" />
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn">Register</button>
+
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        window.onload = function () {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("loginForm").style.display = "block";
+        };
+
+        function closeForm() {
+            window.location.href = "/"; // Redirect to the homepage
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                    Toastify({
+                        text: "@TempData["SuccessMessage"]",
+                    duration: 3000, // Duration of the notification
+                    close: true, // Show close button
+                    gravity: "top", // Position (top/bottom)
+                    position: "right", // Align right
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)", // Background color
+                    stopOnFocus: true, // Prevents dismissing on hover
+                    onClick: function () {window.location.href = "/"; } // Redirect after click
+                                }).showToast();
+            </text>
+        }
+
+            function togglePasswordVisibility(inputId) {
+                const input = document.getElementById(inputId);
+                const eyeIcon = input.nextElementSibling; // Get the eye icon next to the input
+
+                // Toggle the input type
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    eyeIcon.classList.remove('fa-eye'); // Change icon to "eye open"
+                    eyeIcon.classList.add('fa-eye-slash'); // Use "eye slash" for visible password
+                } else {
+                    input.type = 'password';
+                    eyeIcon.classList.remove('fa-eye-slash'); // Change icon back to "eye"
+                    eyeIcon.classList.add('fa-eye'); // Use "eye" for hidden password
+                }
+            }
+
+
+    </script>
+</body>
+</html>

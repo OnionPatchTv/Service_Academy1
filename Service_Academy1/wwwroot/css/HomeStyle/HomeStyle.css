@@ -1,0 +1,169 @@
+.header {
+    margin-bottom: 0px;
+}
+
+.hero {
+    position: relative;
+    text-align: center;
+    color: white;
+    height: 75vh; /* Adjusted height for hero section */
+    overflow: hidden;
+}
+
+    .hero img {
+        width: 100%;
+        height: 100%; /* Ensure image covers the hero section */
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .hero h1 {
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.odd-shape {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 33%; /* Responsive width */
+    height: 100%;
+    padding: 5% 2%;
+    background-color: rgba(245, 245, 245, 0.8);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    clip-path: polygon(0% 0%, 100% 0%, 70% 170%, 0% 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+}
+
+    .odd-shape h1, .odd-shape p {
+        margin: 0;
+        padding: 0;
+        color: black;
+        text-align: left;
+        padding-left: 20px;
+    }
+
+    .odd-shape h1 {
+        font-size: 2.7vw;
+        width: 80%;
+        margin-bottom: 1.5rem;
+    }
+
+    .odd-shape p {
+        width: 80%;
+        font-size: .87vw;
+        margin-bottom: 1.5rem;
+        line-height: 2;
+        color: rgb(66, 66, 66);
+    }
+
+    .odd-shape .cta-button {
+        background-color: #ff782d;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 20px;
+        text-decoration: none; /* Remove underline */
+        cursor: pointer;
+        display: block;
+        font-size: .80vw;
+        margin-left: 30px; /* Adjust value as needed for desired indentation */
+    }
+
+        .odd-shape .cta-button:hover {
+            background-color: #e65c1e;
+            font-weight: 700;
+        }
+
+.layout {
+    display: flex;
+    padding: 30px 150px;
+}
+
+.center-text {
+    text-align: center;
+    margin: 20px 0; /* Optional: add some spacing around the text */
+}
+
+.agenda-title {
+    font-size: 24px; /* Optional: adjust the font size as needed */
+    font-weight: bold; /* Optional: make the title bold */
+}
+
+.agenda-description {
+    font-size: 18px; /* Optional: adjust the font size for the description */
+}
+
+.course-cards {
+    width: 100%;
+    max-width: 320px;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    height: 320px;
+    cursor: pointer; /* Indicate that the card is interactive */
+}
+
+.course-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.course-card h5 {
+    margin: 15px 10px;
+    font-size: 16px;
+    height: 50px;
+    line-height: 1.2;
+}
+
+/* Initial state of the description - hidden */
+.card-description {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 320px; 
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Allow scrolling if the content is too long */
+    text-align: left;
+    transform: translateY(-100%); /* Initially off-screen */
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    font-size: 12px;
+}
+
+/* Show the description on hover with animation */
+.course-card:hover .card-description {
+    transform: translateY(0); /* Slide into view */
+    opacity: 1;
+}
+
+/* Change opacity of the card and apply scale effect on hover */
+.course-card:hover {
+    opacity: 0.7;
+    transform: scale(1.05); /* Slightly scale up the card */
+}

@@ -1,0 +1,206 @@
+﻿@{
+    ViewData["Title"] = "Program Catalog Page";
+}
+
+@section Scripts {
+    <script src="~/js/HomeScript/ProgramCatalogScript.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/HomeStyle/ProgramCatalogStyle.css">
+}
+<div class="container">
+    <h1>Program/Training Catalog</h1>
+
+    <section class="layout">
+        <aside class="sidebar">
+            <h2>
+                <img src="../Images/grid.png" alt="Subjects Icon" class="icon">
+                Subjects
+            </h2>
+            <ul id="subject-list">
+                <li data-category="BISIG">BatStateU Inclusive Social Innovation for Regional Growth (BISIG)</li>
+                <li data-category="LEAF">
+                    Livelihood and Other Entrepreneurship related on Agri-Fisheries (LEAF)
+                </li>
+                <li data-category="ENRCPR">
+                    Environment and Natural Resources Conservation, Protection and
+                    Rehabilitation
+                </li>
+                <li data-category="SAEI">Smart Analytics for Engineering Innovation</li>
+                <li data-category="BINADI">Adopt-A-Municipality / Social Development Through BINADI Implementation</li>
+                <li class="hidden" data-category="CO">Community Outreach</li>
+                <li class="hidden" data-category="TVET">Technical-Vocational Education And Training (TVET)</li>
+                <li class="hidden" data-category="TTAU">Technology Transfer, And Adoption / Utilization</li>
+                <li class="hidden" data-category="TAAS">Technical Assistance And Advisory Services</li>
+                <li class="hidden" data-category="PESODEV">
+                    Parents' Empowerment Thru Social Development
+                    (PESODEV)
+                </li>
+                <li class="hidden" data-category="GED">Gender And Development</li>
+                <li class="hidden" data-category="DRRMDPR">
+                    Disaster Risk Reduction And Management And Disaster
+                    Preparedness And Response / Climate Change Adoption (DRRM and DPR / CCA)
+                </li>
+                <li id="show-more-item"><a href="#" id="show-more">Show More</a></li>
+                <li id="show-less-item" class="hidden"><a href="#" id="show-less">Show Less</a></li>
+            </ul>
+        </aside>
+        <section class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "BISIG" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/BISIG.jpg")" alt="BISIG">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">BatStateU Inclusive Social Innovation for Regional Growth (BISIG)</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "LEAF" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/LEAF.jpg")" alt="ENCPR">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Livelihood and Other Entrepreneurship related on Agri-Fisheries (LEAF)</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "Environment" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/ENRCPR.jpg")" alt="ENCPR">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Environment and Natural Resources Conservation,Protection and Rehabilitation</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "SAEI" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/SAEI.png")" alt="SAEI">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Smart Analytics for Engineering Innovation</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "BINADI" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/BIDANI.png")" alt="BIDANI">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Adopt-A-Municipality / Social Development Through BINADI Implementation</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "Outreach" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/CO.jpg")" alt="CO">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Community Outreach</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "TVET" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/TVET.jpg")" alt="TVET">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Technical-Vocational Education And Training (TVET)</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "TTAU" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/TTAU.jpg")" alt="TTAU">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Technology Transfer, And Adoption / Utilization</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "TAAS" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/TAAS.jpg")" alt="TAAS">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Technical Assistance And Advisory Services</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "PESODEV" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/PESODEV.jpg")" alt="PESODEV">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Parents' Empowerment Thru Social Development (PESODEV)</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "GAD" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/GED.png")" alt="GAD">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Gender And Development</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="course-cards">
+                            <div class="course-card">
+                                <a href="@Url.Action("ProgramList", "ProgramList", new { agenda = "DisasterRisk" })" class="card-link">
+                                    <img src="@Url.Content("~/Images/DRRMDPR.jpg")" alt="DRRMDPR">
+                                    <div class="course-label">BEGINNER</div>
+                                    <h5 class="card-title">Disaster Risk Reduction And Management And Disaster Preparedness And Response / Climate Change Adoption (DRRM and DPR / CCA)</h5>
+                                </a>
+                            </div>
+                            <!-- Add more course cards as needed -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</div>

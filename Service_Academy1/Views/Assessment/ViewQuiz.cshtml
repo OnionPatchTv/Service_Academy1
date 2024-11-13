@@ -1,0 +1,68 @@
+﻿@model Service_Academy1.Models.QuizModel
+@using Service_Academy1.Utilities
+@{
+    ViewData["Title"] = "Service Academy - View Assessment";
+    var questionsList = Model.Questions.ToList(); // Convert to a list to allow indexing
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/InstructorScript/AssessmentScript.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/InstructorStyle/AssessmentStyle.css">
+}
+
+<form method="post" action="@Url.Action("UpdateQuiz", "Assessment")">
+    <input type="hidden" name="QuizId" value="@Model.QuizId" />
+
+    <div>
+        <label for="QuizTitle">Quiz Title</label>
+        <input type="text" name="QuizTitle" value="@Model.QuizTitle" required />
+
+        <label for="QuizDirection">Description</label>
+        <input type="text" name="QuizDirection" value="@Model.QuizDirection" required />
+    </div>
+
+    <div>
+        <!-- Questions and Answers -->
+        @for (int i = 0; i < questionsList.Count; i++)
+        {
+            <div class="question">
+                <label>Question</label>
+                <input type="hidden" name="updatedQuestions[@i].QuestionId" value="@questionsList[i].QuestionId" />
+                <input type="text" name="updatedQuestions[@i].Question" value="@questionsList[i].Question" required />
+
+                <label>Correct Answer</label>
+                <input type="text" name="updatedQuestions[@i].CorrectAnswer" value="@questionsList[i].Answers.FirstOrDefault()?.Answer" required />
+            </div>
+        }
+    </div>
+    <i class="fa fa-trash delete-quiz-btn" onclick="openDeleteQuizModal('@Model.QuizId', '@Model.QuizTitle')"></i>
+    <button type="submit">Update Quiz</button>
+</form>
+
+<div class="modal fade" id="deleteQuizModal" tabindex="-1" aria-labelledby="deleteQuizModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteQuizModalLabel">Delete Quiz</h5>
+                <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <form method="post" action="@Url.Action("DeleteQuiz", "Assessment")">
+                <input type="hidden" name="quizId" id="quizId" />
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this quiz? Once deleted, you cannot undo this action.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btnYes">Yes</button>
+                    <button type="button" class="btnNo" data-dismiss="modal">No</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
