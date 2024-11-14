@@ -10,6 +10,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     : base(options)
     {
     }
+    public DbSet<DepartmentsModel> Departments { get; set; }
     public DbSet<ProgramsModel> Programs { get; set; }
     public DbSet<ProgramManagementModel> ProgramManagement { get; set; }
     public DbSet<EnrollmentModel> Enrollment { get; set; }
@@ -19,7 +20,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<AnswerModel> Answers { get; set; }
     public DbSet<StudentAnswerModel> StudentAnswers { get; set; }
     public DbSet<StudentQuizResultModel> StudentQuizResults { get; set; }
+    public DbSet<StudentModuleResult> StudentModuleResults { get; set; }
     public DbSet<AnnouncementModel> Announcemnets { get; set; }
+    public DbSet<EvaluationCriteria> EvaluationCriteria { get; set; }
+    public DbSet<EvaluationQuestion> EvaluationQuestions { get; set; }
+    public DbSet<EvaluationResponse> EvaluationResponses { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

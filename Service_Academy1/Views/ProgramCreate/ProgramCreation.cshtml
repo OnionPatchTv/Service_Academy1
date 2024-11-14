@@ -1,7 +1,7 @@
 ﻿@model ProgramCreateViewModel
 
 @{
-    ViewData["Title"] = "Service Academy - Instructor Dashboard Page - Program Creation";
+    ViewData["Title"] = "Project Leader Dashboard Page - Program Creation";
 }
 
 @section Styles {
@@ -9,7 +9,7 @@
 }
 
 @section Scripts {
-    <script src="~/js/InstructorScript/ProgramCreateScript.js"></script>
+    <script src="~/js/ProjectLeaderScript/ProgramCreateScript.js"></script>
 }
 
 <div class="container">
@@ -29,7 +29,7 @@
             </div>
         }
         <div class="breadcrumb">
-            <a href="@Url.Action("InstructorDashboard", "Instructor")">Dashboard</a>
+            <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")">Dashboard</a>
             <span class="separator">&gt;</span>
             <span>Course Creation</span>
         </div>
@@ -52,8 +52,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label><b>Program Instructor</b></label>
-                            <input type="text" class="form-control" value="@Model.InstructorName" readonly />
+                            <label><b>Program Project Leader</b></label>
+                            <input type="text" class="form-control" value="@Model.ProjectLeader" readonly />
+                            <label><b>Program by Department: </b></label>
+                            <input type="text" class="form-control" value="@Model.DepartmentName" readonly />
                         </div>
                         <!-- Dropdown for Agenda -->
                         <div class="form-group">
@@ -83,8 +85,8 @@
                         </div>
 
                         <!-- Hidden field for InstructorId -->
-                        <input type="hidden" asp-for="InstructorId" value="@Model.InstructorId" />
-
+                        <input type="hidden" asp-for="ProjectLeaderId" value="@Model.ProjectLeaderId" />
+                        <input type="hidden" asp-for="DepartmentId" value="@Model.DepartmentId" />
                         <button type="submit" id="addProgramBtn" class="btn-add">Add Program</button>
                     </div>
                 </form>

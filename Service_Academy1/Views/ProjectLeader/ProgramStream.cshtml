@@ -8,11 +8,11 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/InstructorScript/ProgramStreamScript.js"></script>
+    <script src="~/js/ProjectLeaderScript/ProgramStreamScript.js"></script>
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/InstructorStyle/ProgramStreamStyle.css">
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
 }
 
 <div class="container">
@@ -30,11 +30,11 @@
     }
 
     <div class="breadcrumb">
-        <a href="@Url.Action("InstructorDashboard", "Instructor")" class="@(Html.IsActive("InstructorDashboard", "Instructor") ? "active" : "")">Dashboard</a>
+        <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
         <span class="separator">&gt;</span>
-        <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStream", "Instructor") ? "active" : "")" onclick="location.reload();">Stream</a>
+        <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")" onclick="location.reload();">Stream</a>
         <span class="separator">&gt;</span>
-        <a href="@Url.Action("ProgramStreamManage", "Instructor", new { programId = Model.ProgramId })">Manage</a>
+        <a href="@Url.Action("ProgramStreamManage", "ProjectLeader", new { programId = Model.ProgramId })">Manage</a>
     </div>
 
     <!-- Full Width Class Banner Section -->
@@ -78,10 +78,12 @@
             </div>
             <div class="posts" id="posts"></div>
         </section>
-        
+
         <div class="button-container">
             <button type="button" class="upload-module" data-toggle="modal" data-target="#uploadModuleModal" @(Model.IsArchived ? "disabled" : "")>Upload Module</button>
             <button type="button" class="btn create-assessment" data-toggle="modal" data-target="#createAssessmentModal" @(Model.IsArchived ? "disabled" : "")>Create Assessment</button>
+            <!-- View Program Evaluation Button -->
+            <a asp-controller="Evaluation" asp-action="EvaluationResults" asp-route-programId="@Model.ProgramId" class="btn btn-primary">View Program Evaluation</a>
         </div>
 
         <!-- Modules and Module Content Sections -->
@@ -129,13 +131,16 @@
                             </h5>
                             <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
-                        <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadModule", "Instructor", new { programId = Model.ProgramId })">
+                        <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadModule", "ProjectLeader", new { programId = Model.ProgramId })">
                             <div class="modal-body">
                                 <label for="title">Module Title</label>
                                 <input type="text" class="form-control" name="title" placeholder="Enter title (e.g., Introduction)" required />
 
                                 <label for="fileInput">Upload New File (Optional)</label>
                                 <input type="file" id="fileInput" class="form-control" name="file" accept=".pdf,.pptx" required />
+
+                                <label for="title">Module Viewd(Optional)</label>
+                                <input type="text" class="form-control" name="link" placeholder="Enter Link (e.g., YoutubeLink)" />
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btnYes">Upload Module</button>
@@ -155,7 +160,7 @@
                             <h5 class="modal-title" id="updateModuleModalLabel"></h5>
                             <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
-                        <form asp-action="UpdateModule" asp-controller="Instructor" method="post" enctype="multipart/form-data">
+                        <form asp-action="UpdateModule" asp-controller="ProjectLeader" method="post" enctype="multipart/form-data">
                             <div class="modal-body">
                                 <input type="hidden" id="moduleIdInput" name="moduleId" />
                                 <div class="form-group">
@@ -185,7 +190,7 @@
                             <h5 class="modal-title" id="deleteModuleModalLabel">Delete Module</h5>
                             <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
-                        <form method="post" action="@Url.Action("DeleteModule", "Instructor")">
+                        <form method="post" action="@Url.Action("DeleteModule", "ProjectLeader")">
                             <input type="hidden" name="moduleId" />
                             <div class="modal-body">
                                 <p>Are you sure you want to delete this module? Once deleted, you cannot undo this action.</p>

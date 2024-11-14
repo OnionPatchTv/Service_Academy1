@@ -17,7 +17,7 @@ $(document).ready(function () {
 
         // Fetch the grades data using AJAX
         $.ajax({
-            url: '/Instructor/GetGrades', // Action URL where you'll fetch the grades
+            url: '/ProjectLeader/GetGrades', // Action URL where you'll fetch the grades
             type: 'GET',
             data: { enrollmentId: enrolleeId, programId: programId },
             success: function (data) {

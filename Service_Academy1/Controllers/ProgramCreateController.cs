@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Service_Academy1.Models;
+using System;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -21,13 +23,25 @@ namespace ServiceAcademy.Controllers
         [HttpGet]
         public IActionResult ProgramCreation()
         {
-            var instructorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var instructorName = User.FindFirstValue(ClaimTypes.Name); // Get the user's name
+            var projectleaderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var projectleaderName = User.FindFirstValue(ClaimTypes.Name);
+
+            // Fetch the project leader's department
+            var projectLeader = _context.Users.FirstOrDefault(u => u.Id == projectleaderId);
+            var departmentName = string.Empty;
+
+            if (projectLeader != null && projectLeader.DepartmentId.HasValue)
+            {
+                var department = _context.Departments.FirstOrDefault(d => d.DepartmentId == projectLeader.DepartmentId.Value);
+                departmentName = department?.DepartmentName ?? "Unknown Department";
+            }
 
             var viewModel = new ProgramCreateViewModel
             {
-                InstructorId = instructorId,
-                InstructorName = instructorName
+                ProjectLeaderId = projectleaderId,
+                ProjectLeader = projectleaderName,
+                DepartmentName = departmentName,
+                DepartmentId = projectLeader?.DepartmentId.ToString()
             };
 
             return View(viewModel);
@@ -36,8 +50,6 @@ namespace ServiceAcademy.Controllers
         [HttpPost]
         public async Task<IActionResult> ProgramCreation(ProgramsModel program, IFormFile photoInput, DateTime startDate, DateTime endDate)
         {
-            program.InstructorId = null;
-
             if (!ModelState.IsValid)
             {
                 foreach (var state in ModelState)
@@ -72,17 +84,19 @@ namespace ServiceAcademy.Controllers
 
             try
             {
-                var instructorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var instructorName = User.FindFirstValue(ClaimTypes.Name);
+                var projectleaderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var projectLeader = _context.Users.FirstOrDefault(u => u.Id == projectleaderId);
 
-                program.InstructorId = instructorId;
-                program.Instructor = instructorName;
+                if (projectLeader != null)
+                {
+                    program.ProjectLeaderId = projectleaderId;
+                    program.ProjectLeader = User.FindFirstValue(ClaimTypes.Name);
+                    program.DepartmentId = projectLeader.DepartmentId ?? 0; // Default to 0 if no department found
+                }
 
-                // Add the program to the database
                 _context.Programs.Add(program);
                 await _context.SaveChangesAsync();
 
-                // Create a new ProgramManagementModel entry with default IsApproved value
                 var programManagement = new ProgramManagementModel
                 {
                     ProgramId = program.ProgramId,
@@ -107,7 +121,5 @@ namespace ServiceAcademy.Controllers
                 return View(program);
             }
         }
-
     }
 }
-

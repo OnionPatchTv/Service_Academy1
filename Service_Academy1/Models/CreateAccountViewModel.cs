@@ -27,6 +27,10 @@ namespace Service_Academy1.Models
     [Required]
     [Display(Name = "Role")]
     public string Role { get; set; } = string.Empty;
-}
+
+    [Required]
+    [Display(Name = "Department")]
+    public string? Department { get; set; }
+    }
 
 }

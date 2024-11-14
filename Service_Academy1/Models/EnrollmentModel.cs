@@ -15,7 +15,7 @@ namespace Service_Academy1.Models
         public int ProgramId { get; set; } // Foreign key for ProgramsModel or the current program
         public string EnrollmentStatus { get; set; } = string.Empty; //status if approved, pending, or denied
         public DateTime EnrollmentDate { get; set; } //enrollment date
-        public string ProgramStatus { get; set; } //completion of the program default is incomplete
+        public string ProgramStatus { get; set; } = string.Empty; //completion of the program default is incomplete
 
         public DateTime? StatusDate { get; set; } // completiion date
 

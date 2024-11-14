@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Analytics Page";
+    //Layout = "~/Views/Shared/_layoutAdmin.cshtml";
+}
+ 
+@section Styles {
+    <link rel="stylesheet" href="~/css/AdminStyle/AnalyticsStyle.css">
+}
+
+@section Scripts {
+    <script src="~/js/AdminScript/Admin.js"></script>
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form id="generate-report-form">
+                <label for="report-type">Report Type:</label>
+                <select id="report-type" name="report-type">
+                    <option value="pdf">PDF</option>
+                    <option value="xlsx">Spreadsheet</option>
+                </select>
+
+                <label for="start-date">Start Date:</label>
+                <input type="date" id="start-date" name="start-date">
+
+                <label for="end-date">End Date:</label>
+                <input type="date" id="end-date" name="end-date">
+
+                <label for="filters">Filters:</label>
+                <select id="filters" name="filters">
+                    <option value="course">Course</option>
+                    <option value="program">Program</option>
+                    <option value="student-demographics">Student Demographics</option>
+                </select>
+                <button type="submit">Generate Report</button>
+            </form>
+
+            <!-- Data Visualization Section -->
+            <div class="card-group">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Student Reports</h2>
+                        <button id="student-reports-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="student-reports-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Engagement Analytics</h2>
+                        <button id="engagement-analytics-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="engagement-analytics-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-group">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Course Performance</h2>
+                        <button id="course-performance-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="course-performance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Program Performance</h2>
+                        <button id="program-performance-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="program-performance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-group">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Mastery Analytics</h2>
+                        <button id="mastery-analytics-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="mastery-analytics-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Custom Reports</h2>
+                        <button id="custom-reports-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="custom-reports-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

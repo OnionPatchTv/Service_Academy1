@@ -53,6 +53,12 @@
             <li>No answers recorded.</li>
         }
     </ul>
+    @if (Model.Remarks == "Fail" && Model.Retries < 3)
+    {
+        <button onclick="location.href='@Url.Action("StudentQuizView", new { quizId = Model.QuizId })'">
+            Retry Quiz
+        </button>
+    }
 }
 else
 {

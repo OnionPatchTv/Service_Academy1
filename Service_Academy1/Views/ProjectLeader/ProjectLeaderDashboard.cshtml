@@ -1,17 +1,17 @@
 ﻿@model IEnumerable<Service_Academy1.Models.ProgramsModel>
 
 @{
-    ViewData["Title"] = "Instructor Dashboard Page";
+    ViewData["Title"] = "Project Leader Dashboard Page";
 }
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/InstructorScript/ProgramManagementScript.js"></script>
+    <script src="~/js/ProjectLeaderScript/ProgramManagementScript.js"></script>
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/InstructorStyle/InstructorDashboardStyle.css">
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProjectLeaderDashboardStyle.css">
 }
 
 <main class="container-fluid">
@@ -72,7 +72,7 @@
                                 <div class="program-image">
                                     @if (canRedirectToStream)
                                     {
-                                        <a href="@Url.Action("ProgramStream", "Instructor", new { programId = program.ProgramId })">
+                                        <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = program.ProgramId })">
                                             <img src="@Url.Content(program.PhotoPath)" alt="@program.Title">
                                         </a>
                                     }
@@ -85,7 +85,7 @@
                                     <h3>
                                         @if (canRedirectToStream)
                                         {
-                                            <a href="@Url.Action("ProgramStream", "Instructor", new { programId = program.ProgramId })">
+                                            <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = program.ProgramId })">
                                                 @program.Title
                                             </a>
                                         }
@@ -95,7 +95,7 @@
                                         }
                                     </h3>
                                     <div class="instructor">
-                                        <i class="fas fa-user"></i> @program.Instructor
+                                        <i class="fas fa-user"></i> @program.ProjectLeader
                                     </div>
                                     <!-- Icons for program actions -->
                                     <div class="program-icons">
@@ -127,7 +127,7 @@
                                         }
                                         else if (program.ProgramManagement.FirstOrDefault()?.IsActive == true)
                                         {
-                                            <form method="post" action="@Url.Action("DeactivateProgram", "Instructor")" style="display:inline;">
+                                            <form method="post" action="@Url.Action("DeactivateProgram", "ProjectLeader")" style="display:inline;">
                                                 <input type="hidden" name="programId" value="@program.ProgramId" />
                                                 <button class="btnDeactivate" data-toggle="modal" data-target="#deactivateModal-@program.ProgramId" type="button">Deactivate</button>
                                             </form>
@@ -146,7 +146,7 @@
                                                         <h5 class="modal-title" id="activateModalLabel">Activate Program</h5>
                                                         <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
                                                     </div>
-                                                    <form method="post" action="@Url.Action("ActivateProgram", "Instructor")">
+                                                    <form method="post" action="@Url.Action("ActivateProgram", "ProjectLeader")">
                                                         <input type="hidden" name="programId" value="@program.ProgramId" />
                                                         <div class="modal-body">
                                                             <div class="form-group">
@@ -179,7 +179,7 @@
                                                             &times;
                                                         </button>
                                                     </div>
-                                                    <form method="post" action="@Url.Action("ArchiveProgram", "Instructor")">
+                                                    <form method="post" action="@Url.Action("ArchiveProgram", "ProjectLeader")">
                                                         <input type="hidden" name="programId" value="@program.ProgramId" />
                                                         <div class="modal-body">
                                                             <p>Do you want to archive this Program? Once archived you cannot modify its content.</p>
@@ -205,7 +205,7 @@
                                                             &times;
                                                         </button>
                                                     </div>
-                                                    <form method="post" action="@Url.Action("DeleteProgram", "Instructor")">
+                                                    <form method="post" action="@Url.Action("DeleteProgram", "ProjectLeader")">
                                                         <input type="hidden" name="programId" value="@program.ProgramId" />
                                                         <div class="modal-body">
                                                             <p>Do you want to delete the Program? Once deleted, you cannot rollback.</p>
@@ -231,7 +231,7 @@
                                                 <h5 class="modal-title" id="deactivateModalLabel">Deactivate Program</h5>
                                                 <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
                                             </div>
-                                            <form method="post" action="@Url.Action("DeactivateProgram", "Instructor")">
+                                            <form method="post" action="@Url.Action("DeactivateProgram", "ProjectLeader")">
                                                 <input type="hidden" name="programId" value="@program.ProgramId" />
                                                 <div class="modal-body">
                                                     <p>Are you sure you want to deactivate this Program? Once deactivated, it cannot be modified unless reactivated.</p>

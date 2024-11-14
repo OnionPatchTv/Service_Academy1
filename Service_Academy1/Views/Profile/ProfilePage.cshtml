@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Profile Page";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/HomeStyle/ProfileStyle.css">
+}
+
+<div class="profile-banner">
+    <div class="profile-picture">
+        <img src="profile-pic-placeholder.png" alt="Profile Picture">
+        <div class="camera-icon">📷</div>
+    </div>
+    <div class="profile-info">
+        <h2>Welcome, Name</h2>
+        <p>Learner • Serice Academy</p>
+    </div>
+</div>
+
+<div class="tabs">
+    <button class="tab active">Profile</button>
+    <button class="tab">Badges & Certificates</button>
+    <button class="tab">Discounts</button>
+    <button class="tab">Learning History</button>
+</div>
+
+<div class="content">
+    <div class="basic-info">
+        <h3>Basic Information</h3>
+        <form>
+            <label>UserName*</label>
+            <input type="text" value="name">
+
+            <label>FullName*</label>
+            <input type="text" value="name">
+
+            <label>Gender*</label>
+            <label>Age*</label>
+            <label>Country or Place*</label>
+
+        </form>
+    </div>
+
+    <div class="contact-info">
+        <h3>Contact Information</h3>
+        <p>Email:</p>
+        <h3>Password:</h3>
+        <button>Change Password</button>
+        <button>Change Email</button>
+    </div>
+
+    <div class="career-info">
+        <h3>Profession</h3>
+    </div>
+</div>

@@ -1,0 +1,304 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard Page";
+    //Layout = "~/Views/Shared/_layoutAdmin.cshtml";
+}
+@section Scripts {
+    <script src="~/js/AdminScript/Admin.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AdminStyle/AdminDashboardStyle.css">
+}
+
+<div class="container">
+    <div class="dashboard row">
+        <div class="col-md-4 card">
+            <h3>New Trainees</h3>
+            <div class="value">202</div>
+            <div class="percentage">15.34%</div>
+        </div>
+        <div class="col-md-4 card">
+            <h3>Existing Trainees</h3>
+            <div class="value">532</div>
+            <div class="percentage">22.45%</div>
+        </div>
+        <div class="col-md-4 card">
+            <h3>Total Reviews</h3>
+            <div class="value">2,032</div>
+            <div class="percentage">22.45%</div>
+        </div>
+    </div>
+
+    <!-- Engagement Chart -->
+    <div class="engagement">
+        <div class="dropdown">
+            <h3>Engagement over time</h3>
+            <select class="form-select">
+                <option>Last 7 days</option>
+                <option>Last 30 days</option>
+                <option>Last 90 days</option>
+            </select>
+        </div>
+        <div class="chart-container">
+            <canvas id="engagementChart"></canvas>
+        </div>
+        <button class="btn btn-dark export-button">Export</button>
+    </div>
+
+    <!-- Programs Section -->
+    <div class="programs row">
+        <h3 class="programs-title">Programs</h3>
+        <div class="col-md-4 card">
+            <h3>E-SULAT</h3>
+            <div class="square-card-container">
+                <div class="square-card">
+                    <div class="title">Certificates</div>
+                    <div class="count">25</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Chapters</div>
+                    <div class="count">10</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Trainees</div>
+                    <div class="count">50</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Reviews</div>
+                    <div class="count">500</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Page Views</div>
+                    <div class="count">10,000</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 card">
+            <h3>Basic Arithmetic</h3>
+            <div class="square-card-container">
+                <div class="square-card">
+                    <div class="title">Certificates</div>
+                    <div class="count">50</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Chapters</div>
+                    <div class="count">20</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Trainees</div>
+                    <div class="count">80</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Reviews</div>
+                    <div class="count">1,000</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Page Views</div>
+                    <div class="count">20,000</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 card">
+            <h3>World Geography</h3>
+            <div class="square-card-container">
+                <div class="square-card">
+                    <div class="title">Certificates</div>
+                    <div class="count">30</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Chapters</div>
+                    <div class="count">15</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Trainees</div>
+                    <div class="count">60</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Reviews</div>
+                    <div class="count">750</div>
+                </div>
+                <div class="square-card">
+                    <div class="title">Page Views</div>
+                    <div class="count">15,000</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completed Programs Table -->
+    <div class="table">
+        <h3>Completed Programs</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Trainee</th>
+                    <th>Date Completed</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>E-SULAT</td>
+                    <td>John Doe</td>
+                    <td>2024-08-15</td>
+                    <td>85%</td>
+                </tr>
+                <tr>
+                    <td>Basic Arithmetic</td>
+                    <td>Jane Smith</td>
+                    <td>2024-08-16</td>
+                    <td>92%</td>
+                </tr>
+                <tr>
+                    <td>World Geography</td>
+                    <td>Tom Brown</td>
+                    <td>2024-08-17</td>
+                    <td>78%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bottom Charts Section -->
+    <div class="bottom-charts">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <h3>Completion Rate</h3>
+                    <div class="chart-container">
+                        <canvas id="completionRateChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <h3>Trainee's Progress</h3>
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+<script>
+    // Engagement Chart
+    const engagementData = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [{
+            label: 'Engagement',
+            data: [12, 19, 3, 5, 2, 3, 7],
+            borderColor: '#FF6600',
+            backgroundColor: 'rgba(255, 102, 0, 0.2)',
+            borderWidth: 1
+        }]
+    };
+
+    const engagementConfig = {
+        type: 'line',
+        data: engagementData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return context.dataset.label + ': ' + context.raw;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    const engagementChart = new Chart(
+        document.getElementById('engagementChart'),
+        engagementConfig
+    );
+
+    // Completion Rate Chart
+    const completionRateData = {
+        labels: ['Completed', 'Not Completed'],
+        datasets: [{
+            data: [80, 20],
+            backgroundColor: ['#FF6600', 'rgba(255, 102, 0, 0.2)'],
+            borderColor: ['#FF6600', '#e0e0e0'],
+            borderWidth: 1
+        }]
+    };
+
+    const completionRateConfig = {
+        type: 'doughnut',
+        data: completionRateData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return context.dataset.label + ': ' + context.raw;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const completionRateChart = new Chart(
+        document.getElementById('completionRateChart'),
+        completionRateConfig
+    );
+
+    // Trainee's Progress Chart
+    const progressData = {
+        labels: ['Progress', 'Remaining'],
+        datasets: [{
+            data: [60, 40],
+            backgroundColor: ['#FF6600', 'rgba(255, 102, 0, 0.2)'],
+            borderColor: ['#FF6600', '#e0e0e0'],
+            borderWidth: 1
+        }]
+    };
+
+    const progressConfig = {
+        type: 'doughnut',
+        data: progressData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return context.dataset.label + ': ' + context.raw;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const progressChart = new Chart(
+        document.getElementById('progressChart'),
+        progressConfig
+    );
+</script>

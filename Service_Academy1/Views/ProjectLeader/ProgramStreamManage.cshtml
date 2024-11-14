@@ -9,19 +9,19 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/InstructorScript/ProgramStreamManageScript.js"></script>
+    <script src="~/js/ProjectLeaderScript/ProgramStreamManageScript.js"></script>
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/InstructorStyle/ProgramStreamManageStyle.css">
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamManageStyle.css">
 }
 
 <div class="breadcrumb">
-    <a href="@Url.Action("InstructorDashboard", "Instructor")" class="@(Html.IsActive("InstructorDashboard", "Instructor") ? "active" : "")">Dashboard</a>
+    <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
     <span class="separator">&gt;</span>
-    <a href="@Url.Action("ProgramStream", "Instructor", new { programId = programId })" class="@(Html.IsActive("ProgramStream", "Instructor") ? "active" : "")">Stream</a>
+    <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = programId })" class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")">Stream</a>
     <span class="separator">&gt;</span>
-    <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStreamManage", "Instructor") ? "active" : "")" onclick="location.reload();">Manage</a>
+    <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStreamManage", "ProjectLeader") ? "active" : "")" onclick="location.reload();">Manage</a>
 </div>
 
 <div class="enrolled-trainees">

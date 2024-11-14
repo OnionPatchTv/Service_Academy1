@@ -104,9 +104,13 @@ namespace ServiceAcademy.Controllers
                         {
                             return RedirectToAction("MyLearning", "Trainee");
                         }
-                        else if (roles.Contains("Instructor"))
+                        else if (roles.Contains("ProjectLeader"))
                         {
-                            return RedirectToAction("InstructorDashboard", "Instructor");
+                            return RedirectToAction("ProjectLeaderDashboard", "ProjectLeader");
+                        }
+                        else if (roles.Contains("Coordinator"))
+                        {
+                            return RedirectToAction("CoordinatorDashboard", "Coordinator");
                         }
                         else if (roles.Contains("Admin"))
                         {

@@ -10,10 +10,10 @@ namespace Service_Academy1.Models
         public int QuizId { get; set; }
 
         [Required]
-        public string QuizTitle { get; set; }
+        public string QuizTitle { get; set; } = string.Empty;
 
         [Required]
-        public string QuizDirection { get; set; }
+        public string QuizDirection { get; set; } = string.Empty;
 
         [ForeignKey("ProgramsModel")]
         public int ProgramId { get; set; }
@@ -29,7 +29,7 @@ namespace Service_Academy1.Models
         public int QuestionId { get; set; }
 
         [Required]
-        public string Question { get; set; }
+        public string Question { get; set; } = string.Empty ;
 
         [ForeignKey("QuizModel")]
         public int QuizId { get; set; }
@@ -49,7 +49,7 @@ namespace Service_Academy1.Models
         public int AnswerId { get; set; }
 
         [Required]
-        public string Answer { get; set; } // Option text
+        public string Answer { get; set; } = string.Empty; // Option text
 
         [ForeignKey("QuestionModel")]
         public int QuestionId { get; set; }

@@ -14,26 +14,26 @@ using Newtonsoft.Json;
 
 namespace ServiceAcademy.Controllers
 {
-    public class InstructorController : Controller
+    public class ProjectLeaderController : Controller
     {
-        private readonly ILogger<InstructorController> _logger;
+        private readonly ILogger<ProjectLeaderController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
-        public InstructorController(ILogger<InstructorController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
+        public ProjectLeaderController(ILogger<ProjectLeaderController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _logger = logger;
             _context = context;
             _environment = environment;
 
         }
-        public async Task<IActionResult> InstructorDashboard()
+        public async Task<IActionResult> ProjectLeaderDashboard()
         {
             // Get the current user's ID
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // Fetch programs created by the logged-in instructor
             var programs = await _context.Programs
-                                          .Where(p => p.InstructorId == currentUserId) // Filter by the current instructor's ID
+                                          .Where(p => p.ProjectLeaderId == currentUserId) // Filter by the current instructor's ID
                                           .Include(p => p.ProgramManagement) // Include the ProgramManagement relationship
                                           .Include(p => p.Enrollments)
                                           .AsSplitQuery()
@@ -67,7 +67,7 @@ namespace ServiceAcademy.Controllers
             if (program == null)
             {
                 TempData["Error"] = "Program not found.";
-                return RedirectToAction("InstructorDashboard");
+                return RedirectToAction("ProjectLeaderDashboard");
             }
 
             var modules = _context.Modules.Where(m => m.ProgramId == programId).ToList();
@@ -196,7 +196,7 @@ namespace ServiceAcademy.Controllers
 
             await _context.SaveChangesAsync();
             TempData["Message"] = "Program activated successfully.";
-            return RedirectToAction("InstructorDashboard");
+            return RedirectToAction("ProjectLeaderDashboard");
         }
 
         [HttpPost]
@@ -215,7 +215,7 @@ namespace ServiceAcademy.Controllers
                 TempData["Error"] = "Program deactivation failed. Program not found.";
             }
 
-            return RedirectToAction("InstructorDashboard");
+            return RedirectToAction("ProjectLeaderDashboard");
         }
 
 
@@ -230,7 +230,7 @@ namespace ServiceAcademy.Controllers
                 await _context.SaveChangesAsync();
                 TempData["Message"] = "Program archived successfully.";
             }
-            return RedirectToAction("InstructorDashboard");
+            return RedirectToAction("ProjectLeaderDashboard");
         }
         [HttpPost]
         public async Task<IActionResult> DeleteProgram(int programId)
@@ -280,7 +280,7 @@ namespace ServiceAcademy.Controllers
                 TempData["Error"] = "Program not found.";
             }
 
-            return RedirectToAction("InstructorDashboard");
+            return RedirectToAction("ProjectLeaderDashboard");
         }
 
         [HttpPost]

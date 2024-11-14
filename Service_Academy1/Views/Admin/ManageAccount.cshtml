@@ -4,7 +4,7 @@
 
 @{
     ViewData["Title"] = "Manage Accounts";
-    //Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 @section Styles {
@@ -90,7 +90,7 @@
 
                 <!-- Create New Account Form -->
                 <h2 class="mt-5">Create New Account</h2>
-                @await Html.PartialAsync("_CreateAccountForm", new CreateAccountViewModel())
+                @await Html.PartialAsync("_CreateAccountForm", Model.CreateAccountForm ?? new CreateAccountViewModel())
             </div>
 
             <!-- Sidebar Section -->

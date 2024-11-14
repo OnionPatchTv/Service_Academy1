@@ -1,4 +1,4 @@
-﻿@model ProgramStreamViewModel
+﻿@model MyLearningStreamViewModel
 @using Service_Academy1.Utilities
 
 @{
@@ -12,14 +12,13 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/InstructorStyle/ProgramStreamStyle.css">
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
 }
 
-<div class="breadcrumb">
+<nav class="navbar">
     <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
-    <span class="separator">&gt;</span>
     <a href="javascript:void(0);" class="@(Html.IsActive("MyLearningStream", "Trainee") ? "active" : "")" onclick="location.reload();">Stream</a>
-</div>
+</nav>
 
 <!-- Full Width Class Banner Section -->
 <section class="class-banner">
@@ -43,19 +42,25 @@
         <aside class="modules">
             <h3>Modules</h3>
             <div class="module-list">
-                @foreach (var module in Model.Modules.OrderBy(m => m.Title))
+                @if (Model.Modules != null)
                 {
-                    <button class="module-title" onclick="loadModuleContent('@module.FilePath')">@module.Title</button>
+                    @foreach (var module in Model.Modules.OrderBy(m => m.Title))
+                    {
+                        <button class="module-title" onclick="loadModuleContent('@module.FilePath')">Module @module.Title</button>
+                    }
                 }
+
                 <h3>Quizzes</h3>
-                @foreach (var quiz in Model.Quizzes)
+                @if (Model.Quizzes != null)
                 {
-                    <button class="quiz-title" onclick="location.href='@Url.Action("RedirectToQuizOrResult", "Trainee", new { quizId = quiz.QuizId })'">
-                        @quiz.QuizTitle
-                    </button>
+                    @foreach (var quiz in Model.Quizzes)
+                    {
+                        <button class="quiz-title" onclick="location.href='@Url.Action("RedirectToQuizOrResult", "Trainee", new { quizId = quiz.QuizId })'">
+                            @quiz.QuizTitle
+                        </button>
+                    }
                 }
             </div>
-
         </aside>
 
         <section class="module-viewer">
@@ -65,4 +70,30 @@
             </div>
         </section>
     </section>
+
+    @if (Model.Enrollment != null)
+    {
+        <!-- Enrollment and Evaluation Section -->
+        @foreach (var enrollment in Model.Enrollment)
+        {
+            @if (enrollment.ProgramId == Model.ProgramId) // Removed the program completion check for testing
+            {
+                bool hasEvaluated = Model.Evaluations.Any(e => e.ProgramId == enrollment.ProgramId && e.LearnerId == Model.UserId);
+
+                @if (!hasEvaluated)
+                {
+                    <a asp-controller="Evaluation" asp-action="Create" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary">Evaluate Program</a>
+                }
+                else
+                {
+                    <span>You have already submitted an evaluation for this program.</span>
+                }
+            }
+        }
+    }
+    else
+    {
+        <p>No enrollments found.</p>
+    }
 </main>
+

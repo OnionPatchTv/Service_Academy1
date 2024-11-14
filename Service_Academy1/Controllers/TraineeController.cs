@@ -2,64 +2,65 @@
 using Microsoft.EntityFrameworkCore;
 using Service_Academy1.Models;
 using System.Diagnostics;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace ServiceAcademy.Controllers
 {
     public class TraineeController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public TraineeController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public TraineeController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
-        public IActionResult MyLearning()
+
+        public async Task<IActionResult> MyLearning()
         {
-            // Retrieve the messages from TempData
             ViewBag.SuccessMessage = TempData["SuccessMessage"];
             ViewBag.ErrorMessage = TempData["ErrorMessage"];
 
-            // Get the logged-in user's ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _userManager.GetUserId(User);
 
-            // Fetch programs the trainee is enrolled in, including enrollment status and reason for denial
-            var enrolledPrograms = _context.Enrollment
+            var enrolledPrograms = await _context.Enrollment
                 .Where(e => e.TraineeId == userId)
                 .Include(e => e.ProgramsModel)
-                    .ThenInclude(p => p.ProgramManagement) // Include ProgramManagement for IsArchived
-                .AsSplitQuery()  // Split the query to avoid joining too many tables
+                    .ThenInclude(p => p.ProgramManagement)
+                .AsSplitQuery()
+                .AsNoTracking()
                 .Select(e => new
                 {
                     Program = e.ProgramsModel,
                     e.EnrollmentStatus,
                     e.ProgramStatus,
                     e.ReasonForDenial,
-                    IsArchived = e.ProgramsModel.ProgramManagement.Any(pm => pm.IsArchived) // Check if any ProgramManagement entry is archived
+                    IsArchived = e.ProgramsModel.ProgramManagement.Any(pm => pm.IsArchived)
                 })
-                .ToList();
+                .ToListAsync();
+
             return View(enrolledPrograms);
         }
 
         [HttpPost]
-        public IActionResult DeleteProgram(int programId)
+        public async Task<IActionResult> DeleteProgram(int programId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var enrollment = _context.Enrollment
+            var userId = _userManager.GetUserId(User);
+
+            var enrollment = await _context.Enrollment
                 .Include(e => e.ProgramsModel)
                 .ThenInclude(p => p.ProgramManagement)
-                .AsSplitQuery()
-                .FirstOrDefault(e => e.ProgramId == programId && e.TraineeId == userId);
+                .FirstOrDefaultAsync(e => e.ProgramId == programId && e.TraineeId == userId);
 
             if (enrollment != null)
             {
-                // Check if the program is archived
                 var isArchived = enrollment.ProgramsModel.ProgramManagement.Any(pm => pm.IsArchived);
 
                 if (enrollment.EnrollmentStatus == "Denied" || isArchived)
                 {
-                    // Allow deletion if status is Denied or the program is archived
                     _context.Enrollment.Remove(enrollment);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = isArchived
                         ? "Enrollment deleted successfully as the program is archived."
                         : "Enrollment deleted successfully.";
@@ -77,7 +78,7 @@ namespace ServiceAcademy.Controllers
             return RedirectToAction("MyLearning");
         }
 
-        public IActionResult MyLearningStream(int programId)
+        public async Task<IActionResult> MyLearningStream(int programId)
         {
             if (programId <= 0)
             {
@@ -85,12 +86,15 @@ namespace ServiceAcademy.Controllers
                 return RedirectToAction("MyLearning");
             }
 
-            var program = _context.Programs
-                .Include(p => p.Modules) // Include Modules data
+            var userId = _userManager.GetUserId(User);
+
+            var program = await _context.Programs
+                .Include(p => p.Modules)
                 .Include(p => p.Quizzes)
-                    .ThenInclude(q => q.Questions)  // Avoid including Answers if unnecessary
-                .AsSplitQuery()  // Split the queries for related entities
-                .FirstOrDefault(p => p.ProgramId == programId);
+                    .ThenInclude(q => q.Questions)
+                .AsSplitQuery()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ProgramId == programId);
 
             if (program == null)
             {
@@ -98,28 +102,38 @@ namespace ServiceAcademy.Controllers
                 return RedirectToAction("MyLearning");
             }
 
-            var viewModel = new ProgramStreamViewModel // Or create a MyLearningStreamViewModel
+            var viewModel = new MyLearningStreamViewModel
             {
                 ProgramId = program.ProgramId,
                 Title = program.Title,
                 Description = program.Description,
                 PhotoPath = program.PhotoPath,
                 Modules = program.Modules.ToList(),
-                Quizzes = program.Quizzes.ToList() // Include only the necessary data
+                Quizzes = program.Quizzes.ToList(),
+                Enrollment = await _context.Enrollment
+                    .Include(e => e.ProgramsModel)
+                    .Where(e => e.TraineeId == userId)
+                    .AsNoTracking()
+                    .ToListAsync(),
+                Evaluations = await _context.EvaluationResponses
+                    .Include(x => x.EvaluationQuestion)
+                    .Where(e => e.LearnerId == userId)
+                    .AsNoTracking()
+                    .ToListAsync()
             };
 
             return View(viewModel);
         }
 
         [HttpGet]
-        public IActionResult RedirectToQuizOrResult(int quizId)
+        public async Task<IActionResult> RedirectToQuizOrResult(int quizId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _userManager.GetUserId(User);
 
-            // Retrieve the enrollment for the current user and the specified quiz
-            var enrollment = _context.Enrollment
-                .FirstOrDefault(e => e.TraineeId == userId &&
-                                     e.ProgramsModel.Quizzes.Any(q => q.QuizId == quizId));
+            var enrollment = await _context.Enrollment
+                .Include(e => e.ProgramsModel.Quizzes)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.TraineeId == userId && e.ProgramsModel.Quizzes.Any(q => q.QuizId == quizId));
 
             if (enrollment == null)
             {
@@ -127,29 +141,22 @@ namespace ServiceAcademy.Controllers
                 return RedirectToAction("MyLearningStream");
             }
 
-            // Check for an existing quiz result for this enrollment and quiz
-            var quizResult = _context.StudentQuizResults
-                .FirstOrDefault(sqr => sqr.QuizId == quizId && sqr.EnrollmentId == enrollment.EnrollmentId);
+            var quizResult = await _context.StudentQuizResults
+                .AsNoTracking()
+                .FirstOrDefaultAsync(sqr => sqr.QuizId == quizId && sqr.EnrollmentId == enrollment.EnrollmentId);
 
             if (quizResult != null)
             {
-                // Redirect to QuizResult using the StudentQuizResultId
                 return RedirectToAction("QuizResult", "Assessment", new { resultId = quizResult.StudentQuizResultId });
             }
-            else
-            {
-                // If no result exists, redirect to StudentQuizView for answering
-                return RedirectToAction("StudentQuizView", "Assessment", new { quizId = quizId });
-            }
-        }
 
+            return RedirectToAction("StudentQuizView", "Assessment", new { quizId });
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
     }
 }
-

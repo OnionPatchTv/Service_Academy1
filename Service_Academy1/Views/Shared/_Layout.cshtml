@@ -32,9 +32,15 @@
                     <a href="@Url.Action("Contact", "Home")" class="@(Html.IsActive("Contact", "Home") ? "active" : "")">Contact Us</a>
                     <a href="@Url.Action("Faqs", "Home")" class="@(Html.IsActive("Faqs", "Home") ? "active" : "")">FAQs</a>
                 }
-                else if (User.IsInRole("Instructor"))
+                else if (User.IsInRole("ProjectLeader"))
                 {
 
+                }
+                else if (User.IsInRole("Coordinator"))
+                {
+                    <a href="@Url.Action("Dashboard", "Coordinator")" class="@(Html.IsActive("Dashboard", "Coordinator") ? "active" : "")">Dashboard</a>
+                    <a href="@Url.Action("Analytics", "Coordinator")" class="@(Html.IsActive("Analytics", "Coordinator") ? "active" : "")">Analytics</a>
+                    <a href="@Url.Action("ManageProgram", "Coordinator")" class="@(Html.IsActive("ManageProgram", "Coordinator") ? "active" : "")">Manage Programs</a>
                 }
                 else if (User.IsInRole("Admin"))
                 {
@@ -65,9 +71,9 @@
                   ViewContext.RouteData.Values["action"].ToString() == "QuizResult" ||
                   ViewContext.RouteData.Values["action"].ToString() == "MyLearningStream" ? "active" : "")">My Learning</a>
                 }
-                else if (User.IsInRole("Instructor"))
+                else if (User.IsInRole("ProjectLeader"))
                 {
-                    <a href="@Url.Action("InstructorDashboard", "Instructor")" class="@(Html.IsActive("InstructorDashboard", "Instructor") ||
+                    <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ||
                   ViewContext.RouteData.Values["action"].ToString() == "ProgramStream" ||
                   ViewContext.RouteData.Values["action"].ToString() == "ProgramStreamManage" ||
                   ViewContext.RouteData.Values["action"].ToString() == "ProgramCreation" ||
@@ -84,7 +90,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                         <li>
-                            <a class="dropdown-item" href="@Url.Action("MyProfile", "Account")">Profile</a>
+                            <a class="dropdown-item" href="@Url.Action("ProfilePage", "Profile")">Profile</a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="@Url.Action("Logout", "Account")">Logout</a>
@@ -154,6 +160,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

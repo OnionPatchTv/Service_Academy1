@@ -23,7 +23,7 @@ namespace ServiceAcademy.Controllers
             if (!programExists)
             {
                 ModelState.AddModelError("", "The selected ProgramId does not exist.");
-                return RedirectToAction("ProgramStream", "Instructor", new { id = ProgramId });
+                return RedirectToAction("ProgramStream", "ProjectLeader", new { id = ProgramId });
             }
 
             // Set the ProgramId in the QuizModel
@@ -74,7 +74,7 @@ namespace ServiceAcademy.Controllers
             }
 
             // Redirect to ProgramStream or another appropriate location
-            return RedirectToAction("ProgramStream", "Instructor", new { programId = quiz.ProgramId });
+            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = quiz.ProgramId });
         }
         public IActionResult ViewQuiz(int quizId)
         {
@@ -93,121 +93,132 @@ namespace ServiceAcademy.Controllers
         }
         public async Task<IActionResult> StudentQuizView(int quizId)
         {
-            // Get the current user's ID
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Fetch the quiz to get the associated ProgramId
             var quiz = await _context.Quizzes
-                                     .Include(q => q.Questions)
-                                     .ThenInclude(q => q.Answers)
-                                     .AsSplitQuery()
-                                     .FirstOrDefaultAsync(q => q.QuizId == quizId);
+                .Include(q => q.Questions)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
-            if (quiz == null)
-            {
-                return NotFound("Quiz not found.");
-            }
+            if (quiz == null) return NotFound("Quiz not found.");
 
-            // Fetch the enrollment associated with the user and the program
             var enrollment = await _context.Enrollment
-                                           .FirstOrDefaultAsync(e => e.TraineeId == currentUserId && e.ProgramId == quiz.ProgramId);
+                .FirstOrDefaultAsync(e => e.TraineeId == currentUserId && e.ProgramId == quiz.ProgramId);
 
-            if (enrollment == null)
+            if (enrollment == null) return Unauthorized("You are not enrolled in this program.");
+
+            var result = await _context.StudentQuizResults
+                .FirstOrDefaultAsync(r => r.QuizId == quizId && r.EnrollmentId == enrollment.EnrollmentId);
+
+            if (result != null)
             {
-                return Unauthorized("You are not enrolled in this program.");
-            }
+                if (result.Remarks == "Pass")
+                {
+                    TempData["QuizErrorMessage"] = "You passed and cannot retake this quiz.";
+                    return RedirectToAction("QuizResult", new { resultId = result.StudentQuizResultId });
+                }
+                else if (result.Retries >= 3)
+                {
+                    result.IsCompleted = true;
+                    _context.Update(result);
+                    await _context.SaveChangesAsync();
 
-            // Check if the student already has a quiz result
-            var existingResult = await _context.StudentQuizResults
-                                               .FirstOrDefaultAsync(r => r.QuizId == quizId && r.EnrollmentId == enrollment.EnrollmentId);
-
-            if (existingResult != null)
-            {
-                TempData["QuizErrorMessage"] = "You already have an existing result! You can't take the quiz again!";
-                return RedirectToAction("QuizResult", new { resultId = existingResult.StudentQuizResultId });
+                    TempData["QuizErrorMessage"] = "Retry limit reached. Final result recorded.";
+                    return RedirectToAction("QuizResult", new { resultId = result.StudentQuizResultId });
+                }
             }
 
             ViewBag.EnrollmentId = enrollment.EnrollmentId;
 
+            if (result?.Retries < 3 && result.Remarks == "Fail")
+            {
+                // Shuffle questions for retry
+                quiz.Questions = quiz.Questions.OrderBy(q => Guid.NewGuid()).ToList();
+            }
+
             return View(quiz);
         }
-
         [HttpPost]
         public async Task<IActionResult> SubmitQuiz(int quizId, Dictionary<int, string> answers, int enrollmentId)
         {
-            // Fetch the quiz to get the associated ProgramId
             var quiz = await _context.Quizzes
-                                     .Include(q => q.Questions)
-                                     .ThenInclude(q => q.Answers)
-                                     .AsSplitQuery()
-                                     .FirstOrDefaultAsync(q => q.QuizId == quizId);
+                .Include(q => q.Questions)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
-            if (quiz == null)
-            {
-                return NotFound("Quiz not found.");
-            }
+            if (quiz == null) return NotFound("Quiz not found.");
 
-            // Check if the provided enrollment ID is valid for this program
             var enrollment = await _context.Enrollment
-                                            .FirstOrDefaultAsync(e => e.EnrollmentId == enrollmentId
-                                                                       && e.ProgramId == quiz.ProgramId);
+                .FirstOrDefaultAsync(e => e.EnrollmentId == enrollmentId && e.ProgramId == quiz.ProgramId);
 
-            if (enrollment == null)
+            if (enrollment == null) return BadRequest("Invalid Enrollment.");
+
+            var result = await _context.StudentQuizResults
+                .Include(r => r.StudentAnswers) // Include existing answers for updating
+                .FirstOrDefaultAsync(r => r.QuizId == quizId && r.EnrollmentId == enrollment.EnrollmentId);
+
+            if (result == null)
             {
-                return BadRequest("Invalid Enrollment.");
+                result = new StudentQuizResultModel
+                {
+                    QuizId = quizId,
+                    EnrollmentId = enrollmentId,
+                    Retries = 0, // Set retries count
+                };
+                _context.StudentQuizResults.Add(result);
             }
 
-            // Check if the student already has a quiz result
-            var existingResult = await _context.StudentQuizResults
-                                               .FirstOrDefaultAsync(r => r.QuizId == quizId && r.EnrollmentId == enrollment.EnrollmentId);
-
-            if (existingResult != null)
-            {
-                TempData["QuizErrorMessage"] = "You already have an existing result!";
-                return RedirectToAction("QuizResult", new { resultId = existingResult.StudentQuizResultId });
-            }
-
-            // Proceed with calculating and saving the quiz result
             int rawScore = 0;
-            List<StudentAnswerModel> studentAnswers = new List<StudentAnswerModel>();
 
             foreach (var question in quiz.Questions)
             {
-                var studentAnswer = new StudentAnswerModel
-                {
-                    QuestionId = question.QuestionId,
-                    Answer = answers.ContainsKey(question.QuestionId) ? answers[question.QuestionId] : string.Empty,
-                    IsCorrect = answers.ContainsKey(question.QuestionId) && answers[question.QuestionId] == question.CorrectAnswer
-                };
+                var existingAnswer = result.StudentAnswers.FirstOrDefault(sa => sa.QuestionId == question.QuestionId);
 
-                studentAnswers.Add(studentAnswer);
+                // Normalize answers (convert to lowercase for case-insensitive comparison)
+                var studentAnswerNormalized = answers.ContainsKey(question.QuestionId) ? answers[question.QuestionId].Trim().ToLower() : string.Empty;
+                var correctAnswerNormalized = question.CorrectAnswer.Trim().ToLower();
 
-                if (studentAnswer.IsCorrect)
+                // Check if the student's answer is correct (case-insensitive comparison)
+                var isCorrect = studentAnswerNormalized == correctAnswerNormalized;
+                if (isCorrect) rawScore++;
+
+                if (existingAnswer != null)
                 {
-                    rawScore++;
+                    // Update existing answer
+                    existingAnswer.Answer = studentAnswerNormalized;
+                    existingAnswer.IsCorrect = isCorrect;
+                }
+                else
+                {
+                    // Add new answer if not existing
+                    result.StudentAnswers.Add(new StudentAnswerModel
+                    {
+                        QuestionId = question.QuestionId,
+                        Answer = studentAnswerNormalized,
+                        IsCorrect = isCorrect
+                    });
                 }
             }
 
-            int totalScore = quiz.Questions.Count;
-            double computedScore = Math.Round(((double)rawScore / totalScore) * 63.5 + 37.5, 2);
+            // Update score calculations
+            result.RawScore = rawScore;
+            result.TotalScore = quiz.Questions.Count;
+            result.ComputedScore = Math.Round(((double)rawScore / result.TotalScore) * 62.5 + 37.5, 2);
+            result.Remarks = result.ComputedScore >= 50 ? "Pass" : "Fail";
 
-            var studentQuizResult = new StudentQuizResultModel
+            if (result.Remarks == "Pass" || result.Retries >= 3)
             {
-                QuizId = quizId,
-                EnrollmentId = enrollment.EnrollmentId,
-                RawScore = rawScore,
-                TotalScore = totalScore,
-                ComputedScore = computedScore,
-                Remarks = computedScore >= 50 ? "Pass" : "Fail",
-                StudentAnswers = studentAnswers
-            };
+                result.IsCompleted = true;
+            }
+            else
+            {
+                result.Retries++;
+            }
 
-            _context.StudentQuizResults.Add(studentQuizResult);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("QuizResult", new { resultId = studentQuizResult.StudentQuizResultId });
+            return RedirectToAction("QuizResult", new { resultId = result.StudentQuizResultId });
         }
-
 
         public async Task<IActionResult> QuizResult(int resultId)
         {
@@ -266,12 +277,12 @@ namespace ServiceAcademy.Controllers
                 TempData["ProgramId"] = programId;
 
                 // Redirect to the ProgramStream view for the related ProgramId
-                return RedirectToAction("ProgramStream", "Instructor");
+                return RedirectToAction("ProgramStream", "ProjectLeader");
             }
             else
             {
                 TempData["Error"] = "Quiz not found.";
-                return RedirectToAction("ProgramStream", "Instructor");
+                return RedirectToAction("ProgramStream", "ProjectLeader");
             }
         }
 

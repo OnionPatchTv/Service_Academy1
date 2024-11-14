@@ -30,6 +30,9 @@ namespace Service_Academy1.Models
         [Required]
         public string Remarks { get; set; } // Pass or Fail based on score or other criteria
 
+        public int Retries {  get; set; }
+        public bool IsCompleted { get; set; } = false;
+
         public virtual ICollection<StudentAnswerModel> StudentAnswers { get; set; } = new List<StudentAnswerModel>(); // Answers submitted by the student
     }
 }
