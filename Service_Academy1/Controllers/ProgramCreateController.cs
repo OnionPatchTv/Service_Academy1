@@ -94,6 +94,9 @@ namespace ServiceAcademy.Controllers
                     program.DepartmentId = projectLeader.DepartmentId ?? 0; // Default to 0 if no department found
                 }
 
+                // Ensure SDG value is set from the view model
+                program.SDG = program.SDG; // The SDG value is included as part of the ProgramsModel instance here.
+
                 _context.Programs.Add(program);
                 await _context.SaveChangesAsync();
 
@@ -121,5 +124,6 @@ namespace ServiceAcademy.Controllers
                 return View(program);
             }
         }
+
     }
 }

@@ -18,6 +18,7 @@ namespace Service_Academy1.Models
         public string ProjectLeader { get; set; } = string.Empty;
 
         public string Agenda { get; set; } = string.Empty;
+        public string SDG {  get; set; } = string.Empty;
         public string PhotoPath { get; set; } = string.Empty;
 
         // Foreign key property for the instructor's Id
@@ -34,6 +35,7 @@ namespace Service_Academy1.Models
         public virtual ICollection<EnrollmentModel> Enrollments { get; set; } = new List<EnrollmentModel>();
         public virtual ICollection<ModuleModel> Modules { get; set; } = new List<ModuleModel>();
         public virtual ICollection<QuizModel> Quizzes { get; set; } = new List<QuizModel>();
+        public virtual ICollection<EvaluationQuestionModel> EvaluationQuestions { get; set; } = new List<EvaluationQuestionModel>();
     }
 
 }

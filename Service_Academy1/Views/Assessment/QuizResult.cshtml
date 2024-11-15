@@ -1,7 +1,17 @@
 ﻿@model Service_Academy1.Models.StudentQuizResultModel
 
 @{
-    ViewData["Title"] = "Service Academy - Student Quiz";
+    ViewData["Title"] = "Student Quiz Result";
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/TraineeScript/StudentQuizViewScript.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/AssessmentStyle.css">
 }
 
 @if (TempData["QuizErrorMessage"] != null)
@@ -10,6 +20,12 @@
         @TempData["QuizErrorMessage"]
     </div>
 }
+
+<div class="breadcrumb">
+    <a href="@Url.Action("MyLearningStream", "Student", new { programId = ViewBag.ProgramId })">ViewBag.ProgramTitle</a>
+    <span class="separator">&gt;</span>
+    <span>Student Quiz Result</span>
+</div>
 
 <h2>Quiz Result</h2>
 

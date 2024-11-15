@@ -1,0 +1,97 @@
+﻿@model EvaluationFormViewModel
+
+@{
+    ViewData["Title"] = "Evaluation Form";
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/TraineeScript/EvaluationFormScript.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/TraineeStyle/EvaluationFormStyle.css">
+}
+<h2>Evaluation Form for @ViewBag.ProgramTitle</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+@if (Model.Questions != null && Model.Questions.Any())
+{
+    <form id="evaluationForm" asp-action="Submit" method="post">
+        @foreach (var categoryGroup in Model.Questions.GroupBy(q => q.Category))
+        {
+            <div class="container">
+                <!-- Display the category title -->
+                <div class="category">@categoryGroup.Key</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var question in categoryGroup)
+                        {
+                            <tr>
+                                <td class="question">@(!string.IsNullOrWhiteSpace(question.QuestionText) ? question.QuestionText : $"[{categoryGroup.Key}]")</td>
+
+                                <!-- Hidden input to pass QuestionId -->
+                                <input type="hidden" name="Responses[@(Model.Questions.IndexOf(question))].QuestionId" value="@question.EvaluationQuestionId" />
+
+                                @for (int rating = 1; rating <= 5; rating++)
+                                {
+                                    <td>
+                                        <input type="radio"
+                                               name="Responses[@(Model.Questions.IndexOf(question))].Rating"
+                                               value="@rating"
+                                               id="q@(question.EvaluationQuestionId)_@rating"
+                                               required />
+                                        <label for="q@(question.EvaluationQuestionId)_@rating">@rating</label>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <input type="hidden" asp-for="ProgramId" value="@Model.ProgramId" />
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submitModal">Submit Evaluation</button>
+    </form>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="submitModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div id="modalForm" class="modal-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="submitModalLabel">Submit Evaluation</h5>
+                        <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to submit your evaluation? Once submitted, you will not be able to change your responses.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btnNo" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btnYes" id="confirmSubmit">Yes, Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+else
+{
+    <p>No questions available for this evaluation.</p>
+}

@@ -38,9 +38,9 @@
                 }
                 else if (User.IsInRole("Coordinator"))
                 {
-                    <a href="@Url.Action("Dashboard", "Coordinator")" class="@(Html.IsActive("Dashboard", "Coordinator") ? "active" : "")">Dashboard</a>
-                    <a href="@Url.Action("Analytics", "Coordinator")" class="@(Html.IsActive("Analytics", "Coordinator") ? "active" : "")">Analytics</a>
-                    <a href="@Url.Action("ManageProgram", "Coordinator")" class="@(Html.IsActive("ManageProgram", "Coordinator") ? "active" : "")">Manage Programs</a>
+                    <a href="@Url.Action("CoordDashboard", "Coordinator")" class="@(Html.IsActive("CoordDashboard", "Coordinator") ? "active" : "")">Dashboard</a>
+                    <a href="@Url.Action("CoordAnalytics", "Coordinator")" class="@(Html.IsActive("CoordAnalytics", "Coordinator") ? "active" : "")">Analytics</a>
+                    <a href="@Url.Action("CoordManageProgram", "Coordinator")" class="@(Html.IsActive("CoordManageProgram", "Coordinator") ? "active" : "")">Manage Programs</a>
                 }
                 else if (User.IsInRole("Admin"))
                 {
@@ -78,6 +78,7 @@
                   ViewContext.RouteData.Values["action"].ToString() == "ProgramStreamManage" ||
                   ViewContext.RouteData.Values["action"].ToString() == "ProgramCreation" ||
                   ViewContext.RouteData.Values["action"].ToString() == "CreateAssessment" ||
+                  ViewContext.RouteData.Values["action"].ToString() == "EvaluationResults" ||
                   ViewContext.RouteData.Values["action"].ToString() == "ViewQuiz" ? "active" : "")">My Teaching</a>
                 }
                 else if (User.IsInRole("Admin"))

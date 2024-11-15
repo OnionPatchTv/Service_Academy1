@@ -77,6 +77,30 @@
                                 <option value="DisasterRisk">Disaster Risk Reduction And Management And Disaster Preparedness And Response / Climate Change Adoption</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            @Html.ValidationMessageFor(model => model.SDG)
+                            <label asp-for="SDG"><b>SDG</b></label>
+                            <select asp-for="SDG" class="form-control" required>
+                                <option value="">-- Select SDG --</option>
+                                <option value="NP">No Poverty</option>
+                                <option value="ZH">Zero Hunger</option>
+                                <option value="GHWB">Good Health and Well Being</option>
+                                <option value="QE">Quality Education</option>
+                                <option value="GE">Gender Equality</option>
+                                <option value="CWS">Clean Water and Sanitation</option>
+                                <option value="ACE">Affordable and Clean Energy</option>
+                                <option value="DWEG">Decent Work and Economic Growth</option>
+                                <option value="III">Industy, Innovation and Infrastructure</option>
+                                <option value="RI">Reduced Inequalities</option>
+                                <option value="SCC">Sustainable Cities and Communities</option>
+                                <option value="RCP">Rersponsible Consumption and Production</option>
+                                <option value="CA">Climate Action</option>
+                                <option value="LBW">Life Below Water</option>
+                                <option value="LL">Life on Land</option>
+                                <option value="PJSI">Peace, Justice and Strong Institutions</option>
+                                <option value="PG">Partnerships for the Goals</option>
+                            </select>
+                        </div>
 
                         <div class="form-group">
                             @Html.ValidationMessageFor(model => model.Description)

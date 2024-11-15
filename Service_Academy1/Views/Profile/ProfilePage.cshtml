@@ -2,54 +2,75 @@
     ViewData["Title"] = "Profile Page";
 }
 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/HomeScript/ProfileScript.js"></script>
+}
+
 @section Styles {
     <link rel="stylesheet" href="~/css/HomeStyle/ProfileStyle.css">
 }
 
-<div class="profile-banner">
-    <div class="profile-picture">
-        <img src="profile-pic-placeholder.png" alt="Profile Picture">
-        <div class="camera-icon">📷</div>
+
+    <!-- Profile Save Notification -->
+    <div id="save-notification" class="save-notification">
+        Profile saved successfully!
     </div>
-    <div class="profile-info">
-        <h2>Welcome, Name</h2>
-        <p>Learner • Serice Academy</p>
-    </div>
-</div>
-
-<div class="tabs">
-    <button class="tab active">Profile</button>
-    <button class="tab">Badges & Certificates</button>
-    <button class="tab">Discounts</button>
-    <button class="tab">Learning History</button>
-</div>
-
-<div class="content">
-    <div class="basic-info">
-        <h3>Basic Information</h3>
-        <form>
-            <label>UserName*</label>
-            <input type="text" value="name">
-
-            <label>FullName*</label>
-            <input type="text" value="name">
-
-            <label>Gender*</label>
-            <label>Age*</label>
-            <label>Country or Place*</label>
-
-        </form>
+    <!-- Profile Error Notification -->
+    <div id="error-notification" class="error-notification">
+        Please correct the highlighted errors.
     </div>
 
-    <div class="contact-info">
-        <h3>Contact Information</h3>
-        <p>Email:</p>
-        <h3>Password:</h3>
-        <button>Change Password</button>
-        <button>Change Email</button>
+    <div class="container">
+        <div class="profile">
+            <!-- Editable Profile Picture (Initially hidden until 'Edit Profile' is clicked) -->
+            <label for="profilePic" class="profile-pic-label">
+                <i class="fas fa-user-circle"></i>
+                <input type="file" id="profilePic" accept="image/*" hidden>
+            </label>
+            <!-- Editable Name and Email (Initially editable false) -->
+            <h2 class="profile-full-name" id="profileFullName">John Doe</h2>
+            <p class="profile-email" id="profileEmail">Johndoe@Academy.com</p>
+    
+            <!-- About Section (Restored) -->
+            <h3>About</h3>
+            <p class="editable-about" contenteditable="false">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore recusandae placeat ex aut sequi nulla eligendi asperiores tenetur maxime ut unde, quibusdam facilis obcaecati consequatur!</p>
+        </div>
+        
+        <div class="form">
+            <h2>Personal Details</h2>
+            <!-- Form to edit details -->
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" value="John Doe" readonly required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" value="Johndoe@Academy.com" readonly 
+                    pattern="[a-zA-Z0-9._%+-]+[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" value="09956651724" readonly required 
+                    pattern="\d{11}" title="Phone number must be 11 digits (no spaces or special characters)">
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" value="123 Example Street" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="birthday">Birthday</label>
+                    <input type="date" id="birthday" name="birthday" value="2000-01-01" readonly class="birthday-input">
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" value="10" readonly min="1" max="120">
+                </div>
+                
+                <!-- Edit Profile Button inside the form -->
+                <button type="button" id="editProfileButton" class="edit-profile-button">Edit Profile</button>
+            </form>
+        </div>
     </div>
-
-    <div class="career-info">
-        <h3>Profession</h3>
-    </div>
-</div>

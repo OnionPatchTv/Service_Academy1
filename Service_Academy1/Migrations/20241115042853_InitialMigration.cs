@@ -196,6 +196,7 @@ namespace Service_Academy1.Migrations
                     Description = table.Column<string>(type: "text", nullable: false),
                     ProjectLeader = table.Column<string>(type: "text", nullable: false),
                     Agenda = table.Column<string>(type: "text", nullable: false),
+                    SDG = table.Column<string>(type: "text", nullable: false),
                     PhotoPath = table.Column<string>(type: "text", nullable: false),
                     ProjectLeaderId = table.Column<string>(type: "text", nullable: true),
                     DepartmentId = table.Column<int>(type: "integer", nullable: false)
@@ -270,7 +271,7 @@ namespace Service_Academy1.Migrations
                 name: "EvaluationQuestions",
                 columns: table => new
                 {
-                    QuestionId = table.Column<int>(type: "integer", nullable: false)
+                    EvaluationQuestionId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     QuestionText = table.Column<string>(type: "text", nullable: false),
                     Category = table.Column<string>(type: "text", nullable: false),
@@ -278,7 +279,7 @@ namespace Service_Academy1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EvaluationQuestions", x => x.QuestionId);
+                    table.PrimaryKey("PK_EvaluationQuestions", x => x.EvaluationQuestionId);
                     table.ForeignKey(
                         name: "FK_EvaluationQuestions_Programs_ProgramId",
                         column: x => x.ProgramId,
@@ -361,20 +362,25 @@ namespace Service_Academy1.Migrations
                 {
                     ResponseId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    QuestionId = table.Column<int>(type: "integer", nullable: false),
-                    EvaluationQuestionQuestionId = table.Column<int>(type: "integer", nullable: true),
-                    ProgramId = table.Column<int>(type: "integer", nullable: false),
-                    LearnerId = table.Column<string>(type: "text", nullable: false),
+                    EvaluationQuestionId = table.Column<int>(type: "integer", nullable: false),
+                    EnrollmentId = table.Column<int>(type: "integer", nullable: false),
                     Rating = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EvaluationResponses", x => x.ResponseId);
                     table.ForeignKey(
-                        name: "FK_EvaluationResponses_EvaluationQuestions_EvaluationQuestionQ~",
-                        column: x => x.EvaluationQuestionQuestionId,
+                        name: "FK_EvaluationResponses_Enrollment_EnrollmentId",
+                        column: x => x.EnrollmentId,
+                        principalTable: "Enrollment",
+                        principalColumn: "EnrollmentId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EvaluationResponses_EvaluationQuestions_EvaluationQuestionId",
+                        column: x => x.EvaluationQuestionId,
                         principalTable: "EvaluationQuestions",
-                        principalColumn: "QuestionId");
+                        principalColumn: "EvaluationQuestionId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -569,9 +575,14 @@ namespace Service_Academy1.Migrations
                 column: "ProgramId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EvaluationResponses_EvaluationQuestionQuestionId",
+                name: "IX_EvaluationResponses_EnrollmentId",
                 table: "EvaluationResponses",
-                column: "EvaluationQuestionQuestionId");
+                column: "EnrollmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EvaluationResponses_EvaluationQuestionId",
+                table: "EvaluationResponses",
+                column: "EvaluationQuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Modules_ProgramId",

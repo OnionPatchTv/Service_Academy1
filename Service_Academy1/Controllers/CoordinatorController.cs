@@ -18,20 +18,64 @@ namespace Service_Academy1.Controllers
             _logger = logger;
             _context = context;
         }
-        public IActionResult CoordinatorDashboard()
+        public IActionResult CoordDashboard()
         {
             ViewData["ActivePage"] = "Dashboard";
             return View();
         }
 
         // Analytics action
-        public IActionResult Analytics()
+        public IActionResult CoordAnalytics()
         {
             ViewData["ActivePage"] = "Analytics";
             return View();
         }
+        private string GetAgendaFullName(string agendaCode)
+        {
+            return agendaCode switch
+            {
+                "BISIG" => "BatStateU Inclusive Social Innovation for Regional Growth (BISIG)",
+                "LEAF" => "Livelihood and Other Entrepreneurship related on Agri-Fisheries (LEAF)",
+                "Environment" => "Environment and Natural Resources Conservation, Protection and Rehabilitation",
+                "SAEI" => "Smart Analytics for Engineering Innovation",
+                "BINADI" => "Adopt-A-Municipality / Social Development Through BINADI Implementation",
+                "Outreach" => "Community Outreach",
+                "TVET" => "Technical-Vocational Education And Training (TVET)",
+                "TTAU" => "Technology Transfer, And Adoption / Utilization",
+                "TAAS" => "Technical Assistance And Advisory Services",
+                "PESODEV" => "Parents' Empowerment Thru Social Development",
+                "GAD" => "Gender And Development",
+                "DisasterRisk" => "Disaster Risk Reduction And Management And Disaster Preparedness And Response / Climate Change Adoption",
+                _ => agendaCode // Return the acronym if no match found
+            };
+        }
+
+        private string GetSdgFullName(string sdgCode)
+        {
+            return sdgCode switch
+            {
+                "NP" => "No Poverty",
+                "ZH" => "Zero Hunger",
+                "GHWB" => "Good Health and Well Being",
+                "QE" => "Quality Education",
+                "GE" => "Gender Equality",
+                "CWS" => "Clean Water and Sanitation",
+                "ACE" => "Affordable and Clean Energy",
+                "DWEG" => "Decent Work and Economic Growth",
+                "III" => "Industry, Innovation and Infrastructure",
+                "RI" => "Reduced Inequalities",
+                "SCC" => "Sustainable Cities and Communities",
+                "RCP" => "Responsible Consumption and Production",
+                "CA" => "Climate Action",
+                "LBW" => "Life Below Water",
+                "LL" => "Life on Land",
+                "PJSI" => "Peace, Justice and Strong Institutions",
+                "PG" => "Partnerships for the Goals",
+                _ => sdgCode // Return the acronym if no match found
+            };
+        }
         // ManageProgram action: Handles the program management view
-        public IActionResult ManageProgram()
+        public IActionResult CoordManageProgram()
         {
             // Get the coordinator's department ID
             var coordinatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -49,6 +93,13 @@ namespace Service_Academy1.Controllers
                 .Include(p => p.ProgramManagement)
                 .Where(p => p.DepartmentId == departmentId)
                 .ToList();
+
+            // Add full names for Agenda and SDG fields
+            foreach (var program in programs)
+            {
+                program.Agenda = GetAgendaFullName(program.Agenda);
+                program.SDG = GetSdgFullName(program.SDG);
+            }
 
             ViewData["ActivePage"] = "ManageProgram";
             return View(programs); // Pass the filtered list of programs to the view
@@ -69,7 +120,8 @@ namespace Service_Academy1.Controllers
                 .Select(p => new
                 {
                     p.Description,
-                    p.Agenda
+                    p.Agenda,
+                    p.SDG
                 })
                 .FirstOrDefaultAsync();
 

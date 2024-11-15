@@ -17,6 +17,12 @@
 <h2>@Model.QuizTitle</h2>
 <p>@Model.QuizDirection</p>
 
+<div class="breadcrumb">
+    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = Model.ProgramId })">@ViewBag.ProgramTitle</a>
+    <span class="separator">&gt;</span>
+    <span>@Model.QuizTitle Assessment</span>
+</div>
+
 <form id="quizForm" method="post" action="@Url.Action("SubmitQuiz", "Assessment")">
     <input type="hidden" name="QuizId" value="@Model.QuizId" />
     <input type="hidden" name="EnrollmentId" value="@ViewBag.EnrollmentId" /> <!-- Pass EnrollmentId here -->

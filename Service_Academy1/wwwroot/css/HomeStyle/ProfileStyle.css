@@ -1,0 +1,250 @@
+﻿
+
+/* Profile container setup */
+.container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 900px;
+    width: 100%;
+    margin: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+/* Profile section style */
+.profile {
+    flex: 1;
+    padding: 20px;
+    text-align: center;
+    border-right: 1px solid #ddd;
+}
+
+    .profile i {
+        font-size: 150px;
+        color: #FF782D; /* Primary color for profile icon */
+        margin-bottom: 15px;
+    }
+
+    .profile h2 {
+        font-size: 24px;
+        margin: 10px 0;
+        color: #FF782D; /* Primary color for full name */
+    }
+
+    .profile p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+/* About Section */
+.about {
+    flex: 1;
+    padding: 20px;
+}
+
+    .about h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #FF782D; /* Accent color for subheading (optional) */
+    }
+
+    .about p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+/* Form section style */
+.form {
+    flex: 2;
+    padding: 40px;
+    margin-left: 40px;
+    position: relative;
+}
+
+/* Form input group styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+/* Edit Profile Button inside the form */
+.edit-profile-button {
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    background-color: #FF782D; /* Primary color for button */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+    .edit-profile-button:hover {
+        background-color: #e66a2e; /* Darker shade on hover */
+        transform: scale(1.05);
+    }
+
+/* Profile Picture Edit */
+.profile-pic-label {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+    .profile-pic-label i {
+        font-size: 150px;
+        color: #FF782D; /* Primary color for profile picture icon */
+        transition: 0.3s ease;
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        background-size: cover;
+        background-position: center;
+        background-color: #f0f0f0;
+    }
+
+    .profile-pic-label:hover i {
+        color: #e66a2e; /* Darker shade on hover */
+        transform: scale(1.1);
+    }
+
+    .profile-pic-label input {
+        display: none; /* Hide input entirely */
+    }
+
+        /* Hide file name and file input in most browsers */
+        .profile-pic-label input::-webkit-file-upload-button {
+            display: none; /* Prevent the file upload button from appearing */
+        }
+
+        /* Additional styling to prevent file name display in some browsers */
+        .profile-pic-label input[type="file"]::-webkit-file-upload-button {
+            display: none !important;
+        }
+
+        .profile-pic-label input[type="file"] {
+            width: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            border: none;
+            overflow: hidden;
+            position: absolute;
+            opacity: 0; /* Ensure input doesn't show visually */
+        }
+
+/* Editable Sections */
+.profile h2[contenteditable],
+.profile p[contenteditable] {
+    border: 1px solid transparent;
+    transition: border 0.3s ease, background 0.3s ease;
+}
+
+    .profile h2[contenteditable]:focus,
+    .profile p[contenteditable]:focus {
+        border: 1px solid black; /* Primary color for focus border */
+        background: #e7e7e7; /* Light background when focused */
+        outline: none;
+    }
+
+/* Editable About Section */
+.editable-about {
+    border: 1px solid transparent; /* Start with a transparent border */
+    background: #ffffff; /* Default background */
+    border-radius: 5px;
+    transition: border 0.3s ease, background 0.3s ease;
+    word-wrap: break-word; /* Ensures long words are broken and wrapped into the next line */
+    overflow-wrap: break-word; /* Same as word-wrap but newer standard */
+    white-space: normal; /* Makes sure text wraps and doesn't overflow */
+    max-width: 100%; /* Prevents it from growing beyond the container width */
+    word-break: break-word; /* Ensures long continuous strings break into the next line */
+    max-height: 160px; /* Limit the height to prevent excessive expansion */
+    overflow-y: auto; /* Enable scrolling if the content exceeds max-height */
+    padding: 10px; /* Optional: Add padding for better aesthetics */
+}
+
+
+/* When the page is in edit mode, highlight the editable About section */
+body.edit-mode .editable-about {
+    border: 1px solid black;
+    background: #e7e7e7;
+    border-radius: 5px;
+}
+
+/* Editable About Section - Focused */
+.editable-about:focus {
+    outline: none; /* Remove default outline */
+    border: 1px solid transparent; /* Orange dashed border when focused */
+    background: #e7e7e7; /* Light background when focused */
+}
+
+
+/* Toast Notification */
+.save-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: none; /* Hidden by default */
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+    .save-notification.show {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+/* Error Notification */
+.error-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f44336; /* Red background for errors */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: none; /* Hidden by default */
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+    .error-notification.show {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+
+.error {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}

@@ -43,7 +43,6 @@ namespace ServiceAcademy.Controllers
             {
                 return NotFound();
             }
-
             ViewBag.ProgramId = quiz.ProgramId; // Pass ProgramId to the view
             ViewBag.NumberOfQuestions = numberOfQuestions; // Set NumberOfQuestions from user input
             return View(quiz);
@@ -79,6 +78,7 @@ namespace ServiceAcademy.Controllers
         public IActionResult ViewQuiz(int quizId)
         {
             var quiz = _context.Quizzes
+                               .Include(q => q.ProgramsModel)
                                .Include(q => q.Questions)
                                .ThenInclude(q => q.Answers)
                                .AsSplitQuery()
@@ -88,7 +88,7 @@ namespace ServiceAcademy.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.ProgramTitle = quiz.ProgramsModel.Title;
             return View(quiz); // Pass the quiz model to the view
         }
         public async Task<IActionResult> StudentQuizView(int quizId)
@@ -96,12 +96,13 @@ namespace ServiceAcademy.Controllers
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var quiz = await _context.Quizzes
+                .Include(q => q.ProgramsModel)
                 .Include(q => q.Questions)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
             if (quiz == null) return NotFound("Quiz not found.");
-
+          
             var enrollment = await _context.Enrollment
                 .FirstOrDefaultAsync(e => e.TraineeId == currentUserId && e.ProgramId == quiz.ProgramId);
 
@@ -135,7 +136,7 @@ namespace ServiceAcademy.Controllers
                 // Shuffle questions for retry
                 quiz.Questions = quiz.Questions.OrderBy(q => Guid.NewGuid()).ToList();
             }
-
+            ViewBag.ProgramTitle = quiz.ProgramsModel.Title;
             return View(quiz);
         }
         [HttpPost]
@@ -226,7 +227,8 @@ namespace ServiceAcademy.Controllers
             var result = await _context.StudentQuizResults
                 .Include(r => r.StudentAnswers)
                     .ThenInclude(sa => sa.Question) // Include the related questions for each answer
-                .Include(r => r.Quiz)  // Ensure the Quiz is included here
+                .Include(r => r.Quiz)// Ensure the Quiz is included here
+                .ThenInclude(q => q.ProgramsModel)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(r => r.StudentQuizResultId == resultId);
 
@@ -241,7 +243,9 @@ namespace ServiceAcademy.Controllers
                 _logger.LogError("Quiz information not found for resultId: {ResultId}", resultId);
                 return NotFound("Quiz information not found.");
             }
-
+            var program = result.Quiz.ProgramsModel;
+            ViewBag.ProgramTitle = program.Title; 
+            ViewBag.ProgramId = program.ProgramId;
             return View(result);
         }
         [HttpPost]

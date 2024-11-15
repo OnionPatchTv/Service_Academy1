@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Service_Academy1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241114110003_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241115042920_SeedRolesAndUsers")]
+    partial class SeedRolesAndUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -348,13 +348,13 @@ namespace Service_Academy1.Migrations
                     b.ToTable("EvaluationCriteria");
                 });
 
-            modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestion", b =>
+            modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestionModel", b =>
                 {
-                    b.Property<int>("QuestionId")
+                    b.Property<int>("EvaluationQuestionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("QuestionId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EvaluationQuestionId"));
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -367,14 +367,14 @@ namespace Service_Academy1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("QuestionId");
+                    b.HasKey("EvaluationQuestionId");
 
                     b.HasIndex("ProgramId");
 
                     b.ToTable("EvaluationQuestions");
                 });
 
-            modelBuilder.Entity("Service_Academy1.Models.EvaluationResponse", b =>
+            modelBuilder.Entity("Service_Academy1.Models.EvaluationResponseModel", b =>
                 {
                     b.Property<int>("ResponseId")
                         .ValueGeneratedOnAdd()
@@ -382,17 +382,10 @@ namespace Service_Academy1.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResponseId"));
 
-                    b.Property<int?>("EvaluationQuestionQuestionId")
+                    b.Property<int>("EnrollmentId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("LearnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProgramId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuestionId")
+                    b.Property<int>("EvaluationQuestionId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Rating")
@@ -400,7 +393,9 @@ namespace Service_Academy1.Migrations
 
                     b.HasKey("ResponseId");
 
-                    b.HasIndex("EvaluationQuestionQuestionId");
+                    b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("EvaluationQuestionId");
 
                     b.ToTable("EvaluationResponses");
                 });
@@ -500,6 +495,10 @@ namespace Service_Academy1.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ProjectLeaderId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SDG")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Title")
@@ -758,7 +757,7 @@ namespace Service_Academy1.Migrations
                     b.Navigation("currentTrainee");
                 });
 
-            modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestion", b =>
+            modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestionModel", b =>
                 {
                     b.HasOne("Service_Academy1.Models.ProgramsModel", "ProgramsModel")
                         .WithMany()
@@ -769,13 +768,23 @@ namespace Service_Academy1.Migrations
                     b.Navigation("ProgramsModel");
                 });
 
-            modelBuilder.Entity("Service_Academy1.Models.EvaluationResponse", b =>
+            modelBuilder.Entity("Service_Academy1.Models.EvaluationResponseModel", b =>
                 {
-                    b.HasOne("Service_Academy1.Models.EvaluationQuestion", "EvaluationQuestion")
+                    b.HasOne("Service_Academy1.Models.EnrollmentModel", "Enrollment")
                         .WithMany()
-                        .HasForeignKey("EvaluationQuestionQuestionId");
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("EvaluationQuestion");
+                    b.HasOne("Service_Academy1.Models.EvaluationQuestionModel", "EvaluationQuestions")
+                        .WithMany("Responses")
+                        .HasForeignKey("EvaluationQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enrollment");
+
+                    b.Navigation("EvaluationQuestions");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.ModuleModel", b =>
@@ -894,6 +903,11 @@ namespace Service_Academy1.Migrations
                     b.Navigation("Enrollment");
 
                     b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestionModel", b =>
+                {
+                    b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.ProgramsModel", b =>

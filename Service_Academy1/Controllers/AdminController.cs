@@ -22,7 +22,50 @@ namespace ServiceAcademy.Controllers
             _userManager = userManager;
             _context = context;
         }
+        private string GetAgendaFullName(string agendaCode)
+        {
+            return agendaCode switch
+            {
+                "BISIG" => "BatStateU Inclusive Social Innovation for Regional Growth (BISIG)",
+                "LEAF" => "Livelihood and Other Entrepreneurship related on Agri-Fisheries (LEAF)",
+                "Environment" => "Environment and Natural Resources Conservation, Protection and Rehabilitation",
+                "SAEI" => "Smart Analytics for Engineering Innovation",
+                "BINADI" => "Adopt-A-Municipality / Social Development Through BINADI Implementation",
+                "Outreach" => "Community Outreach",
+                "TVET" => "Technical-Vocational Education And Training (TVET)",
+                "TTAU" => "Technology Transfer, And Adoption / Utilization",
+                "TAAS" => "Technical Assistance And Advisory Services",
+                "PESODEV" => "Parents' Empowerment Thru Social Development",
+                "GAD" => "Gender And Development",
+                "DisasterRisk" => "Disaster Risk Reduction And Management And Disaster Preparedness And Response / Climate Change Adoption",
+                _ => agendaCode // Return the acronym if no match found
+            };
+        }
 
+        private string GetSdgFullName(string sdgCode)
+        {
+            return sdgCode switch
+            {
+                "NP" => "No Poverty",
+                "ZH" => "Zero Hunger",
+                "GHWB" => "Good Health and Well Being",
+                "QE" => "Quality Education",
+                "GE" => "Gender Equality",
+                "CWS" => "Clean Water and Sanitation",
+                "ACE" => "Affordable and Clean Energy",
+                "DWEG" => "Decent Work and Economic Growth",
+                "III" => "Industry, Innovation and Infrastructure",
+                "RI" => "Reduced Inequalities",
+                "SCC" => "Sustainable Cities and Communities",
+                "RCP" => "Responsible Consumption and Production",
+                "CA" => "Climate Action",
+                "LBW" => "Life Below Water",
+                "LL" => "Life on Land",
+                "PJSI" => "Peace, Justice and Strong Institutions",
+                "PG" => "Partnerships for the Goals",
+                _ => sdgCode // Return the acronym if no match found
+            };
+        }
         // Dashboard action
         public IActionResult Dashboard()
         {
@@ -168,8 +211,14 @@ namespace ServiceAcademy.Controllers
                 .Include(p => p.ProgramManagement) // Load related ProgramManagement data
                 .ToList();
 
+            foreach (var program in programs)
+            {
+                program.Agenda = GetAgendaFullName(program.Agenda);
+                program.SDG = GetSdgFullName(program.SDG);
+            }
+
             ViewData["ActivePage"] = "ManageProgram";
-            return View(programs); // Pass the list of programs to the view
+            return View(programs); // Pass the filtered list of programs to the view
         }
         [HttpGet]
         public async Task<IActionResult> GetProgramDetails(int programId)
@@ -179,7 +228,8 @@ namespace ServiceAcademy.Controllers
                 .Select(p => new
                 {
                     p.Description,
-                    p.Agenda
+                    p.Agenda,
+                    p.SDG
                 })
                 .FirstOrDefaultAsync();
 

@@ -110,7 +110,7 @@ namespace ServiceAcademy.Controllers
                         }
                         else if (roles.Contains("Coordinator"))
                         {
-                            return RedirectToAction("CoordinatorDashboard", "Coordinator");
+                            return RedirectToAction("CoordDashboard", "Coordinator");
                         }
                         else if (roles.Contains("Admin"))
                         {

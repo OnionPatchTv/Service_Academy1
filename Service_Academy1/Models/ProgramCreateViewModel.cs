@@ -10,6 +10,7 @@ namespace Service_Academy1.Models
         [Required]
         public string Description { get; set; } = string.Empty;
         public string Agenda { get; set; } = string.Empty;
+        public string SDG { get; set; } = string.Empty;
         public string ProjectLeaderId { get; set; } = string.Empty;
         public string DepartmentId { get; set; } = string.Empty;
         public string ProjectLeader { get; set; } = string.Empty; // This will be set in the controller

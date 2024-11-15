@@ -9,6 +9,7 @@ $(document).ready(function () {
         var title = button.data('title'); // Extract program title
         var description = button.data('description'); // Extract program description
         var agenda = button.data('agenda'); // Extract program agenda
+        var sdg = button.data('sdg'); // Extract program agenda
         var modal = $(this);
 
         // Set the modal title
@@ -16,6 +17,7 @@ $(document).ready(function () {
 
         // Populate the agenda and description fields
         modal.find('#programAgenda').text(agenda);
+        modal.find('#programSDG').text(sdg);
         modal.find('#programDescription').text(description);
     });
 });

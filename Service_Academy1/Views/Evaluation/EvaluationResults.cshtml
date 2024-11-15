@@ -1,97 +1,38 @@
-﻿@model EvaluationResultsViewModel
+﻿@model Service_Academy1.Models.EvaluationResultsViewModel
+
+<h2>Evaluation Results for @Model.ProgramTitle</h2>
+<p>Evaluated: @Model.EvaluatedCount / @Model.TotalTrainees (@Model.UnevaluatedCount unevaluated)</p>
 
 @if (Model != null)
 {
-    <h2>Evaluation Results for @(Model.ProgramTitle ?? "N/A")</h2> @* Handle null ProgramTitle *@
-
-    <p>
-        Evaluated: @(Model.EvaluatedCount) / @(Model.TotalTrainees)
-        (@(Model.UnevaluatedCount) unevaluated)
-    </p>
-
-    @if (Model.AverageRatings != null && Model.AverageRatings.Any())
-    {
-        @* Chart Containers *@
-        <div class="chart-container">
-            <h4>Performance</h4>
-            <canvas id="performanceChart"></canvas>
-        </div>
-
-        <div class="chart-container">
-            <h4>Satisfaction</h4>
-            <canvas id="satisfactionChart"></canvas>
-        </div>
-
-        <div class="chart-container">
-            <h4>Quality</h4>
-            <canvas id="qualityChart"></canvas>
-        </div>
-
-        <div class="chart-container">
-            <h4>Continuity</h4>
-            <canvas id="continuityChart"></canvas>
-        </div>
-
-        @section Scripts
-        {
+    <canvas id="evaluationChart"></canvas>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        // Function to create the chart
-        function createChart(chartId, category, averageRating, color) {
-            var ctx = document.getElementById(chartId).getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: [category], // Single category label
-                    datasets: [{
-                        label: 'Average Rating',
-                        data: [averageRating ?? 0], // Single average rating value with null fallback
-                        backgroundColor: color.background,
-                        borderColor: color.border,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 5 // Assuming a 5-point rating scale
-                        }
+        var ctx = document.getElementById('evaluationChart').getContext('2d');
+        var evaluationChart = new Chart(ctx, {
+            type: 'bar',  // Use bar chart to display the data
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.AverageRatings.Select(ar => ar.Category))),
+                datasets: [{
+                    label: 'Average Ratings',
+                    data: @Html.Raw(Json.Serialize(Model.AverageRatings.Select(ar => ar.AverageRating))),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-        }
-
-        // Define color scheme for each category chart
-        const chartColors = {
-            performance: { background: 'rgba(54, 162, 235, 0.2)', border: 'rgba(54, 162, 235, 1)' },
-            satisfaction: { background: 'rgba(75, 192, 192, 0.2)', border: 'rgba(75, 192, 192, 1)' },
-            quality: { background: 'rgba(255, 206, 86, 0.2)', border: 'rgba(255, 206, 86, 1)' },
-            continuity: { background: 'rgba(153, 102, 255, 0.2)', border: 'rgba(153, 102, 255, 1)' }
-        };
-
-        // Loop through AverageRatings with null checks
-        @foreach (var category in Model.AverageRatings)
-                {
-                    // Null check for the category and its Category property
-                    if (category != null && category.Category != null)
-                    {
-                        var categoryLower = category.Category.ToLower(); // Store lowercase category name for consistency
-                        <text>
-                                createChart('@(categoryLower)Chart', '@category.Category', @category.AverageRating, chartColors['@(categoryLower)']);
-                        </text>
-                    }
-                }
-            </script>
-        }
-    }
-    else
-    {
-        <p>No evaluations submitted yet.</p>
-    }
-
+            }
+        });
+    </script>
 }
 else
 {
-    <p>No data available for this program.</p>
+    <p>No evaluation data available for this program.</p>
 }

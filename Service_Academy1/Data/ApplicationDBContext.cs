@@ -23,8 +23,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<StudentModuleResult> StudentModuleResults { get; set; }
     public DbSet<AnnouncementModel> Announcemnets { get; set; }
     public DbSet<EvaluationCriteria> EvaluationCriteria { get; set; }
-    public DbSet<EvaluationQuestion> EvaluationQuestions { get; set; }
-    public DbSet<EvaluationResponse> EvaluationResponses { get; set; }
+    public DbSet<EvaluationQuestionModel> EvaluationQuestions { get; set; }
+    public DbSet<EvaluationResponseModel> EvaluationResponses { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

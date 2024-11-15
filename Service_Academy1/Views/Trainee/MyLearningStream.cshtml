@@ -70,30 +70,28 @@
             </div>
         </section>
     </section>
-
-    @if (Model.Enrollment != null)
+    <!-- Enrollment and Evaluation Section -->
+    @foreach (var enrollment in Model.Enrollment)
     {
-        <!-- Enrollment and Evaluation Section -->
-        @foreach (var enrollment in Model.Enrollment)
+        @if (enrollment.ProgramId == Model.ProgramId)
         {
-            @if (enrollment.ProgramId == Model.ProgramId) // Removed the program completion check for testing
-            {
-                bool hasEvaluated = Model.Evaluations.Any(e => e.ProgramId == enrollment.ProgramId && e.LearnerId == Model.UserId);
+            // Check if the user has already evaluated the program using EnrollmentId
+            bool hasEvaluated = Model.Evaluations.Any(e =>
+            e.EvaluationQuestions != null &&
+            e.EvaluationQuestions.ProgramId == Model.ProgramId &&
+            e.EnrollmentId == enrollment.EnrollmentId // Compare by EnrollmentId
+            );
 
-                @if (!hasEvaluated)
-                {
-                    <a asp-controller="Evaluation" asp-action="Create" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary">Evaluate Program</a>
-                }
-                else
-                {
-                    <span>You have already submitted an evaluation for this program.</span>
-                }
+            @if (!hasEvaluated)
+            {
+                <a asp-controller="Evaluation" asp-action="EvaluationForm" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary">Evaluate Program</a>
+            }
+            else
+            {
+                <span>You have already submitted an evaluation for this program.</span>
             }
         }
     }
-    else
-    {
-        <p>No enrollments found.</p>
-    }
 </main>
+
 

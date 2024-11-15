@@ -1,178 +1,201 @@
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Service_Academy1.Controllers;
 using Service_Academy1.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-public class EvaluationController : Controller
+namespace Service_Academy1.Controllers
 {
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public EvaluationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public class EvaluationController : Controller
     {
-        _context = context;
-        _userManager = userManager;
-    }
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-    public async Task<IActionResult> Create(int programId)
-    {
-        var learnerId = _userManager.GetUserId(User);
-
-        // Check enrollment and if the user is authorized to evaluate
-        var enrollment = await _context.Enrollment
-            .Include(x => x.ProgramsModel)
-            .FirstOrDefaultAsync(e => e.ProgramId == programId && e.TraineeId == learnerId && e.EnrollmentStatus == "Approved");
-
-        if (enrollment == null)
+        public EvaluationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            TempData["ErrorMessage"] = "You are not authorized to evaluate this program.";
-            return RedirectToAction("TraineeDashboard", "Trainee", new { id = programId });
+            _context = context;
+            _userManager = userManager;
         }
 
-
-        // Define standard questions categorized by different criteria
-        var standardQuestions = new Dictionary<string, List<EvaluationQuestion>>
+        public async Task<IActionResult> EvaluationForm(int programId)
         {
-            { "Performance", new List<EvaluationQuestion> {
-                new EvaluationQuestion { QuestionId = 1, QuestionText = "Overall, how effectively did the program achieve its stated learning objectives?", Category = "Performance", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 2, QuestionText = "To what extent did the program content align with your expectations?", Category = "Performance", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 3, QuestionText = "How well did the program structure facilitate your learning process?", Category = "Performance", ProgramId = programId }
-            }},
-            { "Satisfaction", new List<EvaluationQuestion> {
-                new EvaluationQuestion { QuestionId = 4, QuestionText = "Overall, how satisfied were you with the program?", Category = "Satisfaction", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 5, QuestionText = "How satisfied were you with the quality of instruction/materials?", Category = "Satisfaction", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 6, QuestionText = "How likely are you to recommend this program to others?", Category = "Satisfaction", ProgramId = programId }
-            }},
-            { "Quality", new List<EvaluationQuestion> {
-                new EvaluationQuestion { QuestionId = 7, QuestionText = "How would you rate the clarity and organization of the program content?", Category = "Quality", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 8, QuestionText = "How would you rate the relevance and usefulness of the program content to your needs?", Category = "Quality", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 9, QuestionText = "How would you rate the overall quality of the learning experience?", Category = "Quality", ProgramId = programId }
-            }},
-            { "Continuity", new List<EvaluationQuestion> {
-                new EvaluationQuestion { QuestionId = 10, QuestionText = "How likely are you to apply what you learned in this program in the future?", Category = "Continuity", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 11, QuestionText = "How helpful was this program in achieving your learning/professional goals?", Category = "Continuity", ProgramId = programId },
-                new EvaluationQuestion { QuestionId = 12, QuestionText = "Would you be interested in participating in similar programs in the future?", Category = "Continuity", ProgramId = programId }
-            }}
-        }.SelectMany(x => x.Value).ToList();
+            var learnerId = _userManager.GetUserId(User);
 
-        if (standardQuestions == null || !standardQuestions.Any())
-        {
-            TempData["ErrorMessage"] = "No evaluation questions available for this program.";
-            return RedirectToAction("MyLearningStream", new { programId = programId });
-        }
+            // Check if user is enrolled and authorized to evaluate
+            var enrollment = await _context.Enrollment
+                .Include(x => x.ProgramsModel)
+                .FirstOrDefaultAsync(e => e.ProgramId == programId && e.TraineeId == learnerId && e.EnrollmentStatus == "Approved");
 
-        var viewModel = new EvaluationFormViewModel
-        {
-            ProgramId = programId,
-            Questions = standardQuestions,
-            Responses = standardQuestions.Select(q => new ResponseViewModel { QuestionId = q.QuestionId }).ToList()
-        };
-
-        ViewBag.ProgramTitle = enrollment.ProgramsModel.Title;
-        return View(viewModel);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Submit(EvaluationFormViewModel model)
-    {
-        if (!ModelState.IsValid)
-        {
-            return Json(new { success = false, message = "Invalid form submission." });
-        }
-
-        var learnerId = _userManager.GetUserId(User);
-
-        // Check if the user has already evaluated the program
-        bool hasEvaluated = await _context.EvaluationResponses
-            .AnyAsync(er => er.LearnerId == learnerId && er.ProgramId == model.ProgramId);
-
-        if (hasEvaluated)
-        {
-            return Json(new { success = false, message = "You have already evaluated this program." });
-        }
-
-        // Save each response
-        foreach (var response in model.Responses)
-        {
-            var evaluationResponse = new EvaluationResponse
+            if (enrollment == null)
             {
-                QuestionId = response.QuestionId,
-                ProgramId = model.ProgramId,
-                LearnerId = learnerId,
-                Rating = response.Rating
+                TempData["ErrorMessage"] = "You are not authorized to evaluate this program.";
+                return RedirectToAction("TraineeDashboard", "Trainee", new { id = programId });
+            }
+
+            // Check if questions exist for this programId, if not, create them.
+            var existingQuestions = await _context.EvaluationQuestions.Where(q => q.ProgramId == programId).ToListAsync();
+            if (!existingQuestions.Any())
+            {
+                // Define standard questions
+                var standardQuestions = new Dictionary<string, List<EvaluationQuestionModel>>
+                {
+                    { "Performance", new List<EvaluationQuestionModel> {
+                        new EvaluationQuestionModel { QuestionText = "Overall, how effectively did the program achieve its stated learning objectives?", Category = "Performance" },
+                        new EvaluationQuestionModel { QuestionText = "To what extent did the program content align with your expectations?", Category = "Performance" },
+                        new EvaluationQuestionModel { QuestionText = "How well did the program structure facilitate your learning process?", Category = "Performance" }
+                    }},
+                    { "Satisfaction", new List<EvaluationQuestionModel> {
+                        new EvaluationQuestionModel { QuestionText = "Overall, how satisfied were you with the program?", Category = "Satisfaction" },
+                        new EvaluationQuestionModel { QuestionText = "How satisfied were you with the quality of instruction/materials?", Category = "Satisfaction" },
+                        new EvaluationQuestionModel { QuestionText = "How likely are you to recommend this program to others?", Category = "Satisfaction" }
+                    }},
+                    { "Quality", new List<EvaluationQuestionModel> {
+                        new EvaluationQuestionModel { QuestionText = "How would you rate the clarity and organization of the program content?", Category = "Quality" },
+                        new EvaluationQuestionModel { QuestionText = "How would you rate the relevance and usefulness of the program content to your needs?", Category = "Quality" },
+                        new EvaluationQuestionModel { QuestionText = "How would you rate the overall quality of the learning experience?", Category = "Quality" }
+                    }},
+                    { "Continuity", new List<EvaluationQuestionModel> {
+                        new EvaluationQuestionModel { QuestionText = "How likely are you to apply what you learned in this program in the future?", Category = "Continuity" },
+                        new EvaluationQuestionModel { QuestionText = "How helpful was this program in achieving your learning/professional goals?", Category = "Continuity" },
+                        new EvaluationQuestionModel { QuestionText = "Would you be interested in participating in similar programs in the future?", Category = "Continuity" }
+                    }}
+                };
+
+                // Add questions to database
+                foreach (var categoryGroup in standardQuestions)
+                {
+                    foreach (var question in categoryGroup.Value)
+                    {
+                        question.ProgramId = programId; // Assign ProgramId to each question
+                        _context.EvaluationQuestions.Add(question);
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // Now fetch questions again (they should exist)
+            var questions = await _context.EvaluationQuestions.Where(q => q.ProgramId == programId).ToListAsync();
+
+            if (!questions.Any())
+            {
+                TempData["ErrorMessage"] = "No evaluation questions available for this program.";
+                return RedirectToAction("MyLearningStream", new { programId = programId });
+            }
+
+            var viewModel = new EvaluationFormViewModel
+            {
+                ProgramId = programId,
+                Questions = questions,
+                Responses = questions.Select(q => new ResponseViewModel { QuestionId = q.EvaluationQuestionId }).ToList()
             };
-            _context.EvaluationResponses.Add(evaluationResponse);
+
+            ViewBag.ProgramTitle = enrollment.ProgramsModel.Title;
+            return View(viewModel);
         }
 
-        await _context.SaveChangesAsync();
-
-        return Json(new { success = true, programId = model.ProgramId });
-    }
-
-    public async Task<IActionResult> EvaluationResults(int programId)
-    {
-        // Fetch average ratings grouped by category and include the related question text
-        var averageRatings = await _context.EvaluationResponses
-            .Include(er => er.EvaluationQuestion)
-            .Where(r => r.ProgramId == programId)
-            .GroupBy(r => r.EvaluationQuestion.Category)
-            .Select(g => new ResultViewModel
-            {
-                Category = g.Key,
-                AverageRating = g.Average(r => r.Rating),
-                QuestionText = g.FirstOrDefault().EvaluationQuestion.QuestionText
-            })
-            .ToListAsync();
-
-        // Retrieve the program details for displaying title, or set a default if not found
-        var program = await _context.Programs.FindAsync(programId);
-
-        // Count distinct learners who have evaluated
-        var evaluatedCount = await _context.EvaluationResponses
-            .Where(er => er.ProgramId == programId)
-            .Select(er => er.LearnerId)
-            .Distinct()
-            .CountAsync();
-
-        // Count total approved trainees for the program
-        var totalTrainees = await _context.Enrollment
-            .Where(e => e.ProgramId == programId && e.EnrollmentStatus == "Approved")
-            .CountAsync();
-
-        // Retrieve all questions for the specified program ID
-        var questions = await _context.EvaluationQuestions
-            .Where(x => x.ProgramId == programId)
-            .ToListAsync();
-
-        // Create the view model with all necessary data
-        var viewModel = new EvaluationResultsViewModel
+        [HttpPost]
+        public async Task<IActionResult> Submit(EvaluationFormViewModel model)
         {
-            ProgramTitle = program?.Title ?? "Program Not Found",
-            AverageRatings = averageRatings,
-            EvaluatedCount = evaluatedCount,
-            TotalTrainees = totalTrainees,
-            UnevaluatedCount = totalTrainees - evaluatedCount,
-            ProgramId = programId,
-            Questions = questions // Set Questions property with the result from the query
-        };
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Invalid form submission." });
+            }
 
-        return View(viewModel);
-    }
+            var learnerId = _userManager.GetUserId(User);
 
-    public async Task<IActionResult> MyEvaluations()
-    {
-        var learnerId = _userManager.GetUserId(User);
+            // Get the corresponding enrollment for this user and program
+            var enrollment = await _context.Enrollment
+                .FirstOrDefaultAsync(e => e.ProgramId == model.ProgramId && e.TraineeId == learnerId && e.EnrollmentStatus == "Approved");
 
-        var myEvaluations = await _context.EvaluationResponses
-            .Include(er => er.EvaluationQuestion)
-            .Include(er => er.EvaluationQuestion.ProgramsModel)
-            .Where(er => er.LearnerId == learnerId)
-            .ToListAsync();
+            if (enrollment == null)
+            {
+                return Json(new { success = false, message = "Enrollment not found." });
+            }
 
-        return View(myEvaluations);
+            // Check if the user has already evaluated the program
+            bool hasEvaluated = await _context.EvaluationResponses
+                .AnyAsync(er => er.EnrollmentId == enrollment.EnrollmentId && er.EvaluationQuestions.ProgramId == model.ProgramId);
+
+            if (hasEvaluated)
+            {
+                return Json(new { success = false, message = "You have already evaluated this program." });
+            }
+
+            // Save each response
+            foreach (var response in model.Responses)
+            {
+                var evaluationResponse = new EvaluationResponseModel
+                {
+                    EvaluationQuestionId = response.QuestionId,
+                    EnrollmentId = enrollment.EnrollmentId,
+                    Rating = response.Rating
+                };
+                _context.EvaluationResponses.Add(evaluationResponse);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Successfully Answered the Evaluation Form!";
+            // Redirect back to MyLearningStream.cshtml after successful submission
+            return RedirectToAction("MyLearningStream", "Trainee", new { programId = model.ProgramId });
+        }
+
+        public async Task<IActionResult> EvaluationResults(int programId)
+        {
+            // Fetch evaluation response data, grouped by category and rating
+            var evaluationResults = await _context.EvaluationResponses
+                .Include(r => r.EvaluationQuestions)
+                .Where(r => r.EvaluationQuestions.ProgramId == programId)
+                .GroupBy(r => new { r.EvaluationQuestions.Category, r.Rating })
+                .Select(g => new EvaluationResponseDetail
+                {
+                    Category = g.Key.Category,
+                    Rating = g.Key.Rating,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            // Get the total number of trainees for the program
+            var totalTrainees = await _context.Enrollment
+                .Where(e => e.ProgramId == programId)
+                .CountAsync();
+
+            // Count how many trainees have submitted their evaluations
+            var evaluatedCount = await _context.EvaluationResponses
+                .Where(r => r.EvaluationQuestions.ProgramId == programId)
+                .Select(r => r.EnrollmentId)
+                .Distinct()
+                .CountAsync();
+
+            // The number of unevaluated trainees
+            var unevaluatedCount = totalTrainees - evaluatedCount;
+
+            // Calculate average ratings by category
+            var averageRatings = evaluationResults
+                .GroupBy(r => r.Category)
+                .Select(g => new AverageRatingViewModel
+                {
+                    Category = g.Key,
+                    AverageRating = g.Average(r => r.Rating)
+                })
+                .ToList();
+
+            // Prepare the view model
+            var viewModel = new EvaluationResultsViewModel
+            {
+                ProgramTitle = (await _context.Programs.FindAsync(programId))?.Title,
+                TotalTrainees = totalTrainees,
+                EvaluatedCount = evaluatedCount,
+                UnevaluatedCount = unevaluatedCount,
+                ProgramId = programId,
+                AverageRatings = averageRatings,
+                EvaluationDetails = evaluationResults
+            };
+
+            // Return the view
+            return View(viewModel);
+        }
+
     }
 }
-
