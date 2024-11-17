@@ -99,6 +99,22 @@ $('.close-btn').on('click', function () {
     $('#updateModuleModal').modal('hide');
     $('#deleteModuleModal').modal('hide');
 });
+function openUpdateActivityModal(activityId, activityTitle, activityDescription, activityScore) {
+    // Populate the update modal fields
+    $('#activitiesIdInput').val(activityId);
+    $('#activityTitleInput').val(activityTitle);
+    $('#activityDescriptionInput').val(activityDescription); // Description textarea
+    $('#activityScoreInput').val(activityScore);
+
+    $('#updateActivityModal').modal('show');
+}
+
+function openDeleteActivityModal(activityId, activityTitle) {
+    // Set the activity ID for deletion
+    $('input[name="activitiesId"]').val(activityId);
+    $('#deleteActivityModalLabel').text('Delete Activity: ' + activityTitle);
+    $('#deleteActivityModal').modal('show');
+}
 
 $(document).ready(function () {
     // Optional: If you'd like to keep auto-hiding the alert after a few seconds while still allowing manual close

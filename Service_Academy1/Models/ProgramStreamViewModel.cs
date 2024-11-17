@@ -13,5 +13,6 @@ namespace Service_Academy1.Models
         public bool IsArchived { get; set; } = false;
         public virtual ICollection<ModuleModel> Modules { get; set; }
         public List<QuizModel> Quizzes { get; set; }
+        public List<ActivitiesModel> Activities { get; set; }
     }
 }

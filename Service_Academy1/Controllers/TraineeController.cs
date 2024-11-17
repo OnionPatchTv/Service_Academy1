@@ -89,6 +89,8 @@ namespace ServiceAcademy.Controllers
 
             var program = _context.Programs
                 .Include(p => p.Modules)
+                .Include(a => a.Activities)
+                    .ThenInclude(a => a.TraineeActivities)
                 .Include(p => p.Quizzes)
                     .ThenInclude(q => q.Questions)
                 .AsSplitQuery()
@@ -122,6 +124,7 @@ namespace ServiceAcademy.Controllers
                 PhotoPath = program.PhotoPath,
                 Modules = program.Modules.ToList(),
                 Quizzes = program.Quizzes.ToList(),
+                Activities = program.Activities.ToList(),
                 Enrollment = _context.Enrollment
                                  .Where(e => e.TraineeId == userId && e.ProgramId == programId)
                                  .Include(e => e.ProgramsModel)
@@ -150,13 +153,13 @@ namespace ServiceAcademy.Controllers
             }
 
             // Check for an existing quiz result for this enrollment and quiz
-            var quizResult = _context.StudentQuizResults
+            var quizResult = _context.TraineeQuizResults
                 .FirstOrDefault(sqr => sqr.QuizId == quizId && sqr.EnrollmentId == enrollment.EnrollmentId);
 
             if (quizResult != null)
             {
                 // Redirect to QuizResult using the StudentQuizResultId
-                return RedirectToAction("QuizResult", "Assessment", new { resultId = quizResult.StudentQuizResultId });
+                return RedirectToAction("QuizResult", "Assessment", new { resultId = quizResult.TraineeQuizResultId });
             }
             else
             {

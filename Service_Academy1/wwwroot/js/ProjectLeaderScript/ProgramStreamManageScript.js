@@ -42,6 +42,7 @@ $(document).ready(function () {
                             '<td>' + grade.quizTitle + '</td>' +
                             '<td>' + grade.rawScore + '</td>' +
                             '<td>' + grade.totalScore + '</td>' +
+                            '<td>' + grade.retries + '</td>' +
                             '<td>' + grade.computedScore + '</td>' +
                             '<td>' + grade.remarks + '</td>' +
                             '</tr>';
@@ -53,6 +54,30 @@ $(document).ready(function () {
             },
             error: function () {
                 alert('Error fetching grade data.');
+            }
+        });
+        $.ajax({
+            url: '/ProjectLeader/GetTraineeActivities', // Action URL for activities
+            type: 'GET',
+            data: { enrollmentId: enrolleeId, programId: programId },
+            success: function (data) {
+                var activitiesTableBody = modal.find('#activitiesTableBody');
+                activitiesTableBody.empty(); // Clear existing rows
+
+                if (Array.isArray(data)) {
+                    data.forEach(function (activity) {
+                        var row = `<tr>
+                            <td>${activity.activityTitle}</td>
+                            <td>${activity.rawScore}</td>
+                            <td>${activity.totalScore}</td>
+                            <td>${activity.computedScore}</td>
+                        </tr>`;
+                        activitiesTableBody.append(row);
+                    });
+                }
+            },
+            error: function () {
+                alert('Error fetching activities data.');
             }
         });
     });

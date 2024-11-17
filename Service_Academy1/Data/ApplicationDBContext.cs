@@ -18,9 +18,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<QuizModel> Quizzes { get; set; }
     public DbSet<QuestionModel> Questions { get; set; }
     public DbSet<AnswerModel> Answers { get; set; }
-    public DbSet<StudentAnswerModel> StudentAnswers { get; set; }
-    public DbSet<StudentQuizResultModel> StudentQuizResults { get; set; }
-    public DbSet<StudentModuleResult> StudentModuleResults { get; set; }
+    public DbSet<ActivitiesModel> Activities { get; set; }
+    public DbSet<TraineeActivitiesModel> TraineeActivities { get; set; }
+    public DbSet<TraineeAnswerModel> TraineeAnswers { get; set; }
+    public DbSet<TraineeQuizResultModel> TraineeQuizResults { get; set; }
+    public DbSet<TraineeModuleResult> TraineeModuleResults { get; set; }
     public DbSet<AnnouncementModel> Announcemnets { get; set; }
     public DbSet<EvaluationCriteria> EvaluationCriteria { get; set; }
     public DbSet<EvaluationQuestionModel> EvaluationQuestions { get; set; }

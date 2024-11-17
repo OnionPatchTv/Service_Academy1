@@ -32,3 +32,38 @@ function filterPrograms() {
 // Add event listeners for the search input and filter changes
 document.querySelector(".search-container input").addEventListener("input", filterPrograms);
 document.querySelector("#filterAgenda").addEventListener("change", filterPrograms);
+function openSubmitActivityModal(activityId, title, description, totalScore) {
+    $('#activityIdInput').val(activityId);
+    $('#activityTitle').val(title);
+    $('#activityDirection').val(description);
+    $('#totalScore').text(totalScore);
+
+    // Clear previous inputs
+    $('#submissionLinkOrFile').val('');
+    $('#submissionFile').val('');
+
+    // Fetch existing submission details
+    $.get('/Assessment/GetSubmissionDetails', { activitiesId: activityId }, function (data) {
+        if (data && data.filePath) {
+            $('#submissionLinkOrFile').val(data.filePath);
+        }
+    }).fail(function () {
+        console.log("No existing submission found.");
+    });
+
+    // Fetch raw and computed scores
+    $.get('/Assessment/GetScores', { activitiesId: activityId }, function (data) {
+        if (data) {
+            $('#rawScore').text('Raw Score: ' + data.rawScore);
+            $('#computedScore').text('Computed Score: ' + data.computedScore);
+        } else {
+            $('#rawScore').text('Raw Score: 0');
+            $('#computedScore').text('Computed Score: 0');
+        }
+    }).fail(function () {
+        console.log("No scores found.");
+    });
+
+    $('#submitActivityModal').modal('show');
+}
+

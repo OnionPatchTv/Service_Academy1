@@ -447,3 +447,6 @@ body {
         opacity: 0.9;
         background-color: #cc5200;
     }
+.fa-check {
+    display: inline; /* Ensure it's visible */
+}

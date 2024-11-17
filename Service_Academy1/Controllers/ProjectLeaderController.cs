@@ -71,6 +71,9 @@ namespace ServiceAcademy.Controllers
             }
 
             var modules = _context.Modules.Where(m => m.ProgramId == programId).ToList();
+            var activities = _context.Activities.Where(a => a.ProgramId == programId)
+                                          .Include(a => a.TraineeActivities)
+                                           .ToList();
             var quizzes = _context.Quizzes.Where(q => q.ProgramId == programId)
                                            .Include(q => q.Questions)
                                            .ThenInclude(q => q.Answers)
@@ -87,6 +90,7 @@ namespace ServiceAcademy.Controllers
                 PhotoPath = program.PhotoPath,
                 Modules = modules,
                 Quizzes = quizzes,
+                Activities = activities,
                 IsArchived = programManagement?.IsArchived ?? false
             };
 
@@ -123,9 +127,26 @@ namespace ServiceAcademy.Controllers
 
             return View(enrolledTrainees);
         }
+        [HttpGet]
+        public IActionResult GetTraineeActivities(int enrollmentId, int programId)
+        {
+            var activities = _context.TraineeActivities
+                .Where(ta => ta.EnrollmentId == enrollmentId && ta.Activities.ProgramId == programId)
+                .Select(ta => new
+                {
+                    ActivityTitle = ta.Activities.ActivitiesTitle,
+                    RawScore = ta.RawScore,
+                    TotalScore = ta.Activities.TotalScore,
+                    ComputedScore = ta.ComputedScore,
+                })
+                .ToList();
+
+            return Json(activities);
+        }
+
         public async Task<IActionResult> GetGrades(int enrollmentId, int programId)
         {
-            var grades = await _context.StudentQuizResults
+            var grades = await _context.TraineeQuizResults
                 .Where(sqr => sqr.EnrollmentId == enrollmentId && sqr.Quiz.ProgramId == programId)
                 .Include(sqr => sqr.Quiz)
                 .Select(sqr => new
@@ -133,6 +154,7 @@ namespace ServiceAcademy.Controllers
                     QuizTitle = sqr.Quiz.QuizTitle,
                     RawScore = sqr.RawScore,
                     TotalScore = sqr.TotalScore,
+                    Retries = sqr.Retries,
                     ComputedScore = sqr.ComputedScore,
                     Remarks = sqr.Remarks
                 })
@@ -245,8 +267,8 @@ namespace ServiceAcademy.Controllers
                 foreach (var quiz in quizzes)
                 {
                     // Remove associated StudentQuizResults
-                    var studentQuizResults = _context.StudentQuizResults.Where(sqr => sqr.QuizId == quiz.QuizId).ToList();
-                    _context.StudentQuizResults.RemoveRange(studentQuizResults);
+                    var studentQuizResults = _context.TraineeQuizResults.Where(sqr => sqr.QuizId == quiz.QuizId).ToList();
+                    _context.TraineeQuizResults.RemoveRange(studentQuizResults);
 
                     // Remove associated Questions and Answers
                     var questions = _context.Questions.Where(q => q.QuizId == quiz.QuizId).ToList();
@@ -300,7 +322,7 @@ namespace ServiceAcademy.Controllers
             var moduleTitle = $"Module {moduleNumber}: {title}";
 
             // Save the file
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+            var uploads = Path.Combine(_environment.WebRootPath, "ModuleUploads");
             var filePath = Path.Combine(uploads, file.FileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
@@ -312,7 +334,7 @@ namespace ServiceAcademy.Controllers
             {
                 ProgramId = programId,
                 Title = moduleTitle,
-                FilePath = "/uploads/" + file.FileName
+                FilePath = "/ModuleUploads/" + file.FileName
             };
 
             _context.Modules.Add(module);
@@ -338,7 +360,7 @@ namespace ServiceAcademy.Controllers
             // Optionally update file if provided
             if (file != null && file.Length > 0)
             {
-                var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+                var uploads = Path.Combine(_environment.WebRootPath, "ModuleUploads");
                 var filePath = Path.Combine(uploads, file.FileName);
 
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -346,7 +368,7 @@ namespace ServiceAcademy.Controllers
                     await file.CopyToAsync(fileStream);
                 }
 
-                module.FilePath = "/uploads/" + file.FileName;
+                module.FilePath = "/ModuleUploads/" + file.FileName;
             }
 
             await _context.SaveChangesAsync();

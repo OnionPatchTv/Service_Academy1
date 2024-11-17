@@ -150,7 +150,7 @@ namespace Service_Academy1.Controllers
             programManagement.IsApproved = "Approved";
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("ManageProgram");
+            return RedirectToAction("CoordManageProgram");
         }
 
         // Deny Program Action
@@ -171,7 +171,7 @@ namespace Service_Academy1.Controllers
             programManagement.ReasonForDenial = reasonForDenial;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("ManageProgram");
+            return RedirectToAction("CoordManageProgram");
         }
     }
 }

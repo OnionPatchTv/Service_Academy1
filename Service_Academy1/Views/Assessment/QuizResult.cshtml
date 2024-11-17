@@ -1,4 +1,4 @@
-﻿@model Service_Academy1.Models.StudentQuizResultModel
+﻿@model Service_Academy1.Models.TraineeQuizResultModel
 
 @{
     ViewData["Title"] = "Student Quiz Result";
@@ -22,7 +22,7 @@
 }
 
 <div class="breadcrumb">
-    <a href="@Url.Action("MyLearningStream", "Student", new { programId = ViewBag.ProgramId })">ViewBag.ProgramTitle</a>
+    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = ViewBag.ProgramId })">@ViewBag.ProgramTitle</a>
     <span class="separator">&gt;</span>
     <span>Student Quiz Result</span>
 </div>
@@ -39,9 +39,9 @@
 
     <h4>Your Answers</h4>
     <ul>
-        @if (Model.StudentAnswers != null && Model.StudentAnswers.Any())
+        @if (Model.TraineeAnswers != null && Model.TraineeAnswers.Any())
         {
-            @foreach (var answer in Model.StudentAnswers)
+            @foreach (var answer in Model.TraineeAnswers)
             {
                 @if (answer?.Question != null)
                 {

@@ -1,0 +1,53 @@
+﻿@model ActivityViewModel
+
+@{
+    ViewData["Title"] = "View Activity";
+}
+
+<h2>@Model.Activity.ActivitiesTitle</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Trainee Name</th>
+            <th>File Path</th>
+            <th>Raw Score</th>
+            <th>Total Score Achievable</th>
+            <th>Computed Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var traineeActivity in Model.TraineeActivities)
+        {
+            <tr>
+                <td>@traineeActivity.Enrollment.currentTrainee.UserName</td>
+                <td>
+                    @if (Uri.IsWellFormedUriString(traineeActivity.FilePath, UriKind.Absolute))
+                    {
+                        <!-- Link to external URL -->
+                        <a href="@traineeActivity.FilePath" target="_blank">
+                            View Submitted Link
+                        </a>
+                    }
+                    else
+                    {
+                        <!-- Link to ViewSubmission action -->
+                        <a href="@Url.Action("ViewSubmission", "Assessment", new { filePath = traineeActivity.FilePath })" target="_blank">
+                            View Submitted Document
+                        </a>
+                    }
+                </td>
+                <td>
+                    <form method="post" action="@Url.Action("UpdateRawScore", "Assessment")">
+                        <input type="hidden" name="traineeActivityId" value="@traineeActivity.TraineeActivityId" />
+                        <input type="number" name="rawScore" value="@traineeActivity.RawScore" class="form-control" style="width: 80px; display: inline;" />
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                </td>
+                <td>@Model.Activity.TotalScore</td>
+                <td>@traineeActivity.ComputedScore</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

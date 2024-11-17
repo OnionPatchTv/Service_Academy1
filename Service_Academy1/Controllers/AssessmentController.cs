@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service_Academy1.Models;
+using Microsoft.AspNetCore.StaticFiles;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -10,13 +11,15 @@ namespace ServiceAcademy.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
-        public AssessmentController(ILogger<HomeController> logger, ApplicationDbContext context)
+        private readonly IWebHostEnvironment _environment;
+        public AssessmentController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _logger = logger;
             _context = context;
+            _environment = environment;
         }
         [HttpPost]
-        public IActionResult Create(QuizModel quizModel, int NumberOfQuestions, int ProgramId)
+        public IActionResult CreateQuiz(QuizModel quizModel, int NumberOfQuestions, int ProgramId)
         {
             // Check if ProgramId exists
             var programExists = _context.Programs.Any(p => p.ProgramId == ProgramId);
@@ -36,6 +39,55 @@ namespace ServiceAcademy.Controllers
             // Redirect to the CreateAssessment view, passing the NumberOfQuestions
             return RedirectToAction("CreateAssessment", new { id = quizModel.QuizId, numberOfQuestions = NumberOfQuestions });
         }
+        [HttpPost]
+        public IActionResult CreateActivity(ActivitiesModel activityModel, int ProgramId)
+        {
+            // Check if ProgramId exists
+            var programExists = _context.Programs.Any(p => p.ProgramId == ProgramId);
+            if (!programExists)
+            {
+                ModelState.AddModelError("", "The selected ProgramId does not exist.");
+                return RedirectToAction("ProgramStream", "ProjectLeader", new { id = ProgramId });
+            }
+
+            // Set the ProgramId in the ActivitiesModel
+            activityModel.ProgramId = ProgramId;
+
+            // Add created date in UTC format
+            activityModel.CreatedAt = DateTime.UtcNow;
+
+            // Save the ActivitiesModel to the database
+            _context.Activities.Add(activityModel);
+            _context.SaveChanges();
+
+            // Redirect back to ProgramStream page
+            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = ProgramId });
+        }
+
+        public IActionResult ViewActivity(int activitiesId)
+        {
+            // Fetch the activity along with the enrolled trainees' activities
+            var activity = _context.Activities
+                .Include(a => a.TraineeActivities)
+                .ThenInclude(ta => ta.Enrollment)
+                .ThenInclude(e => e.currentTrainee)
+                .FirstOrDefault(a => a.ActivitiesId == activitiesId);
+
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            // Create a ViewModel to pass the data to the view
+            var viewModel = new ActivityViewModel
+            {
+                Activity = activity,
+                TraineeActivities = activity.TraineeActivities.ToList()
+            };
+
+            return View(viewModel);
+        }
+
         public IActionResult CreateAssessment(int id, int numberOfQuestions)
         {
             var quiz = _context.Quizzes.Find(id);
@@ -108,7 +160,7 @@ namespace ServiceAcademy.Controllers
 
             if (enrollment == null) return Unauthorized("You are not enrolled in this program.");
 
-            var result = await _context.StudentQuizResults
+            var result = await _context.TraineeQuizResults
                 .FirstOrDefaultAsync(r => r.QuizId == quizId && r.EnrollmentId == enrollment.EnrollmentId);
 
             if (result != null)
@@ -116,7 +168,7 @@ namespace ServiceAcademy.Controllers
                 if (result.Remarks == "Pass")
                 {
                     TempData["QuizErrorMessage"] = "You passed and cannot retake this quiz.";
-                    return RedirectToAction("QuizResult", new { resultId = result.StudentQuizResultId });
+                    return RedirectToAction("QuizResult", new { resultId = result.TraineeQuizResultId });
                 }
                 else if (result.Retries >= 3)
                 {
@@ -125,7 +177,7 @@ namespace ServiceAcademy.Controllers
                     await _context.SaveChangesAsync();
 
                     TempData["QuizErrorMessage"] = "Retry limit reached. Final result recorded.";
-                    return RedirectToAction("QuizResult", new { resultId = result.StudentQuizResultId });
+                    return RedirectToAction("QuizResult", new { resultId = result.TraineeQuizResultId });
                 }
             }
 
@@ -154,26 +206,26 @@ namespace ServiceAcademy.Controllers
 
             if (enrollment == null) return BadRequest("Invalid Enrollment.");
 
-            var result = await _context.StudentQuizResults
-                .Include(r => r.StudentAnswers) // Include existing answers for updating
+            var result = await _context.TraineeQuizResults
+                .Include(r => r.TraineeAnswers) // Include existing answers for updating
                 .FirstOrDefaultAsync(r => r.QuizId == quizId && r.EnrollmentId == enrollment.EnrollmentId);
 
             if (result == null)
             {
-                result = new StudentQuizResultModel
+                result = new TraineeQuizResultModel
                 {
                     QuizId = quizId,
                     EnrollmentId = enrollmentId,
                     Retries = 0, // Set retries count
                 };
-                _context.StudentQuizResults.Add(result);
+                _context.TraineeQuizResults.Add(result);
             }
 
             int rawScore = 0;
 
             foreach (var question in quiz.Questions)
             {
-                var existingAnswer = result.StudentAnswers.FirstOrDefault(sa => sa.QuestionId == question.QuestionId);
+                var existingAnswer = result.TraineeAnswers.FirstOrDefault(sa => sa.QuestionId == question.QuestionId);
 
                 // Normalize answers (convert to lowercase for case-insensitive comparison)
                 var studentAnswerNormalized = answers.ContainsKey(question.QuestionId) ? answers[question.QuestionId].Trim().ToLower() : string.Empty;
@@ -192,7 +244,7 @@ namespace ServiceAcademy.Controllers
                 else
                 {
                     // Add new answer if not existing
-                    result.StudentAnswers.Add(new StudentAnswerModel
+                    result.TraineeAnswers.Add(new TraineeAnswerModel
                     {
                         QuestionId = question.QuestionId,
                         Answer = studentAnswerNormalized,
@@ -218,19 +270,19 @@ namespace ServiceAcademy.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("QuizResult", new { resultId = result.StudentQuizResultId });
+            return RedirectToAction("QuizResult", new { resultId = result.TraineeQuizResultId });
         }
 
         public async Task<IActionResult> QuizResult(int resultId)
         {
             // Ensure we include the Quiz along with StudentAnswers and related Questions
-            var result = await _context.StudentQuizResults
-                .Include(r => r.StudentAnswers)
+            var result = await _context.TraineeQuizResults
+                .Include(r => r.TraineeAnswers)
                     .ThenInclude(sa => sa.Question) // Include the related questions for each answer
                 .Include(r => r.Quiz)// Ensure the Quiz is included here
                 .ThenInclude(q => q.ProgramsModel)
                 .AsSplitQuery()
-                .FirstOrDefaultAsync(r => r.StudentQuizResultId == resultId);
+                .FirstOrDefaultAsync(r => r.TraineeQuizResultId == resultId);
 
             if (result == null)
             {
@@ -259,8 +311,8 @@ namespace ServiceAcademy.Controllers
                 var programId = quiz.ProgramId;  // Get the ProgramId associated with the quiz
 
                 // Remove related StudentQuizResults
-                var studentQuizResults = _context.StudentQuizResults.Where(sqr => sqr.QuizId == quizId).ToList();
-                _context.StudentQuizResults.RemoveRange(studentQuizResults);
+                var studentQuizResults = _context.TraineeQuizResults.Where(sqr => sqr.QuizId == quizId).ToList();
+                _context.TraineeQuizResults.RemoveRange(studentQuizResults);
 
                 // Remove associated Questions and Answers
                 var questions = _context.Questions.Where(q => q.QuizId == quizId).ToList();
@@ -338,8 +390,8 @@ namespace ServiceAcademy.Controllers
             // Update StudentQuizResults based on the updated questions
             if (updatedQuestionIds.Any())
             {
-                var affectedResults = _context.StudentQuizResults
-                    .Include(r => r.StudentAnswers)
+                var affectedResults = _context.TraineeQuizResults
+                    .Include(r => r.TraineeAnswers)
                     .Where(r => r.QuizId == updatedQuiz.QuizId)
                     .ToList();
 
@@ -347,7 +399,7 @@ namespace ServiceAcademy.Controllers
                 {
                     int rawScore = 0;
 
-                    foreach (var studentAnswer in result.StudentAnswers)
+                    foreach (var studentAnswer in result.TraineeAnswers)
                     {
                         if (updatedQuestionIds.Contains(studentAnswer.QuestionId))
                         {
@@ -371,8 +423,8 @@ namespace ServiceAcademy.Controllers
 
                     // Recompute the score
                     result.RawScore = rawScore;
-                    result.TotalScore = result.StudentAnswers.Count;
-                    result.ComputedScore = Math.Round(((double)rawScore / result.TotalScore) * 63.5 + 37.5, 2);
+                    result.TotalScore = result.TraineeAnswers.Count;
+                    result.ComputedScore = Math.Round(((double)rawScore / result.TotalScore) * 62.5 + 37.5, 2);
                     result.Remarks = result.ComputedScore >= 50 ? "Pass" : "Fail";
                 }
 
@@ -381,6 +433,212 @@ namespace ServiceAcademy.Controllers
 
             TempData["SuccessMessage"] = "Quiz and student results updated successfully!";
             return RedirectToAction("ViewQuiz", new { quizId = updatedQuiz.QuizId });
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateActivity(int activitiesId, string activitiesTitle, string activityDirection, int totalScore)
+        {
+            var activity = await _context.Activities.FindAsync(activitiesId);
+            if (activity == null)
+            {
+                TempData["Error"] = "Activity not found.";
+                return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+            }
+
+            // Update activity details
+            activity.ActivitiesTitle = activitiesTitle;
+            activity.ActivityDirection = activityDirection;
+            activity.TotalScore = totalScore;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Activity updated successfully.";
+            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteActivity(int activitiesId)
+        {
+            var activity = await _context.Activities
+                          .Include(a => a.TraineeActivities)
+                           .FirstOrDefaultAsync(a => a.ActivitiesId == activitiesId);
+
+            if (activity == null)
+            {
+                TempData["Error"] = "Activity not found.";
+                return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+            }
+
+            // Delete the activity
+            _context.Activities.Remove(activity);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Activity and its Corresponding Data are Deleted Successfully.";
+            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+        }
+
+        [HttpGet]
+        public IActionResult GetSubmissionDetails(int activitiesId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var submission = _context.TraineeActivities
+                                     .FirstOrDefault(ta => ta.ActivitiesId == activitiesId && ta.Enrollment.TraineeId == currentUserId);
+
+            if (submission == null)
+            {
+                return NotFound();
+            }
+
+            return Json(new { submission.FilePath });
+        }
+
+        public async Task<IActionResult> SubmitActivity(int activitiesId, string submissionLink, IFormFile? submissionFile)
+        {
+            // Retrieve the activity and validate
+            var activity = _context.Activities.Include(a => a.ProgramsModel)
+                                              .FirstOrDefault(a => a.ActivitiesId == activitiesId);
+            if (activity == null)
+            {
+                return BadRequest("Activity not found.");
+            }
+
+            // Retrieve the enrollment record for the current trainee
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assuming you're using ASP.NET Identity
+            var enrollment = _context.Enrollment.FirstOrDefault(e => e.ProgramId == activity.ProgramId && e.TraineeId == currentUserId);
+
+            if (enrollment == null)
+            {
+                return BadRequest("You are not enrolled in this program.");
+            }
+
+            // Check if a submission already exists
+            var existingSubmission = _context.TraineeActivities
+                                             .FirstOrDefault(ta => ta.ActivitiesId == activitiesId && ta.EnrollmentId == enrollment.EnrollmentId);
+
+            string filePath = string.Empty;
+
+            // Upload new file if provided
+            if (submissionFile != null)
+            {
+                string fileName = $"{Path.GetFileNameWithoutExtension(submissionFile.FileName)}_{DateTime.UtcNow:yyyyMMddHHmmss}{Path.GetExtension(submissionFile.FileName)}";
+                filePath = Path.Combine("ActivityUploads", fileName); // Relative path
+                string fullPath = Path.Combine(_environment.WebRootPath, filePath); // Absolute path
+
+                using (var fileStream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await submissionFile.CopyToAsync(fileStream);
+                }
+            }
+
+            if (existingSubmission != null)
+            {
+                // Update existing submission
+                existingSubmission.FilePath = !string.IsNullOrEmpty(filePath) ? filePath : submissionLink;
+                existingSubmission.SubmittedAt = DateTime.UtcNow;
+                _context.TraineeActivities.Update(existingSubmission);
+            }
+            else
+            {
+                // Create a new TraineeActivities record
+                var traineeActivity = new TraineeActivitiesModel
+                {
+                    ActivitiesId = activitiesId,
+                    EnrollmentId = enrollment.EnrollmentId, // Link to the correct enrollment
+                    FilePath = !string.IsNullOrEmpty(filePath) ? filePath : submissionLink,
+                    RawScore = 0,
+                    ComputedScore = 0,
+                    IsCompleted = true,
+                    SubmittedAt = DateTime.UtcNow
+                };
+
+                _context.TraineeActivities.Add(traineeActivity);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("MyLearningStream", "Trainee", new { programId = activity.ProgramId });
+        }
+        [HttpGet]
+        public IActionResult GetScores(int activitiesId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var submission = _context.TraineeActivities
+                                     .FirstOrDefault(ta => ta.ActivitiesId == activitiesId && ta.Enrollment.TraineeId == currentUserId);
+
+            if (submission == null)
+            {
+                return Json(new { rawScore = 0, computedScore = 0 });
+            }
+
+            return Json(new { rawScore = submission.RawScore, computedScore = submission.ComputedScore });
+        }
+
+        [HttpPost]
+        public IActionResult UpdateRawScore(int traineeActivityId, int rawScore)
+        {
+            // Fetch the specific TraineeActivity record
+            var traineeActivity = _context.TraineeActivities
+                .Include(t => t.Activities) // Ensure the related Activity is included
+                .FirstOrDefault(t => t.TraineeActivityId == traineeActivityId);
+
+            if (traineeActivity == null)
+            {
+                return NotFound("Trainee activity not found.");
+            }
+
+            // Update the Raw Score
+            traineeActivity.RawScore = rawScore;
+
+            // Recalculate the Computed Score
+            if (traineeActivity.Activities != null)
+            {
+                double totalScore = traineeActivity.Activities.TotalScore;
+                traineeActivity.ComputedScore = (int)Math.Round(((double)rawScore / totalScore) * 62.5 + 37.5);
+            }
+
+            // Save changes to the database
+            _context.SaveChanges();
+
+            // Redirect back to the activity view
+            return RedirectToAction("ViewActivity", new { activitiesId = traineeActivity.ActivitiesId });
+        }
+        public IActionResult ViewSubmission(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return NotFound("File path is missing.");
+            }
+
+            // Resolve the absolute path based on your hosting environment
+            string absolutePath = Path.Combine(_environment.WebRootPath, filePath);
+
+            // Validate if the file exists
+            if (!System.IO.File.Exists(absolutePath))
+            {
+                return NotFound("File not found.");
+            }
+
+            string extension = Path.GetExtension(absolutePath).ToLower();
+
+            if (extension == ".pdf")
+            {
+                // Serve PDF files
+                var fileBytes = System.IO.File.ReadAllBytes(absolutePath);
+                return File(fileBytes, "application/pdf");
+            }
+            else if (extension == ".txt" || extension == ".html")
+            {
+                // Serve text or HTML files
+                string content = System.IO.File.ReadAllText(absolutePath);
+                return Content(content, extension == ".html" ? "text/html" : "text/plain");
+            }
+            else if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+            {
+                // Serve image files
+                var fileBytes = System.IO.File.ReadAllBytes(absolutePath);
+                return File(fileBytes, $"image/{extension.TrimStart('.')}");
+            }
+
+            // Fallback for unsupported types
+            return BadRequest("Unsupported file type.");
         }
 
     }

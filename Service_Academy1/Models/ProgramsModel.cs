@@ -35,6 +35,7 @@ namespace Service_Academy1.Models
         public virtual ICollection<EnrollmentModel> Enrollments { get; set; } = new List<EnrollmentModel>();
         public virtual ICollection<ModuleModel> Modules { get; set; } = new List<ModuleModel>();
         public virtual ICollection<QuizModel> Quizzes { get; set; } = new List<QuizModel>();
+        public virtual ICollection<ActivitiesModel> Activities { get; set; } = new List<ActivitiesModel>();
         public virtual ICollection<EvaluationQuestionModel> EvaluationQuestions { get; set; } = new List<EvaluationQuestionModel>();
     }
 

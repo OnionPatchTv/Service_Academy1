@@ -80,8 +80,9 @@
         </section>
 
         <div class="button-container">
-            <button type="button" class="upload-module" data-toggle="modal" data-target="#uploadModuleModal" @(Model.IsArchived ? "disabled" : "")>Upload Module</button>
+            <button type="button" class="btn upload-module" data-toggle="modal" data-target="#uploadModuleModal" @(Model.IsArchived ? "disabled" : "")>Upload Module</button>
             <button type="button" class="btn create-assessment" data-toggle="modal" data-target="#createAssessmentModal" @(Model.IsArchived ? "disabled" : "")>Create Assessment</button>
+            <button type="button" class="btn create-activity" data-toggle="modal" data-target="#createActivityModal" @(Model.IsArchived ? "disabled" : "")>Create Activity</button>
             <!-- View Program Evaluation Button -->
             <a asp-controller="Evaluation" asp-action="EvaluationResults" asp-route-programId="@Model.ProgramId" class="btn btn-primary">View Program Evaluation</a>
         </div>
@@ -98,8 +99,8 @@
                             <button class="module-title" onclick="loadModuleContent('@module.FilePath')">
                                 @module.Title
                                 <!-- Action icons inside the button -->
-                                <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title')" title="Update"></i>
-                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title')" title="Delete"></i>
+                                <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Update"></i>
+                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
                             </button>
                         </div>
                     }
@@ -110,6 +111,16 @@
                 {
                     <button class="quiz-title" onclick="location.href='@Url.Action("ViewQuiz", "Assessment", new { quizId = quiz.QuizId })'">@quiz.QuizTitle</button>
                 }
+                <h3>Activities</h3>
+                @foreach (var activity in Model.Activities)
+                {
+                    <button class="activity-title" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
+                        @activity.ActivitiesTitle
+                        <i class="fa fa-edit update-module-btn" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
+                        <i class="fa fa-trash delete-module-btn" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
+                    </button>
+                }
+
             </aside>
 
             <section class="module-viewer">
@@ -204,7 +215,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Create Assessment Modal -->
         <div class="modal fade" id="createAssessmentModal" tabindex="-1" aria-labelledby="createAssessmentModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -214,7 +224,7 @@
                             <h5 class="modal-title" id="createAssessmentModalLabel">Create Assessment</h5>
                             <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
-                        <form id="createAssessmentForm" asp-action="Create" asp-controller="Assessment" method="post">
+                        <form id="createAssessmentForm" asp-action="CreateQuiz" asp-controller="Assessment" method="post">
                             <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
                             <div class="modal-body">
                                 <div class="form-group">
@@ -239,5 +249,100 @@
                 </div>
             </div>
         </div>
+        <!-- Create Activity Modal -->
+        <div class="modal fade" id="createActivityModal" tabindex="-1" aria-labelledby="createActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div id="modalForm" class="modal-form">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createActivityModalLabel">Create Activity</h5>
+                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
+                        <form id="createActivityForm" asp-action="CreateActivity" asp-controller="Assessment" method="post">
+                            <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="activityTitle">Activity Title</label>
+                                    <input type="text" class="form-control" id="activityTitle" name="ActivitiesTitle" placeholder="Enter activity title" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="activityDirection">Activity Direction</label>
+                                    <textarea class="form-control" id="activityDirection" name="ActivityDirection" placeholder="Provide directions for the activity" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="totalScore">Total Score</label>
+                                    <input type="number" class="form-control" id="totalScore" name="TotalScore" placeholder="Set the total score" min="1" required />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btnYes">Save Activity</button>
+                                <button type="button" class="btnNo" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Update Activity Modal -->
+        <div class="modal fade" id="updateActivityModal" tabindex="-1" aria-labelledby="updateActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div id="modalForm" class="modal-form">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="updateActivityModalLabel">Update Activity</h5>
+                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
+                        <form asp-action="UpdateActivity" asp-controller="Assessment" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" id="activitiesIdInput" name="activitiesId" />
+                                <div class="form-group">
+                                    <label for="activityTitleInput">Activity Title</label>
+                                    <input type="text" class="form-control" id="activityTitleInput" name="ActivitiesTitle" required />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="activityDescriptionInput">Activity Description</label>
+                                    <textarea class="form-control" id="activityDescriptionInput" name="ActivityDirection" required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="activityScoreInput">Total Score</label>
+                                    <input type="number" class="form-control" id="activityScoreInput" name="TotalScore" min="1" required />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btnYes">Update Activity</button>
+                                <button type="button" class="btnNo" data-bs-dismiss="modal">No</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Activity Modal -->
+        <div class="modal fade" id="deleteActivityModal" tabindex="-1" aria-labelledby="deleteActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div id="modalForm" class="modal-form">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteActivityModalLabel">Delete Activity</h5>
+                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                        </div>
+                        <form method="post" action="@Url.Action("DeleteActivity", "Assessment")">
+                            <input type="hidden" name="activitiesId" />
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete this activity? Once deleted, you cannot undo this action.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btnYes">Yes</button>
+                                <button type="button" class="btnNo" data-bs-dismiss="modal">No</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 </div>
