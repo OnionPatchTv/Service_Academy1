@@ -14,10 +14,9 @@ namespace ServiceAcademy.Controllers
         private readonly IWebHostEnvironment _environment;
         public AssessmentController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
         {
-            _logger = logger;
-            _context = context;
-            _environment = environment;
+            (_logger, _context, _environment) = (logger, context, environment);
         }
+        #region Quiz Management
         [HttpPost]
         public IActionResult CreateQuiz(QuizModel quizModel, int NumberOfQuestions, int ProgramId)
         {
@@ -39,55 +38,6 @@ namespace ServiceAcademy.Controllers
             // Redirect to the CreateAssessment view, passing the NumberOfQuestions
             return RedirectToAction("CreateAssessment", new { id = quizModel.QuizId, numberOfQuestions = NumberOfQuestions });
         }
-        [HttpPost]
-        public IActionResult CreateActivity(ActivitiesModel activityModel, int ProgramId)
-        {
-            // Check if ProgramId exists
-            var programExists = _context.Programs.Any(p => p.ProgramId == ProgramId);
-            if (!programExists)
-            {
-                ModelState.AddModelError("", "The selected ProgramId does not exist.");
-                return RedirectToAction("ProgramStream", "ProjectLeader", new { id = ProgramId });
-            }
-
-            // Set the ProgramId in the ActivitiesModel
-            activityModel.ProgramId = ProgramId;
-
-            // Add created date in UTC format
-            activityModel.CreatedAt = DateTime.UtcNow;
-
-            // Save the ActivitiesModel to the database
-            _context.Activities.Add(activityModel);
-            _context.SaveChanges();
-
-            // Redirect back to ProgramStream page
-            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = ProgramId });
-        }
-
-        public IActionResult ViewActivity(int activitiesId)
-        {
-            // Fetch the activity along with the enrolled trainees' activities
-            var activity = _context.Activities
-                .Include(a => a.TraineeActivities)
-                .ThenInclude(ta => ta.Enrollment)
-                .ThenInclude(e => e.currentTrainee)
-                .FirstOrDefault(a => a.ActivitiesId == activitiesId);
-
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            // Create a ViewModel to pass the data to the view
-            var viewModel = new ActivityViewModel
-            {
-                Activity = activity,
-                TraineeActivities = activity.TraineeActivities.ToList()
-            };
-
-            return View(viewModel);
-        }
-
         public IActionResult CreateAssessment(int id, int numberOfQuestions)
         {
             var quiz = _context.Quizzes.Find(id);
@@ -143,6 +93,143 @@ namespace ServiceAcademy.Controllers
             ViewBag.ProgramTitle = quiz.ProgramsModel.Title;
             return View(quiz); // Pass the quiz model to the view
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteQuiz(int quizId)
+        {
+            var quiz = await _context.Quizzes
+                                     .FirstOrDefaultAsync(q => q.QuizId == quizId);
+
+            if (quiz != null)
+            {
+                var programId = quiz.ProgramId;  // Get the ProgramId associated with the quiz
+
+                // Remove related StudentQuizResults
+                var studentQuizResults = _context.TraineeQuizResults.Where(sqr => sqr.QuizId == quizId).ToList();
+                _context.TraineeQuizResults.RemoveRange(studentQuizResults);
+
+                // Remove associated Questions and Answers
+                var questions = _context.Questions.Where(q => q.QuizId == quizId).ToList();
+                foreach (var question in questions)
+                {
+                    var answers = _context.Answers.Where(a => a.QuestionId == question.QuestionId).ToList();
+                    _context.Answers.RemoveRange(answers);
+                }
+                _context.Questions.RemoveRange(questions);
+
+                // Finally, remove the quiz itself
+                _context.Quizzes.Remove(quiz);
+                await _context.SaveChangesAsync();
+
+                TempData["Message"] = "Quiz and its related data deleted successfully.";
+
+                // Store the ProgramId in TempData
+                TempData["ProgramId"] = programId;
+
+                // Redirect to the ProgramStream view for the related ProgramId
+                return RedirectToAction("ProgramStream", "ProjectLeader");
+            }
+            else
+            {
+                TempData["Error"] = "Quiz not found.";
+                return RedirectToAction("ProgramStream", "ProjectLeader");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateQuiz(QuizModel updatedQuiz, List<QuestionModel> updatedQuestions)
+        {
+            var existingQuiz = await _context.Quizzes
+                                              .Include(q => q.Questions)
+                                              .ThenInclude(q => q.Answers)
+                                              .AsSplitQuery()
+                                              .FirstOrDefaultAsync(q => q.QuizId == updatedQuiz.QuizId);
+
+            if (existingQuiz == null)
+            {
+                return NotFound("Quiz not found.");
+            }
+
+            // Update Quiz title and description
+            existingQuiz.QuizTitle = updatedQuiz.QuizTitle;
+            existingQuiz.QuizDirection = updatedQuiz.QuizDirection;
+
+            List<int> updatedQuestionIds = new List<int>();
+
+            // Update Questions and Answers
+            foreach (var updatedQuestion in updatedQuestions)
+            {
+                var existingQuestion = existingQuiz.Questions.FirstOrDefault(q => q.QuestionId == updatedQuestion.QuestionId);
+                if (existingQuestion != null)
+                {
+                    if (existingQuestion.CorrectAnswer != updatedQuestion.CorrectAnswer)
+                    {
+                        // Track the question if the correct answer changed
+                        updatedQuestionIds.Add(existingQuestion.QuestionId);
+                    }
+
+                    existingQuestion.Question = updatedQuestion.Question;
+                    existingQuestion.CorrectAnswer = updatedQuestion.CorrectAnswer;
+
+                    var existingAnswer = existingQuestion.Answers.FirstOrDefault();
+                    if (existingAnswer != null)
+                    {
+                        existingAnswer.Answer = updatedQuestion.CorrectAnswer;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Update StudentQuizResults based on the updated questions
+            if (updatedQuestionIds.Any())
+            {
+                var affectedResults = _context.TraineeQuizResults
+                    .Include(r => r.TraineeAnswers)
+                    .Where(r => r.QuizId == updatedQuiz.QuizId)
+                    .ToList();
+
+                foreach (var result in affectedResults)
+                {
+                    int rawScore = 0;
+
+                    foreach (var studentAnswer in result.TraineeAnswers)
+                    {
+                        if (updatedQuestionIds.Contains(studentAnswer.QuestionId))
+                        {
+                            var correctAnswer = _context.Questions
+                                .Where(q => q.QuestionId == studentAnswer.QuestionId)
+                                .Select(q => q.CorrectAnswer)
+                                .FirstOrDefault();
+
+                            studentAnswer.IsCorrect = studentAnswer.Answer == correctAnswer;
+
+                            if (studentAnswer.IsCorrect)
+                            {
+                                rawScore++;
+                            }
+                        }
+                        else if (studentAnswer.IsCorrect)
+                        {
+                            rawScore++;
+                        }
+                    }
+
+                    // Recompute the score
+                    result.RawScore = rawScore;
+                    result.TotalScore = result.TraineeAnswers.Count;
+                    result.ComputedScore = Math.Round(((double)rawScore / result.TotalScore) * 62.5 + 37.5, 2);
+                    result.Remarks = result.ComputedScore >= 50 ? "Pass" : "Fail";
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            TempData["SuccessMessage"] = "Quiz and student results updated successfully!";
+            return RedirectToAction("ViewQuiz", new { quizId = updatedQuiz.QuizId });
+        }
+        #endregion
+
+        #region Student Quiz Management
         public async Task<IActionResult> StudentQuizView(int quizId)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -154,7 +241,7 @@ namespace ServiceAcademy.Controllers
                 .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
             if (quiz == null) return NotFound("Quiz not found.");
-          
+
             var enrollment = await _context.Enrollment
                 .FirstOrDefaultAsync(e => e.TraineeId == currentUserId && e.ProgramId == quiz.ProgramId);
 
@@ -296,143 +383,60 @@ namespace ServiceAcademy.Controllers
                 return NotFound("Quiz information not found.");
             }
             var program = result.Quiz.ProgramsModel;
-            ViewBag.ProgramTitle = program.Title; 
+            ViewBag.ProgramTitle = program.Title;
             ViewBag.ProgramId = program.ProgramId;
             return View(result);
         }
+        #endregion
+
+        #region Activiy Management
         [HttpPost]
-        public async Task<IActionResult> DeleteQuiz(int quizId)
+        public IActionResult CreateActivity(ActivitiesModel activityModel, int ProgramId)
         {
-            var quiz = await _context.Quizzes
-                                     .FirstOrDefaultAsync(q => q.QuizId == quizId);
-
-            if (quiz != null)
+            // Check if ProgramId exists
+            var programExists = _context.Programs.Any(p => p.ProgramId == ProgramId);
+            if (!programExists)
             {
-                var programId = quiz.ProgramId;  // Get the ProgramId associated with the quiz
-
-                // Remove related StudentQuizResults
-                var studentQuizResults = _context.TraineeQuizResults.Where(sqr => sqr.QuizId == quizId).ToList();
-                _context.TraineeQuizResults.RemoveRange(studentQuizResults);
-
-                // Remove associated Questions and Answers
-                var questions = _context.Questions.Where(q => q.QuizId == quizId).ToList();
-                foreach (var question in questions)
-                {
-                    var answers = _context.Answers.Where(a => a.QuestionId == question.QuestionId).ToList();
-                    _context.Answers.RemoveRange(answers);
-                }
-                _context.Questions.RemoveRange(questions);
-
-                // Finally, remove the quiz itself
-                _context.Quizzes.Remove(quiz);
-                await _context.SaveChangesAsync();
-
-                TempData["Message"] = "Quiz and its related data deleted successfully.";
-
-                // Store the ProgramId in TempData
-                TempData["ProgramId"] = programId;
-
-                // Redirect to the ProgramStream view for the related ProgramId
-                return RedirectToAction("ProgramStream", "ProjectLeader");
+                ModelState.AddModelError("", "The selected ProgramId does not exist.");
+                return RedirectToAction("ProgramStream", "ProjectLeader", new { id = ProgramId });
             }
-            else
-            {
-                TempData["Error"] = "Quiz not found.";
-                return RedirectToAction("ProgramStream", "ProjectLeader");
-            }
+
+            // Set the ProgramId in the ActivitiesModel
+            activityModel.ProgramId = ProgramId;
+
+            // Add created date in UTC format
+            activityModel.CreatedAt = DateTime.UtcNow;
+
+            // Save the ActivitiesModel to the database
+            _context.Activities.Add(activityModel);
+            _context.SaveChanges();
+
+            TempData["ActivitySuccessMessage"] = "Successfully created an Activity.";
+            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = ProgramId });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateQuiz(QuizModel updatedQuiz, List<QuestionModel> updatedQuestions)
+        public IActionResult ViewActivity(int activitiesId)
         {
-            var existingQuiz = await _context.Quizzes
-                                              .Include(q => q.Questions)
-                                              .ThenInclude(q => q.Answers)
-                                              .AsSplitQuery()
-                                              .FirstOrDefaultAsync(q => q.QuizId == updatedQuiz.QuizId);
+            // Fetch the activity along with the enrolled trainees' activities
+            var activity = _context.Activities
+                .Include(a => a.TraineeActivities)
+                .ThenInclude(ta => ta.Enrollment)
+                .ThenInclude(e => e.CurrentTrainee)
+                .FirstOrDefault(a => a.ActivitiesId == activitiesId);
 
-            if (existingQuiz == null)
+            if (activity == null)
             {
-                return NotFound("Quiz not found.");
+                return NotFound();
             }
 
-            // Update Quiz title and description
-            existingQuiz.QuizTitle = updatedQuiz.QuizTitle;
-            existingQuiz.QuizDirection = updatedQuiz.QuizDirection;
-
-            List<int> updatedQuestionIds = new List<int>();
-
-            // Update Questions and Answers
-            foreach (var updatedQuestion in updatedQuestions)
+            // Create a ViewModel to pass the data to the view
+            var viewModel = new ActivityViewModel
             {
-                var existingQuestion = existingQuiz.Questions.FirstOrDefault(q => q.QuestionId == updatedQuestion.QuestionId);
-                if (existingQuestion != null)
-                {
-                    if (existingQuestion.CorrectAnswer != updatedQuestion.CorrectAnswer)
-                    {
-                        // Track the question if the correct answer changed
-                        updatedQuestionIds.Add(existingQuestion.QuestionId);
-                    }
+                Activity = activity,
+                TraineeActivities = activity.TraineeActivities.ToList()
+            };
 
-                    existingQuestion.Question = updatedQuestion.Question;
-                    existingQuestion.CorrectAnswer = updatedQuestion.CorrectAnswer;
-
-                    var existingAnswer = existingQuestion.Answers.FirstOrDefault();
-                    if (existingAnswer != null)
-                    {
-                        existingAnswer.Answer = updatedQuestion.CorrectAnswer;
-                    }
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            // Update StudentQuizResults based on the updated questions
-            if (updatedQuestionIds.Any())
-            {
-                var affectedResults = _context.TraineeQuizResults
-                    .Include(r => r.TraineeAnswers)
-                    .Where(r => r.QuizId == updatedQuiz.QuizId)
-                    .ToList();
-
-                foreach (var result in affectedResults)
-                {
-                    int rawScore = 0;
-
-                    foreach (var studentAnswer in result.TraineeAnswers)
-                    {
-                        if (updatedQuestionIds.Contains(studentAnswer.QuestionId))
-                        {
-                            var correctAnswer = _context.Questions
-                                .Where(q => q.QuestionId == studentAnswer.QuestionId)
-                                .Select(q => q.CorrectAnswer)
-                                .FirstOrDefault();
-
-                            studentAnswer.IsCorrect = studentAnswer.Answer == correctAnswer;
-
-                            if (studentAnswer.IsCorrect)
-                            {
-                                rawScore++;
-                            }
-                        }
-                        else if (studentAnswer.IsCorrect)
-                        {
-                            rawScore++;
-                        }
-                    }
-
-                    // Recompute the score
-                    result.RawScore = rawScore;
-                    result.TotalScore = result.TraineeAnswers.Count;
-                    result.ComputedScore = Math.Round(((double)rawScore / result.TotalScore) * 62.5 + 37.5, 2);
-                    result.Remarks = result.ComputedScore >= 50 ? "Pass" : "Fail";
-                }
-
-                await _context.SaveChangesAsync();
-            }
-
-            TempData["SuccessMessage"] = "Quiz and student results updated successfully!";
-            return RedirectToAction("ViewQuiz", new { quizId = updatedQuiz.QuizId });
+            return View(viewModel);
         }
         [HttpPost]
         public async Task<IActionResult> UpdateActivity(int activitiesId, string activitiesTitle, string activityDirection, int totalScore)
@@ -471,10 +475,13 @@ namespace ServiceAcademy.Controllers
             _context.Activities.Remove(activity);
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Activity and its Corresponding Data are Deleted Successfully.";
+            TempData["Message"] = "Activity and its corresponding data are deleted successfully.";
             return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
         }
 
+        #endregion
+
+        #region Student Activity Management
         [HttpGet]
         public IActionResult GetSubmissionDetails(int activitiesId)
         {
@@ -553,6 +560,7 @@ namespace ServiceAcademy.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Message"] = "Successfully uploaded an activity.";
             return RedirectToAction("MyLearningStream", "Trainee", new { programId = activity.ProgramId });
         }
         [HttpGet]
@@ -640,6 +648,6 @@ namespace ServiceAcademy.Controllers
             // Fallback for unsupported types
             return BadRequest("Unsupported file type.");
         }
-
+        #endregion
     }
 }

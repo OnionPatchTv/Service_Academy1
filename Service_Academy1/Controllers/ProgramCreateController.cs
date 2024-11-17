@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Service_Academy1.Models;
 using System;
@@ -16,8 +17,7 @@ namespace ServiceAcademy.Controllers
 
         public ProgramCreateController(ILogger<ProgramCreateController> logger, ApplicationDbContext context)
         {
-            _logger = logger;
-            _context = context;
+            (_logger, _context) = (logger, context);
         }
 
         [HttpGet]

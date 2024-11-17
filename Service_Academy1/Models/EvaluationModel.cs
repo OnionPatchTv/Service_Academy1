@@ -15,7 +15,7 @@ namespace Service_Academy1.Models
         public int ProgramId { get; set; }
         public ProgramsModel? ProgramsModel { get; set; }
 
-        public virtual ICollection<EvaluationResponseModel> Responses { get; set; } = new List<EvaluationResponseModel>();
+        public virtual ICollection<EvaluationResponseModel> Responses { get; set; } = [];
     }
     public class EvaluationResponseModel
     {
@@ -28,7 +28,7 @@ namespace Service_Academy1.Models
 
         [ForeignKey("EnrollmentModel")]
         public int EnrollmentId { get; set; } // Foreign key to reference the specific student enrollment
-        public virtual EnrollmentModel Enrollment { get; set; } // Navigation property
+        public virtual EnrollmentModel? Enrollment { get; set; } // Navigation property
         [Range(1, 5)]
         public int Rating { get; set; }
     }

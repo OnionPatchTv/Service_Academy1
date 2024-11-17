@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceAcademy.Controllers;
+using System;
 using System.Security.Claims;
 
 namespace Service_Academy1.Controllers
@@ -15,8 +16,7 @@ namespace Service_Academy1.Controllers
 
         public CoordinatorController(ILogger<CoordinatorController> logger, ApplicationDbContext context)
         {
-            _logger = logger;
-            _context = context;
+            (_logger, _context) = (logger, context);
         }
         public IActionResult CoordDashboard()
         {

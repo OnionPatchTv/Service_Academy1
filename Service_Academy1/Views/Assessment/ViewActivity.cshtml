@@ -20,7 +20,7 @@
         @foreach (var traineeActivity in Model.TraineeActivities)
         {
             <tr>
-                <td>@traineeActivity.Enrollment.currentTrainee.UserName</td>
+                <td>@traineeActivity.Enrollment.CurrentTrainee.UserName</td>
                 <td>
                     @if (Uri.IsWellFormedUriString(traineeActivity.FilePath, UriKind.Absolute))
                     {

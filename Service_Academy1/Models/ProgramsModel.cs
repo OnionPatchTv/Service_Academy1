@@ -22,21 +22,21 @@ namespace Service_Academy1.Models
         public string PhotoPath { get; set; } = string.Empty;
 
         // Foreign key property for the instructor's Id
-        [ForeignKey("currentProjectLeader")]
+        [ForeignKey("CurrentProjectLeader")]
         public string? ProjectLeaderId { get; set; } // Foreign key property
 
         [ForeignKey("Department")]
         public int DepartmentId { get; set; }
 
         // Navigation property to the instructor
-        public virtual ApplicationUser? currentProjectLeader { get; set; }
+        public virtual ApplicationUser? CurrentProjectLeader { get; set; }
         public virtual DepartmentsModel? Department { get; set; }
-        public virtual ICollection<ProgramManagementModel> ProgramManagement { get; set; } = new List<ProgramManagementModel>();
-        public virtual ICollection<EnrollmentModel> Enrollments { get; set; } = new List<EnrollmentModel>();
-        public virtual ICollection<ModuleModel> Modules { get; set; } = new List<ModuleModel>();
-        public virtual ICollection<QuizModel> Quizzes { get; set; } = new List<QuizModel>();
-        public virtual ICollection<ActivitiesModel> Activities { get; set; } = new List<ActivitiesModel>();
-        public virtual ICollection<EvaluationQuestionModel> EvaluationQuestions { get; set; } = new List<EvaluationQuestionModel>();
+        public virtual ICollection<ProgramManagementModel> ProgramManagement { get; set; } = [];
+        public virtual ICollection<EnrollmentModel> Enrollments { get; set; } = [];
+        public virtual ICollection<ModuleModel> Modules { get; set; } = [];
+        public virtual ICollection<QuizModel> Quizzes { get; set; } = [];
+        public virtual ICollection<ActivitiesModel> Activities { get; set; } = [];
+        public virtual ICollection<EvaluationQuestionModel> EvaluationQuestions { get; set; } = [];
     }
 
 }

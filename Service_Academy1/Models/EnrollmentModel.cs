@@ -8,7 +8,7 @@ namespace Service_Academy1.Models
         [Key]
         public int EnrollmentId { get; set; }
 
-        [ForeignKey("currentTrainee")]
+        [ForeignKey("CurrentTrainee")]
         public string? TraineeId { get; set; } // Foreign key property for current user
 
         [ForeignKey("ProgramsModel")]
@@ -21,7 +21,7 @@ namespace Service_Academy1.Models
 
         public string? ReasonForDenial { get; set; }
         // Navigation property to the instructor
-        public virtual ApplicationUser? currentTrainee { get; set; }
+        public virtual ApplicationUser? CurrentTrainee { get; set; }
         public virtual ProgramsModel? ProgramsModel { get; set; } // Navigation property
     }
 }

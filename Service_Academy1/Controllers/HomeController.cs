@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service_Academy1.Models;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace ServiceAcademy.Controllers
 {
@@ -12,8 +13,7 @@ namespace ServiceAcademy.Controllers
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
-            _logger = logger;
-            _context = context;
+            (_logger, _context) = (logger, context);
         }
 
         // Action method for Home.cshtml

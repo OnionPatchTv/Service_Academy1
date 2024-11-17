@@ -2,8 +2,8 @@
 {
     public class ProgramListViewModel
     {
-        public IEnumerable<ProgramsModel> Programs { get; set; }
-        public List<EnrollmentModel> UserEnrollments { get; set; }
+        public IEnumerable<ProgramsModel> Programs { get; set; } = [];
+        public List<EnrollmentModel> UserEnrollments { get; set; } = [];
     }
 
 }

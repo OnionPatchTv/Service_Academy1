@@ -19,7 +19,7 @@ namespace Service_Academy1.Models
         public int ComputedScore { get; set; }
         public bool IsCompleted { get; set; } = false;
        // Foreign key to reference the specific student enrollment
-        public virtual EnrollmentModel Enrollment { get; set; } // Navigation pro
-        public virtual ActivitiesModel Activities { get; set; }
+        public virtual EnrollmentModel? Enrollment { get; set; } // Navigation pro
+        public virtual ActivitiesModel? Activities { get; set; }
     }
 }

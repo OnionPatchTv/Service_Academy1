@@ -13,6 +13,6 @@ namespace Service_Academy1.Models
 
         public string Announcement { get; set; } = string.Empty;
 
-        public virtual ProgramsModel ProgramsModel { get; set; } // Navigation property to program
+        public virtual ProgramsModel? ProgramsModel { get; set; } // Navigation property to program
     }
 }

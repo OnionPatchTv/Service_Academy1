@@ -9,8 +9,8 @@ namespace Service_Academy1.Models
         public int EvaluatedCount { get; set; }
         public int UnevaluatedCount { get; set; }
         public int ProgramId { get; set; }
-        public List<AverageRatingViewModel> AverageRatings { get; set; } = new List<AverageRatingViewModel>();
-        public List<EvaluationResponseDetail> EvaluationDetails { get; set; } = new List<EvaluationResponseDetail>();
+        public List<AverageRatingViewModel> AverageRatings { get; set; } = [];
+        public List<EvaluationResponseDetail> EvaluationDetails { get; set; } = [];
     }
 
     public class AverageRatingViewModel

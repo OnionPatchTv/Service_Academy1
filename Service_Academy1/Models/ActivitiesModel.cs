@@ -19,7 +19,7 @@ namespace Service_Academy1.Models
         [ForeignKey("ProgramsModel")]
         public int ProgramId { get; set; }
 
-        public virtual ProgramsModel ProgramsModel { get; set; } // Navigation property to program
-        public virtual ICollection<TraineeActivitiesModel> TraineeActivities { get; set; } = new List<TraineeActivitiesModel>();
+        public virtual ProgramsModel? ProgramsModel { get; set; } // Navigation property to program
+        public virtual ICollection<TraineeActivitiesModel> TraineeActivities { get; set; } = [];
     }
 }

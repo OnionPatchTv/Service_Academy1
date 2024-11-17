@@ -11,8 +11,8 @@ namespace Service_Academy1.Models
         public string Description { get; set; } = string.Empty;
         public string PhotoPath { get; set; } = string.Empty;
         public bool IsArchived { get; set; } = false;
-        public virtual ICollection<ModuleModel> Modules { get; set; }
-        public List<QuizModel> Quizzes { get; set; }
-        public List<ActivitiesModel> Activities { get; set; }
+        public virtual ICollection<ModuleModel> Modules { get; set; } = [];
+        public List<QuizModel> Quizzes { get; set; } = [];
+        public List<ActivitiesModel> Activities { get; set; } = [];
     }
 }

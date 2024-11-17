@@ -2,7 +2,7 @@
 {
     public class ActivityViewModel
     {
-        public ActivitiesModel Activity { get; set; }
-        public List<TraineeActivitiesModel> TraineeActivities { get; set; }
+        public ActivitiesModel? Activity { get; set; }
+        public List<TraineeActivitiesModel> TraineeActivities { get; set; } = [];
     }
 }

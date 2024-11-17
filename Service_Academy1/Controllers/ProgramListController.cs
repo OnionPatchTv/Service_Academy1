@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Service_Academy1.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,8 +16,7 @@ namespace Service_Academy1.Controllers
 
         public ProgramListController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) // Updated constructor
         {
-            _context = context;
-            _userManager = userManager; // Initialized UserManager
+            (_userManager, _context) = (userManager, context);
         }
 
         // Action method for ProgramList that filters by Agenda

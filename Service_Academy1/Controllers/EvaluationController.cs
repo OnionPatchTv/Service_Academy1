@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Service_Academy1.Controllers;
 using Service_Academy1.Models;
+using System;
 
 namespace Service_Academy1.Controllers
 {
@@ -14,8 +16,7 @@ namespace Service_Academy1.Controllers
 
         public EvaluationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
-            _userManager = userManager;
+            (_userManager, _context) = (userManager, context);
         }
 
         public async Task<IActionResult> EvaluationForm(int programId)

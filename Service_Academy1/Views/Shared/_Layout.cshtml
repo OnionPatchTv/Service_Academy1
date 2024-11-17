@@ -22,13 +22,13 @@
             <span class="service-academy">Service Academy</span>
         </a>
         <nav class="nav-links">
-            @if (User.Identity.IsAuthenticated)
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 // Display specific links based on the user role
                 if (User.IsInRole("Student"))
                 {
                     <a href="@Url.Action("Home", "Home")" class="@(Html.IsActive("Home", "Home") ? "active" : "")">Home</a>
-                    <a href="@Url.Action("ProgramCatalog", "Home")" class="@(ViewContext.RouteData.Values["action"].ToString() == "ProgramCatalog" || (ViewContext.RouteData.Values["action"].ToString() == "ProgramList" && ViewContext.RouteData.Values["controller"].ToString() == "ProgramList") ? "active" : "")">Programs</a>
+                    <a href="@Url.Action("ProgramCatalog", "Home")" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "ProgramCatalog" || (ViewContext.RouteData.Values["action"]?.ToString() == "ProgramList" && ViewContext.RouteData.Values["controller"]?.ToString() == "ProgramList") ? "active" : "")">Programs</a>
                     <a href="@Url.Action("Contact", "Home")" class="@(Html.IsActive("Contact", "Home") ? "active" : "")">Contact Us</a>
                     <a href="@Url.Action("Faqs", "Home")" class="@(Html.IsActive("Faqs", "Home") ? "active" : "")">FAQs</a>
                 }
@@ -53,7 +53,7 @@
             else
             {
                 <a href="@Url.Action("Home", "Home")" class="@(Html.IsActive("Home", "Home") ? "active" : "")">Home</a>
-                <a href="@Url.Action("ProgramCatalog", "Home")" class="@(ViewContext.RouteData.Values["action"].ToString() == "ProgramCatalog" || (ViewContext.RouteData.Values["action"].ToString() == "ProgramList" && ViewContext.RouteData.Values["controller"].ToString() == "ProgramList") ? "active" : "")">Programs</a>
+                <a href="@Url.Action("ProgramCatalog", "Home")" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "ProgramCatalog" || (ViewContext.RouteData.Values["action"]?.ToString() == "ProgramList" && ViewContext.RouteData.Values["controller"]?.ToString() == "ProgramList") ? "active" : "")">Programs</a>
                 <a href="@Url.Action("Contact", "Home")" class="@(Html.IsActive("Contact", "Home") ? "active" : "")">Contact Us</a>
                 <a href="@Url.Action("Faqs", "Home")" class="@(Html.IsActive("Faqs", "Home") ? "active" : "")">FAQs</a>
             }
@@ -61,25 +61,25 @@
         </nav>
 
         <div class="nav-right">
-            @if (User.Identity.IsAuthenticated)
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 // Display specific links based on the user role
                 if (User.IsInRole("Student"))
                 {
                     <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ||
-                  ViewContext.RouteData.Values["action"].ToString() == "StudentQuizView" ||
-                  ViewContext.RouteData.Values["action"].ToString() == "QuizResult" ||
-                  ViewContext.RouteData.Values["action"].ToString() == "MyLearningStream" ? "active" : "")">My Learning</a>
+                  ViewContext.RouteData.Values["action"]?.ToString() == "StudentQuizView" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "QuizResult" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "MyLearningStream" ? "active" : "")">My Learning</a>
                 }
                 else if (User.IsInRole("ProjectLeader"))
                 {
                     <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ||
-                  ViewContext.RouteData.Values["action"].ToString() == "ProgramStream" ||
-                  ViewContext.RouteData.Values["action"].ToString() == "ProgramStreamManage" ||
-                  ViewContext.RouteData.Values["action"].ToString() == "ProgramCreation" ||
-                  ViewContext.RouteData.Values["action"].ToString() == "CreateAssessment" ||
-                  ViewContext.RouteData.Values["action"].ToString() == "EvaluationResults" ||
-                  ViewContext.RouteData.Values["action"].ToString() == "ViewQuiz" ? "active" : "")">My Teaching</a>
+                  ViewContext.RouteData.Values["action"]?.ToString() == "ProgramStream" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "ProgramStreamManage" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "ProgramCreation" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "CreateAssessment" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "EvaluationResults" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "ViewQuiz" ? "active" : "")">My Teaching</a>
                 }
                 else if (User.IsInRole("Admin"))
                 {

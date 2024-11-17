@@ -21,11 +21,10 @@ namespace ServiceAcademy.Controllers
         private readonly IWebHostEnvironment _environment;
         public ProjectLeaderController(ILogger<ProjectLeaderController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
         {
-            _logger = logger;
-            _context = context;
-            _environment = environment;
+            (_logger, _context, _environment) = (logger, context, environment);
 
         }
+        #region ProjectLeader Dashboard Management
         public async Task<IActionResult> ProjectLeaderDashboard()
         {
             // Get the current user's ID
@@ -46,149 +45,6 @@ namespace ServiceAcademy.Controllers
             }
 
             return View(programs);
-        }
-        public IActionResult ProgramStream(int programId)
-        {
-            // Check if ProgramId is passed via TempData, use it if not provided in the URL
-            if (programId == 0 && TempData["ProgramId"] != null)
-            {
-                programId = (int)TempData["ProgramId"];
-            }
-
-            var programData = _context.Programs.FirstOrDefault(p => p.ProgramId == programId);
-            if (programData == null)
-            {
-                return NotFound();
-            }
-
-            var program = _context.Programs
-                .FirstOrDefault(p => p.ProgramId == programId);
-
-            if (program == null)
-            {
-                TempData["Error"] = "Program not found.";
-                return RedirectToAction("ProjectLeaderDashboard");
-            }
-
-            var modules = _context.Modules.Where(m => m.ProgramId == programId).ToList();
-            var activities = _context.Activities.Where(a => a.ProgramId == programId)
-                                          .Include(a => a.TraineeActivities)
-                                           .ToList();
-            var quizzes = _context.Quizzes.Where(q => q.ProgramId == programId)
-                                           .Include(q => q.Questions)
-                                           .ThenInclude(q => q.Answers)
-                                           .AsSplitQuery()
-                                           .ToList();
-
-            var programManagement = _context.ProgramManagement.FirstOrDefault(pm => pm.ProgramId == programId);
-
-            var viewModel = new ProgramStreamViewModel
-            {
-                ProgramId = program.ProgramId,
-                Title = program.Title,
-                Description = program.Description,
-                PhotoPath = program.PhotoPath,
-                Modules = modules,
-                Quizzes = quizzes,
-                Activities = activities,
-                IsArchived = programManagement?.IsArchived ?? false
-            };
-
-            return View(viewModel);
-        }
-        public IActionResult ProgramStreamManage(int programId)
-        {
-            _logger.LogInformation("Fetching enrolled trainees for Program ID: {ProgramId}", programId);
-
-            // Fetch enrolled trainees for the specified program ID with a pending or approved status
-            var enrolledTrainees = _context.Enrollment
-                .Where(e => e.ProgramId == programId &&
-                            (e.EnrollmentStatus == "Approved" || e.EnrollmentStatus == "Pending"))
-                .Select(e => new EnrolleeViewModel
-                {
-                    EnrollmentId = e.EnrollmentId,
-                    TraineeName = e.currentTrainee != null ? e.currentTrainee.UserName : "Unknown",
-                    EnrollmentStatus = e.EnrollmentStatus,
-                    ProgramStatus = e.ProgramStatus
-                })
-                .ToList();
-
-            if (!enrolledTrainees.Any())
-            {
-                _logger.LogWarning("No enrolled trainees found for Program ID: {ProgramId}", programId);
-            }
-            else
-            {
-                _logger.LogInformation("Found {Count} enrolled trainees for Program ID: {ProgramId}", enrolledTrainees.Count, programId);
-            }
-
-            // Pass the ProgramId to the view (via ViewBag or ViewModel)
-            ViewBag.ProgramId = programId;
-
-            return View(enrolledTrainees);
-        }
-        [HttpGet]
-        public IActionResult GetTraineeActivities(int enrollmentId, int programId)
-        {
-            var activities = _context.TraineeActivities
-                .Where(ta => ta.EnrollmentId == enrollmentId && ta.Activities.ProgramId == programId)
-                .Select(ta => new
-                {
-                    ActivityTitle = ta.Activities.ActivitiesTitle,
-                    RawScore = ta.RawScore,
-                    TotalScore = ta.Activities.TotalScore,
-                    ComputedScore = ta.ComputedScore,
-                })
-                .ToList();
-
-            return Json(activities);
-        }
-
-        public async Task<IActionResult> GetGrades(int enrollmentId, int programId)
-        {
-            var grades = await _context.TraineeQuizResults
-                .Where(sqr => sqr.EnrollmentId == enrollmentId && sqr.Quiz.ProgramId == programId)
-                .Include(sqr => sqr.Quiz)
-                .Select(sqr => new
-                {
-                    QuizTitle = sqr.Quiz.QuizTitle,
-                    RawScore = sqr.RawScore,
-                    TotalScore = sqr.TotalScore,
-                    Retries = sqr.Retries,
-                    ComputedScore = sqr.ComputedScore,
-                    Remarks = sqr.Remarks
-                })
-                .ToListAsync();
-
-            // Log the query results
-            Console.WriteLine("Grades fetched: " + JsonConvert.SerializeObject(grades));
-
-            return Json(grades); // Ensure that the correct grades are returned
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ApproveEnrollment(int enrollmentId)
-        {
-            var enrollment = await _context.Enrollment.FindAsync(enrollmentId);
-            if (enrollment == null) return NotFound();
-
-            enrollment.EnrollmentStatus = "Approved";
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("ProgramStreamManage", new { programId = enrollment.ProgramId });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DenyEnrollment(int enrollmentId, string reasonForDenial)
-        {
-            var enrollment = await _context.Enrollment.FindAsync(enrollmentId);
-            if (enrollment == null) return NotFound();
-
-            enrollment.EnrollmentStatus = "Denied";
-            enrollment.ReasonForDenial = reasonForDenial; // Store the denial reason
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("ProgramStreamManage", new { programId = enrollment.ProgramId });
         }
         [HttpPost]
         public async Task<IActionResult> ActivateProgram(int programId, DateTime startDate, DateTime endDate)
@@ -239,8 +95,6 @@ namespace ServiceAcademy.Controllers
 
             return RedirectToAction("ProjectLeaderDashboard");
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> ArchiveProgram(int programId)
@@ -305,6 +159,58 @@ namespace ServiceAcademy.Controllers
             return RedirectToAction("ProjectLeaderDashboard");
         }
 
+        #endregion
+        #region ProgramStream Management
+        public IActionResult ProgramStream(int programId)
+        {
+            // Check if ProgramId is passed via TempData, use it if not provided in the URL
+            if (programId == 0 && TempData["ProgramId"] != null)
+            {
+                programId = (int)TempData["ProgramId"];
+            }
+
+            var programData = _context.Programs.FirstOrDefault(p => p.ProgramId == programId);
+            if (programData == null)
+            {
+                return NotFound();
+            }
+
+            var program = _context.Programs
+                .FirstOrDefault(p => p.ProgramId == programId);
+
+            if (program == null)
+            {
+                TempData["Error"] = "Program not found.";
+                return RedirectToAction("ProjectLeaderDashboard");
+            }
+
+            var modules = _context.Modules.Where(m => m.ProgramId == programId).ToList();
+            var activities = _context.Activities.Where(a => a.ProgramId == programId)
+                                          .Include(a => a.TraineeActivities)
+                                           .ToList();
+            var quizzes = _context.Quizzes.Where(q => q.ProgramId == programId)
+                                           .Include(q => q.Questions)
+                                           .ThenInclude(q => q.Answers)
+                                           .AsSplitQuery()
+                                           .ToList();
+
+            var programManagement = _context.ProgramManagement.FirstOrDefault(pm => pm.ProgramId == programId);
+
+            var viewModel = new ProgramStreamViewModel
+            {
+                ProgramId = program.ProgramId,
+                Title = program.Title,
+                Description = program.Description,
+                PhotoPath = program.PhotoPath,
+                Modules = modules,
+                Quizzes = quizzes,
+                Activities = activities,
+                IsArchived = programManagement?.IsArchived ?? false
+            };
+
+            return View(viewModel);
+        }
+        #region Module Management
         [HttpPost]
         public async Task<IActionResult> UploadModule(int programId, string title, IFormFile file)
         {
@@ -407,7 +313,105 @@ namespace ServiceAcademy.Controllers
             TempData["Message"] = "Module deleted and modules renumbered successfully.";
             return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
         }
+        #endregion
+        #endregion
 
+        #region ProgramStreamManage Management
+        public IActionResult ProgramStreamManage(int programId)
+        {
+            _logger.LogInformation("Fetching enrolled trainees for Program ID: {ProgramId}", programId);
+
+            // Fetch enrolled trainees for the specified program ID with a pending or approved status
+            var enrolledTrainees = _context.Enrollment
+                .Where(e => e.ProgramId == programId &&
+                            (e.EnrollmentStatus == "Approved" || e.EnrollmentStatus == "Pending"))
+                .Select(e => new EnrolleeViewModel
+                {
+                    EnrollmentId = e.EnrollmentId,
+                    TraineeName = e.CurrentTrainee != null ? e.CurrentTrainee.UserName : "Unknown",
+                    EnrollmentStatus = e.EnrollmentStatus,
+                    ProgramStatus = e.ProgramStatus
+                })
+                .ToList();
+
+            if (!enrolledTrainees.Any())
+            {
+                _logger.LogWarning("No enrolled trainees found for Program ID: {ProgramId}", programId);
+            }
+            else
+            {
+                _logger.LogInformation("Found {Count} enrolled trainees for Program ID: {ProgramId}", enrolledTrainees.Count, programId);
+            }
+
+            // Pass the ProgramId to the view (via ViewBag or ViewModel)
+            ViewBag.ProgramId = programId;
+
+            return View(enrolledTrainees);
+        }
+        [HttpGet]
+        public IActionResult GetTraineeActivities(int enrollmentId, int programId)
+        {
+            var activities = _context.TraineeActivities
+                .Where(ta => ta.EnrollmentId == enrollmentId && ta.Activities.ProgramId == programId)
+                .Select(ta => new
+                {
+                    ActivityTitle = ta.Activities.ActivitiesTitle,
+                    RawScore = ta.RawScore,
+                    TotalScore = ta.Activities.TotalScore,
+                    ComputedScore = ta.ComputedScore,
+                })
+                .ToList();
+
+            return Json(activities);
+        }
+
+        public async Task<IActionResult> GetGrades(int enrollmentId, int programId)
+        {
+            var grades = await _context.TraineeQuizResults
+                .Where(sqr => sqr.EnrollmentId == enrollmentId && sqr.Quiz.ProgramId == programId)
+                .Include(sqr => sqr.Quiz)
+                .Select(sqr => new
+                {
+                    QuizTitle = sqr.Quiz.QuizTitle,
+                    RawScore = sqr.RawScore,
+                    TotalScore = sqr.TotalScore,
+                    Retries = sqr.Retries,
+                    ComputedScore = sqr.ComputedScore,
+                    Remarks = sqr.Remarks
+                })
+                .ToListAsync();
+
+            // Log the query results
+            Console.WriteLine("Grades fetched: " + JsonConvert.SerializeObject(grades));
+
+            return Json(grades); // Ensure that the correct grades are returned
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveEnrollment(int enrollmentId)
+        {
+            var enrollment = await _context.Enrollment.FindAsync(enrollmentId);
+            if (enrollment == null) return NotFound();
+
+            enrollment.EnrollmentStatus = "Approved";
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ProgramStreamManage", new { programId = enrollment.ProgramId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DenyEnrollment(int enrollmentId, string reasonForDenial)
+        {
+            var enrollment = await _context.Enrollment.FindAsync(enrollmentId);
+            if (enrollment == null) return NotFound();
+
+            enrollment.EnrollmentStatus = "Denied";
+            enrollment.ReasonForDenial = reasonForDenial; // Store the denial reason
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ProgramStreamManage", new { programId = enrollment.ProgramId });
+        }
+        #endregion
     }
 }
 

@@ -16,7 +16,7 @@ namespace Service_Academy1.Models
         [ForeignKey("EnrollmentModel")]
         public int EnrollmentId { get; set; } // Foreign key to reference the specific student enrollment
         public bool IsCompleted { get; set; } = false;
-        public virtual ModuleModel Modules { get; set; }
-        public virtual EnrollmentModel Enrollment { get; set; } // Navigation property
+        public virtual ModuleModel? Modules { get; set; }
+        public virtual EnrollmentModel? Enrollment { get; set; } // Navigation property
     }
 }

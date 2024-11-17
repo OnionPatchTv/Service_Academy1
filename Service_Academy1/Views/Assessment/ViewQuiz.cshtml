@@ -50,25 +50,26 @@
     <button type="submit">Update Quiz</button>
 </form>
 
-<div class="modal fade" id="deleteQuizModal" tabindex="-1" aria-labelledby="deleteQuizModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteQuizModal" tabindex="-1" role="dialog" aria-labelledby="deleteQuizModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteQuizModalLabel">Delete Quiz</h5>
-                <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">
-                    &times;
-                </button>
+            <div id="modalForm" class="modal-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteQuizModalLabel">Delete Quiz</h5>
+                    <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                </div>
+                <form method="post" action="@Url.Action("DeleteQuiz", "Assessment")">
+                    <input type="hidden" name="quizId" id="quizId" />
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this quiz? Once deleted, you cannot undo this action.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btnYes btn btn-danger">Yes, Delete</button>
+                        <button type="button" class="btnNo btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    </div>
+                </form>
             </div>
-            <form method="post" action="@Url.Action("DeleteQuiz", "Assessment")">
-                <input type="hidden" name="quizId" id="quizId" />
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this quiz? Once deleted, you cannot undo this action.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btnYes">Yes</button>
-                    <button type="button" class="btnNo" data-dismiss="modal">No</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
+

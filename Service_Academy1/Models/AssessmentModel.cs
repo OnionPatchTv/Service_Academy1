@@ -18,9 +18,9 @@ namespace Service_Academy1.Models
         [ForeignKey("ProgramsModel")]
         public int ProgramId { get; set; }
 
-        public virtual ProgramsModel ProgramsModel { get; set; } // Navigation property to program
+        public virtual ProgramsModel? ProgramsModel { get; set; } // Navigation property to program
 
-        public virtual ICollection<QuestionModel> Questions { get; set; } = new List<QuestionModel>(); // One-to-many relationship with QuestionModel
+        public virtual ICollection<QuestionModel> Questions { get; set; } = []; // One-to-many relationship with QuestionModel
     }
 
     public class QuestionModel
@@ -34,13 +34,13 @@ namespace Service_Academy1.Models
         [ForeignKey("QuizModel")]
         public int QuizId { get; set; }
 
-        public virtual QuizModel Quiz { get; set; } // Navigation property
+        public virtual QuizModel? Quiz { get; set; } // Navigation property
 
         // Add the CorrectAnswer property to store the correct answer in the database
         [Required]
-        public string CorrectAnswer { get; set; } // Correct answer for the question
+        public string CorrectAnswer { get; set; } = string.Empty;// Correct answer for the question
 
-        public virtual ICollection<AnswerModel> Answers { get; set; } = new List<AnswerModel>(); // One-to-many relationship with AnswerModel
+        public virtual ICollection<AnswerModel> Answers { get; set; } = []; // One-to-many relationship with AnswerModel
     }
 
     public class AnswerModel
@@ -54,7 +54,7 @@ namespace Service_Academy1.Models
         [ForeignKey("QuestionModel")]
         public int QuestionId { get; set; }
 
-        public virtual QuestionModel Question { get; set; } // Navigation property
+        public virtual QuestionModel? Question { get; set; } // Navigation property
     }
 }
 
