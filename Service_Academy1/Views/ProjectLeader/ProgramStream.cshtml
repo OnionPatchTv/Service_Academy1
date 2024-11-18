@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Program Stream Page";
+    var approvedCount = @Model.Enrollment.Count(e => e.EnrollmentStatus == "Approved");
 }
 
 @section Scripts {
@@ -47,7 +48,7 @@
                 <h2 class="class-title">@Model.Title</h2>
                 <p class="description">@Model.Description</p>
                 <div class="trainees">
-                    <i class="fa-solid fa-graduation-cap"></i> 45 Trainees
+                    <i class="fa-solid fa-graduation-cap"></i> @approvedCount Trainees
                 </div>
             </div>
         </div>
@@ -78,51 +79,67 @@
             </div>
             <div class="posts" id="posts"></div>
         </section>
-
+        <!--
         <div class="button-container">
             <button type="button" class="btn upload-module" data-toggle="modal" data-target="#uploadModuleModal" @(Model.IsArchived ? "disabled" : "")>Upload Module</button>
             <button type="button" class="btn create-assessment" data-toggle="modal" data-target="#createAssessmentModal" @(Model.IsArchived ? "disabled" : "")>Create Assessment</button>
             <button type="button" class="btn create-activity" data-toggle="modal" data-target="#createActivityModal" @(Model.IsArchived ? "disabled" : "")>Create Activity</button>
-            <!-- View Program Evaluation Button -->
+           View Program Evaluation Button
             <a asp-controller="Evaluation" asp-action="EvaluationResults" asp-route-programId="@Model.ProgramId" class="btn btn-primary">View Program Evaluation</a>
-        </div>
+        </div> -->
 
         <!-- Modules and Module Content Sections -->
         <section class="content-sections">
-            <aside class="modules">
-                <h3>Modules</h3>
-                <div class="module-list">
-                    @foreach (var module in Model.Modules.OrderBy(m => m.Title))
-                    {
-                        <div class="module-item">
-                            <!-- Module title button -->
-                            <button class="module-title" onclick="loadModuleContent('@module.FilePath')">
-                                @module.Title
-                                <!-- Action icons inside the button -->
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <button class="dropdown-btn">Modules</button>
+                    <div class="dropdown-content">
+                        @foreach (var module in Model.Modules.OrderBy(m => m.Title))
+                        {
+                            <button onclick="loadModuleContent('@module.FilePath')">
                                 <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Update"></i>
-                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
+                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>@module.Title
                             </button>
-                        </div>
-                    }
+                        }
+                        <button class="add-item-btn" data-toggle="modal" data-target="#uploadModuleModal">Add Module</button>
+                    </div>
                 </div>
 
-                <h3>Quizzes</h3>
-                @foreach (var quiz in Model.Quizzes)
-                {
-                    <button class="quiz-title" onclick="location.href='@Url.Action("ViewQuiz", "Assessment", new { quizId = quiz.QuizId })'">@quiz.QuizTitle</button>
-                }
-                <h3>Activities</h3>
-                @foreach (var activity in Model.Activities)
-                {
-                    <button class="activity-title" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
-                        @activity.ActivitiesTitle
-                        <i class="fa fa-edit update-module-btn" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
-                        <i class="fa fa-trash delete-module-btn" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
+                <div class="sidebar-section">
+                    <button class="dropdown-btn">Quizzes</button>
+                    <div class="dropdown-content">
+                        @foreach (var quiz in Model.Quizzes)
+                        {
+                            <button onclick="location.href='@Url.Action("ViewQuiz", "Assessment", new { quizId = quiz.QuizId })'">
+                                @quiz.QuizTitle
+                            </button>
+                        }
+                        <button class="add-item-btn" data-toggle="modal" data-target="#createAssessmentModal">Add Quiz</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <button class="dropdown-btn">Activities</button>
+                    <div class="dropdown-content">
+                        @foreach (var activity in Model.Activities)
+                        {
+                            <button onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
+                                <i class="fa fa-edit" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
+                                <i class="fa fa-trash" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
+                                @activity.ActivitiesTitle
+                            </button>
+                        }
+                        <button class="add-item-btn" data-toggle="modal" data-target="#createActivityModal">Add Activity</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <button class="dropdown-btn" onclick="location.href='@Url.Action("EvaluationResults", "Evaluation", new { programId = Model.ProgramId })'">
+                        Evaluation Result
                     </button>
-                }
-
+                </div>
             </aside>
-
             <section class="module-viewer">
                 <h3>Module Viewer</h3>
                 <div class="viewer-content">
@@ -130,7 +147,6 @@
                 </div>
             </section>
         </section>
-
         <!-- Upload Module Modal -->
         <div class="modal fade" id="uploadModuleModal" tabindex="-1" aria-labelledby="uploadModuleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -140,7 +156,7 @@
                             <h5 class="modal-title" id="uploadModuleModalLabel">
                                 Upload Module @(Model.Modules.Count + 1)
                             </h5>
-                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                         <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadModule", "ProjectLeader", new { programId = Model.ProgramId })">
                             <div class="modal-body">
@@ -155,7 +171,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btnYes">Upload Module</button>
-                                <button type="button" class="btnNo" data-bs-dismiss="modal">No</button>
+                                <button type="button" class="btnNo" data-dismiss="modal">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -169,7 +185,7 @@
                     <div id="modalForm" class="modal-form">
                         <div class="modal-header">
                             <h5 class="modal-title" id="updateModuleModalLabel"></h5>
-                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                         <form asp-action="UpdateModule" asp-controller="ProjectLeader" method="post" enctype="multipart/form-data">
                             <div class="modal-body">
@@ -185,7 +201,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btnYes">Update Module</button>
-                                <button type="button" class="btnNo" data-bs-dismiss="modal">No</button>
+                                <button type="button" class="btnNo" data-bs-dismiss="modal">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -199,7 +215,7 @@
                     <div id="modalForm" class="modal-form">
                         <div class="modal-header">
                             <h5 class="modal-title" id="deleteModuleModalLabel">Delete Module</h5>
-                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                         <form method="post" action="@Url.Action("DeleteModule", "ProjectLeader")">
                             <input type="hidden" name="moduleId" />
@@ -222,7 +238,7 @@
                     <div id="modalForm" class="modal-form">
                         <div class="modal-header">
                             <h5 class="modal-title" id="createAssessmentModalLabel">Create Assessment</h5>
-                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                         <form id="createAssessmentForm" asp-action="CreateQuiz" asp-controller="Assessment" method="post">
                             <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
@@ -242,7 +258,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btnYes">Save Quiz</button>
-                                <button type="button" class="btnNo" data-bs-dismiss="modal">No</button>
+                                <button type="button" class="btnNo" data-dismiss="modal">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -256,7 +272,7 @@
                     <div id="modalForm" class="modal-form">
                         <div class="modal-header">
                             <h5 class="modal-title" id="createActivityModalLabel">Create Activity</h5>
-                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                         <form id="createActivityForm" asp-action="CreateActivity" asp-controller="Assessment" method="post">
                             <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
@@ -276,7 +292,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btnYes btn btn-primary">Save Activity</button>
-                                <button type="button" class="btnNo btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btnNo btn btn-secondary" data-dismiss="modal">Cancel</button>
                             </div>
                         </form>
                     </div>

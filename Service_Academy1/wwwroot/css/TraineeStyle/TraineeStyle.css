@@ -450,3 +450,68 @@ body {
 .fa-check {
     display: inline; /* Ensure it's visible */
 }
+
+.sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar-section {
+    margin-bottom: 20px;
+}
+
+.dropdown-btn {
+    display: block;
+    width: 100%;
+    background: #007bff;
+    color: white;
+    text-align: left;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+    .dropdown-btn:hover {
+        background: #0056b3;
+    }
+
+.dropdown-content {
+    display: none;
+    padding: 10px 0;
+    margin: 0;
+}
+
+    .dropdown-content button {
+        display: block;
+        width: 100%;
+        background: #fff;
+        color: #333;
+        text-align: left;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        margin-bottom: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+        .dropdown-content button:hover {
+            background: #f0f0f0;
+        }
+
+.module-viewer {
+    flex-grow: 1;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.viewer-content {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}

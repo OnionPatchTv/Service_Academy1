@@ -69,6 +69,15 @@ function applyFormat(formatType) {
 function postAnnouncement() {
     alert("This program is archived and read-only.");
 }
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdownButtons = document.querySelectorAll(".dropdown-btn");
+    dropdownButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const content = this.nextElementSibling;
+            content.style.display = content.style.display === "block" ? "none" : "block";
+        });
+    });
+});
 
 // Function to insert bullet list
 function loadModuleContent(filePath) {
