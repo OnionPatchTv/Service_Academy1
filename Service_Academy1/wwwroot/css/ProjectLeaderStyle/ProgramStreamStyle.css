@@ -411,6 +411,7 @@ body {
     background-color: #f8f9fa;
     padding: 15px;
     border-right: 1px solid #ddd;
+    border-radius: 10px;
 }
 
 .sidebar-section {
@@ -420,7 +421,7 @@ body {
 .dropdown-btn {
     display: block;
     width: 100%;
-    background: #007bff;
+    background: var(--primary-color);
     color: white;
     text-align: left;
     padding: 10px 15px;
@@ -428,29 +429,33 @@ body {
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
+    border-radius: 8px;
 }
 
     .dropdown-btn:hover {
-        background: #0056b3;
+        background: #1f1f44;
     }
 
 .dropdown-content {
-    display: none;
-    padding: 10px 0;
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Optional: Center items vertically if needed */
     margin: 0;
 }
 
     .dropdown-content button {
         display: block;
-        width: 100%;
+        width: 90%;
         background: #fff;
         color: #333;
         text-align: left;
         padding: 10px 15px;
-        border: 1px solid #ddd;
-        margin-bottom: 5px;
+        border: 2px solid #ddd;
+        margin-bottom: 0px;
         cursor: pointer;
         font-size: 14px;
+
     }
 
         .dropdown-content button:hover {
@@ -479,4 +484,17 @@ body {
     height: 600px;
     border: 1px solid #ddd;
     border-radius: 5px;
+}
+
+.description {
+    max-width: 100%; /* Set the maximum width */
+    max-height: calc(1.5em * 4); /* Adjust height for 4 lines (line-height x number of lines) */
+    overflow: hidden; /* Hide the overflowing text */
+    text-overflow: ellipsis; /* Show "..." for truncated text */
+    display: -webkit-box; /* Enable the flexbox model for truncation */
+    -webkit-line-clamp: 4; /* Show only 4 lines */
+    -webkit-box-orient: vertical; /* Set the box orientation to vertical */
+    line-height: 1.5em; /* Line height to control spacing between lines */
+    font-size: 1rem; /* Set the font size */
+    white-space: normal; /* Allow multi-line truncation */
 }

@@ -164,6 +164,20 @@ body {
         display: inline-block;
     }
 
+    .program-content span {
+        font-size: 1.2rem;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%; /* Ensures it takes the full width available */
+        height: 1.4em; /* Fixes to single line height */
+        line-height: 1.4em;
+        color: black; /* To inherit color from parent, if needed */
+        text-decoration: none; /* Optional: remove underline */
+        display: inline-block;
+    }
+
 
 .description {
     font-size: 0.9rem;
