@@ -85,7 +85,6 @@ body {
     flex-direction: column; /* Stack text vertically */
     justify-content: center; /* Center text vertically */
     align-items: left; /* Align text to the left */
-    text-align: left; /* Align text to the left */
     padding: 20px; /* Padding for the text section */
 }
 
@@ -415,7 +414,8 @@ body {
 }
 
 .sidebar-section {
-    margin-bottom: 20px;
+    position: relative; /* This is crucial for containing the dropdown */
+    margin-bottom: 20px; /* Remove default margin to avoid gaps */
 }
 
 .dropdown-btn {
@@ -430,6 +430,9 @@ body {
     font-size: 16px;
     font-weight: bold;
     border-radius: 8px;
+    position: relative; /* Required for absolute positioning of dropdown */
+    display: block; /* Important for correct positioning */
+    width: 100%; /* Important for correct positioning */
 }
 
     .dropdown-btn:hover {
@@ -437,30 +440,50 @@ body {
     }
 
 .dropdown-content {
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Optional: Center items vertically if needed */
-    margin: 0;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the left */
+    justify-content: flex-start;
+    position: static; /* Key change: static positioning */
+    width: 100%; /* Full width of the parent */
+    box-shadow: none; /* Remove the box-shadow */
+    border: none; /* Remove the border */
+    border-radius: 0; /* Remove border-radius */
+    margin-top: 0; /* Remove top margin*/
+    background-color: #fff; /* Dropdown background */
+    padding: 0px; /* Optional padding */
 }
 
     .dropdown-content button {
-        display: block;
-        width: 90%;
-        background: #fff;
-        color: #333;
-        text-align: left;
+        display: block; /* Occupy full width */
+        width: 100%; /* Full width within dropdown */
+        text-align: left; /* Align text left */
         padding: 10px 15px;
-        border: 2px solid #ddd;
-        margin-bottom: 0px;
+        border: none; /* Remove border */
+        background: transparent; /* No background */
+        margin-bottom: 0; /* No margin bottom */
         cursor: pointer;
         font-size: 14px;
-
+        border-radius: 0; /* Remove border-radius from individual buttons */
+        color: #333; /* Set text color */
     }
 
         .dropdown-content button:hover {
-            background: #f0f0f0;
+            background-color: #f0f0f0;
         }
+
+        .dropdown-content button:last-child {
+            border-bottom: none; /* Remove border from the last button */
+        }
+
+        .dropdown-content button i {
+            margin-right: 10px;
+        }
+
+
+.dropdown-btn.active + .dropdown-content { /* Remove :hover */
+    display: flex;
+}
 
 .add-item-btn {
     background: #28a745;
