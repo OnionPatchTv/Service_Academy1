@@ -1,36 +1,21 @@
 ﻿@model Service_Academy1.Models.EvaluationResultsViewModel
 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/TraineeScript/EvaluationFormScript.js"></script>
+}
+
 <h2>Evaluation Results for @Model.ProgramTitle</h2>
 <p>Evaluated: @Model.EvaluatedCount / @Model.TotalTrainees (@Model.UnevaluatedCount unevaluated)</p>
 
 @if (Model != null)
 {
-    <canvas id="evaluationChart"></canvas>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        var ctx = document.getElementById('evaluationChart').getContext('2d');
-        var evaluationChart = new Chart(ctx, {
-            type: 'bar',  // Use bar chart to display the data
-            data: {
-                labels: @Html.Raw(Json.Serialize(Model.AverageRatings.Select(ar => ar.Category))),
-                datasets: [{
-                    label: 'Average Ratings',
-                    data: @Html.Raw(Json.Serialize(Model.AverageRatings.Select(ar => ar.AverageRating))),
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
+    <canvas id="evaluationChart"
+            data-labels='@Html.Raw(Json.Serialize(Model.AverageRatings.Select(ar => ar.Category)))'
+            data-values='@Html.Raw(Json.Serialize(Model.AverageRatings.Select(ar => ar.AverageRating)))'>
+    </canvas>
 }
 else
 {

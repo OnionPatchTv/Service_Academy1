@@ -157,9 +157,9 @@ namespace Service_Academy1.Controllers
                 })
                 .ToListAsync();
 
-            // Get the total number of trainees for the program
+            // Get the total number of approved trainees for the program
             var totalTrainees = await _context.Enrollment
-                .Where(e => e.ProgramId == programId)
+                .Where(e => e.ProgramId == programId && e.EnrollmentStatus == "Approved")
                 .CountAsync();
 
             // Count how many trainees have submitted their evaluations
@@ -197,6 +197,5 @@ namespace Service_Academy1.Controllers
             // Return the view
             return View(viewModel);
         }
-
     }
 }
