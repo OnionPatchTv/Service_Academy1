@@ -74,6 +74,9 @@
                     @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                     {
                         <button class="module-title" onclick="loadModuleContent('@module.FilePath')">@module.Title</button>
+                        <form action="@Url.Action("MarkAsRead", "Trainee", new { programId = Model.ProgramId, moduleId = module.ModuleId })" method="post">
+                            <button type="submit" class="btn btn-primary">Mark as Read</button>
+                        </form>
                     }
                 }
 

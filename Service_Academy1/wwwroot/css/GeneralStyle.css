@@ -1,3 +1,18 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Root variables */
+:root {
+    --primary-color: #2b2b5f;
+    --secondary-color: #f4f4f4;
+    --complete-color: #8de0b1;
+    --incomplete-color: #d1d1d1;
+    --font-family: 'Poppins', sans-serif;
+}
+
 html, body {
     height: 100%;
     margin: 0;
@@ -38,6 +53,28 @@ body {
         transform: translateY(0); /* Ends at its normal position */
     }
 }
+@media (max-width: 768px) {
+    .class-banner {
+        padding: 30px 20px;
+    }
+
+    .banner-content .class-title {
+        font-size: 1.5rem;
+    }
+
+    .banner-content .trainees-count {
+        font-size: 1rem;
+    }
+
+    .content-sections {
+        flex-direction: column;
+    }
+
+    .modules,
+    .module-viewer {
+        width: 100%; /* Full width on mobile */
+    }
+}
 
 /* Apply the animation to the body */
 body {
@@ -56,6 +93,15 @@ body {
     height: 40px; /* Increased height for the logo */
     margin-right: 10px;
 }
+    .logo a { /* Target the anchor tag, not the image directly */
+        display: inline-block; /* Or display: block; if you want it to be a block element */
+        height: 100px; /* Set the height of the clickable area */
+        margin-right: 30px; /* Keep your existing margin */
+    }
+
+        .logo a img.bsu-logo { /* Target the image inside the anchor */
+            height: 100%; /* Make the image fill the anchor's height */
+        }
 
 .service-academy {
     font-size: 1.5em; /* Adjusted font size */
@@ -116,7 +162,7 @@ a.active {
 }
 
 .breadcrumb {
-    margin-top: 10px; /* Adjust value to the amount of space you want */
+    margin-top: 20px; /* Adjust value to the amount of space you want */
     padding: 15px 30px;
     font-size: 16px;
     background-color: #f9f9f9;
@@ -149,7 +195,7 @@ a.active {
 
     .breadcrumb span {
         color: #666;
-        font-weight: 400;
+        font-weight: 300;
     }
 
 .icon {

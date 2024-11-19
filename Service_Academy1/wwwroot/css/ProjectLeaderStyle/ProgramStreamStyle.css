@@ -1,49 +1,4 @@
-﻿/* Reset and box-sizing */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Root variables */
-:root {
-    --primary-color: #2b2b5f;
-    --secondary-color: #f4f4f4;
-    --banner-bg-color: #4a4a7d; /* Banner background color */
-    --font-family: 'Poppins', sans-serif;
-    --shadow-color: rgba(0, 0, 0, 0.1); /* Add shadow color variable */
-}
-
-/* Body */
-body {
-    font-family: var(--font-family);
-    background-color: var(--secondary-color);
-}
-
-.navbar {
-    display: flex;
-    gap: 10px;
-    margin: 10px;
-    padding-left: 80px;
-}
-
-    .navbar a {
-        color: black;
-        text-decoration: none;
-        font-size: 1.2rem;
-        font-weight: 500;
-        position: relative; /* Positioning for the separator */
-    }
-
-        .navbar a:not(:last-child)::after { /* Add separator after each item except the last */
-            content: "|"; /* Separator */
-            margin-left: 10px; /* Space between text and separator */
-            color: black; /* Color of the separator */
-        }
-
-        .navbar a:hover {
-            color: #ddd;
-        }
+﻿
 
 /* Class Banner Section */
 .class-banner {
@@ -403,28 +358,6 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-    .class-banner {
-        padding: 30px 20px;
-    }
-
-    .banner-content .class-title {
-        font-size: 1.5rem;
-    }
-
-    .banner-content .trainees-count {
-        font-size: 1rem;
-    }
-
-    .content-sections {
-        flex-direction: column;
-    }
-
-    .modules,
-    .module-viewer {
-        width: 100%; /* Full width on mobile */
-    }
-}
 
 
 .close-btn {
