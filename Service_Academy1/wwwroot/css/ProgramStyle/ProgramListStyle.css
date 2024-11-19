@@ -124,7 +124,7 @@ body {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Space between elements */
+    gap: 20px; /* Space between elements */
     flex: 1; /* Flexible container to fill available space */
     position: relative; /* Allows absolute positioning if needed */
 }
@@ -133,11 +133,13 @@ body {
         font-size: 1.2rem;
         margin: 0;
         color: black;
-        width: 100%; /* Full width */
-        height: 1.4em; /* Single-line height */
-        line-height: 1.4em;
-        display: inline-block; /* Keeps text within bounds */
-        text-decoration: none;
+        display: -webkit-box; /* Enables the flexbox-like container */
+        -webkit-line-clamp: 2; /* Limits to 2 lines */
+        -webkit-box-orient: vertical; /* Defines the box orientation */
+        overflow: hidden; /* Ensures overflow is clipped */
+        text-overflow: ellipsis; /* Adds ellipsis (...) for overflowed text */
+        line-height: 1.4em; /* Line height for text */
+        height: calc(1.4em * 2); /* Height for 2 lines */
     }
 
     /* Status Section */
@@ -149,10 +151,14 @@ body {
         padding-top: 10px; /* Space above status */
     }
 
-
 .description {
     font-size: 0.9rem;
     color: #555;
+    display: -webkit-box; /* Enables a flexible layout for text */
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical; /* Specify vertical orientation */
+    overflow: hidden; /* Hide overflowed text */
+    text-overflow: ellipsis; /* Show "..." for overflowed text */
 }
 
 /* Trainees */

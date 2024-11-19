@@ -159,19 +159,20 @@ header {
 
 /* Trainee and request items */
 .trainee-item,
-.request-item {
+.request-item,
+.trainee-request {
     display: grid;
     grid-template-columns: 1fr 0.5fr 1fr;
     align-items: center;
     padding: 15px;
     border-radius: 8px;
-    background-color: #f9f9f9;
-    margin-top: 10px;
+    margin-top: 0px;
 }
 
     /* Centering the Status text */
     .trainee-item .status,
-    .request-item .status {
+    .request-item .status,
+    .trainee-request .status {
         text-align: center;
     }
 
@@ -257,7 +258,7 @@ button {
 
 /* Flexbox layout for buttons */
 .trainee-item div,
-.request-item div {
+.trainee-request div {
     display: flex;
     gap: 10px;
     justify-content: center;

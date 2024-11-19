@@ -163,3 +163,30 @@ a {
         text-decoration: none;
         color: #ff782d; /* Or any other color for hover state */
     }
+
+
+/* Updated Icons Section */
+.program-icons {
+    display: flex;
+    gap: 15px; /* Adds spacing between the icons */
+    justify-content: center; /* Centers icons horizontally */
+    align-items: center; /* Centers icons and text vertically */
+    position: relative; /* Removes absolute positioning for better control */
+}
+
+    /* Individual Icon Styling */
+    .program-icons i.fas,
+    .program-icons i.fa-solid {
+        color: #FF782D;
+        cursor: pointer;
+        font-size: 1.2rem; /* Maintains the icon size */
+        display: flex;
+        align-items: center; /* Centers the icon */
+    }
+
+    /* Text Styling */
+    .program-icons .program-count {
+        margin-left: 5px; /* Adds spacing between the icon and the count */
+        font-size: 1rem; /* Ensures the count text is proportional */
+        color: inherit; /* Inherits the color from the icon */
+    }
