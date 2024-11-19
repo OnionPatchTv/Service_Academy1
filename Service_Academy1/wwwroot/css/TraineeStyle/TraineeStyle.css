@@ -223,10 +223,13 @@ body {
         margin: 0;
         color: black;
         width: 100%; /* Full width */
-        height: 1.4em; /* Single-line height */
-        line-height: 1.4em;
-        display: inline-block; /* Keeps text within bounds */
-        text-decoration: none;
+        display: -webkit-box; /* Enables multiline ellipsis */
+        -webkit-line-clamp: 3; /* Limits to 3 lines */
+        -webkit-box-orient: vertical; /* Defines the box orientation */
+        overflow: hidden; /* Hides overflowing text */
+        text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
+        line-height: 1.4em; /* Line height for text */
+        height: calc(1.4em * 3); /* Sets height for exactly 3 lines */
     }
 
     .program-content a {

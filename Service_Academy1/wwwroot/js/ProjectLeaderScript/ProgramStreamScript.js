@@ -71,11 +71,33 @@ function postAnnouncement() {
 }
 document.addEventListener("DOMContentLoaded", function () {
     const dropdownButtons = document.querySelectorAll(".dropdown-btn");
+
     dropdownButtons.forEach((button) => {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevent bubbling
+
+            this.classList.toggle("active"); // Still toggle the active class for styling
+
             const content = this.nextElementSibling;
             content.style.display = content.style.display === "block" ? "none" : "block";
-        });
+        }); // Removed the code to close other dropdowns
+    });
+
+    // Close dropdowns only if clicking OUTSIDE the sidebar
+    document.addEventListener('click', function (event) {
+
+        const sidebar = document.querySelector('.sidebar');
+        if (!sidebar.contains(event.target)) {
+            dropdownButtons.forEach(button => {
+                if (button.classList.contains('active')) {
+                    button.classList.remove('active');
+                    button.nextElementSibling.style.display = "none";
+                }
+            });
+
+        }
+
+
     });
 });
 function loadModuleContent(filePath, moduleTitle, linkPath) {
