@@ -78,11 +78,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+function loadModuleContent(filePath, moduleTitle) {
+        // Update the iframe source
+        document.getElementById("moduleContentFrame").src = filePath;
 
+        // Update the Module Viewer title
+        document.getElementById("moduleViewerTitle").textContent = moduleTitle || "Module Viewer";
+    }
 // Function to insert bullet list
-function loadModuleContent(filePath) {
-    document.getElementById("moduleContentFrame").src = filePath;
-}
 function openUpdateModuleModal(moduleId, moduleTitle) {
     const prefix = moduleTitle.split(': ')[0]; // Extract "Module X"
     const titleWithoutPrefix = moduleTitle.split(': ')[1]; // Extract title without "Module X"
