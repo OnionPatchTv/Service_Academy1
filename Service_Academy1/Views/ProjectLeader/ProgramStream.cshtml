@@ -126,15 +126,14 @@
                         @foreach (var activity in Model.Activities)
                         {
                             <button onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
+                                @activity.ActivitiesTitle
                                 <i class="fa fa-edit" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
                                 <i class="fa fa-trash" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
-                                @activity.ActivitiesTitle
                             </button>
                         }
                         <button class="add-item-btn" data-toggle="modal" data-target="#createActivityModal">Add Activity</button>
                     </div>
                 </div>
-
                 <div class="sidebar-section">
                     <button class="dropdown-btn" onclick="location.href='@Url.Action("EvaluationResults", "Evaluation", new { programId = Model.ProgramId })'">
                         Evaluation Result
