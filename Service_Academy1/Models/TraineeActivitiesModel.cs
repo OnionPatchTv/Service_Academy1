@@ -12,10 +12,11 @@ namespace Service_Academy1.Models
         public int ActivitiesId { get; set; }
         [ForeignKey("EnrollmentModel")]
         public int EnrollmentId { get; set; }
-        [Required]
-        public string FilePath { get; set; } = string.Empty;
+   
+        public string FilePath { get; set; } = "No Document";
+        public string LinkPath { get; set; } = "No Link Pasted";
         public int RawScore {  get; set; }
-        public DateTime SubmittedAt { get; set; }
+        public DateTime SubmittedAt { get; set; } = DateTime.MinValue;
         public int ComputedScore { get; set; }
         public bool IsCompleted { get; set; } = false;
        // Foreign key to reference the specific student enrollment

@@ -388,6 +388,7 @@ namespace Service_Academy1.Migrations
                     ActivitiesId = table.Column<int>(type: "integer", nullable: false),
                     EnrollmentId = table.Column<int>(type: "integer", nullable: false),
                     FilePath = table.Column<string>(type: "text", nullable: false),
+                    LinkPath = table.Column<string>(type: "text", nullable: false),
                     RawScore = table.Column<int>(type: "integer", nullable: false),
                     SubmittedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ComputedScore = table.Column<int>(type: "integer", nullable: false),

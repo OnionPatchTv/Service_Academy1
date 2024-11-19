@@ -619,6 +619,10 @@ namespace Service_Academy1.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("LinkPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("RawScore")
                         .HasColumnType("integer");
 

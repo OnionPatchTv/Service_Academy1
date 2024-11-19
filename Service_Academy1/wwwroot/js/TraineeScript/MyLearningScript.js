@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // When the form is submitted
     const submitActivityForm = document.getElementById('submitActivityForm');
     submitActivityForm.addEventListener('submit', function (event) {
-        const submissionLinkOrFile = document.getElementById('submissionLinkOrFile');
-        const submissionLink = submissionLinkOrFile.value.trim();
+        const submissionLinkInput = document.getElementById('submissionLink');
+        const submissionLink = submissionLinkInput.value.trim();
 
         // Define regex patterns for allowed links
         const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com|sheets\.google\.com|slides\.google\.com)/;
@@ -15,11 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
         if (submissionLink && !googleDrivePattern.test(submissionLink) &&
             !youtubePattern.test(submissionLink) && !canvaPattern.test(submissionLink)) {
             alert("Please enter a valid link. Only Google Drive, YouTube, Google Docs, Sheets, Slides, or Canva links are allowed.");
-            event.preventDefault();  // Prevent form submission
+            event.preventDefault(); // Prevent form submission
             return false;
         }
     });
 });
+
 function loadModuleContent(filePath) {
     document.getElementById("moduleContentFrame").src = filePath;
 }
@@ -59,13 +60,19 @@ function openSubmitActivityModal(activityId, title, description, totalScore) {
     $('#totalScore').text(totalScore);
 
     // Clear previous inputs
-    $('#submissionLinkOrFile').val('');
-    $('#submissionFile').val('');
+    $('#submissionLink').val('');
+    $('#submissionFileDisplay').text('No file uploaded'); // Display text for the uploaded file
 
     // Fetch existing submission details
     $.get('/Assessment/GetSubmissionDetails', { activitiesId: activityId }, function (data) {
-        if (data && data.filePath) {
-            $('#submissionLinkOrFile').val(data.filePath);
+        if (data) {
+            if (data.filePath) {
+                // Display the file name or path in the modal
+                $('#submissionFileDisplay').text(data.filePath);
+            }
+            if (data.linkPath) {
+                $('#submissionLink').val(data.linkPath);
+            }
         }
     }).fail(function () {
         console.log("No existing submission found.");
@@ -86,6 +93,7 @@ function openSubmitActivityModal(activityId, title, description, totalScore) {
 
     $('#submitActivityModal').modal('show');
 }
+
 
 $(document).ready(function () {
     // Optional: If you'd like to keep auto-hiding the alert after a few seconds while still allowing manual close

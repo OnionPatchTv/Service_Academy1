@@ -14,7 +14,7 @@ namespace Service_Academy1.Models
         public string ActivityDirection { get; set; } = string.Empty;
         [Required]
         public int TotalScore { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.MinValue;
 
         [ForeignKey("ProgramsModel")]
         public int ProgramId { get; set; }

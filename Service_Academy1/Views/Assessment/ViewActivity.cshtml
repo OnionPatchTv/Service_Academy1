@@ -11,6 +11,7 @@
         <tr>
             <th>Trainee Name</th>
             <th>File Path</th>
+            <th>Link Path</th>
             <th>Raw Score</th>
             <th>Total Score Achievable</th>
             <th>Computed Score</th>
@@ -22,19 +23,30 @@
             <tr>
                 <td>@traineeActivity.Enrollment.CurrentTrainee.UserName</td>
                 <td>
-                    @if (Uri.IsWellFormedUriString(traineeActivity.FilePath, UriKind.Absolute))
+                    @if (!string.IsNullOrWhiteSpace(traineeActivity.FilePath))
                     {
-                        <!-- Link to external URL -->
-                        <a href="@traineeActivity.FilePath" target="_blank">
-                            View Submitted Link
+                        var fileUrl = Url.Content("~/" + traineeActivity.FilePath);
+                        <a href="@fileUrl" target="_blank">
+                            View Submitted Document
                         </a>
                     }
                     else
                     {
-                        <!-- Link to ViewSubmission action -->
-                        <a href="@Url.Action("ViewSubmission", "Assessment", new { filePath = traineeActivity.FilePath })" target="_blank">
-                            View Submitted Document
+                        <span>No Document Submitted</span>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrWhiteSpace(traineeActivity.LinkPath) &&
+                   Uri.IsWellFormedUriString(traineeActivity.LinkPath, UriKind.Absolute))
+                    {
+                        <!-- Link to External URL -->
+                        <a href="@traineeActivity.LinkPath" target="_blank">
+                            Open Submitted Link
                         </a>
+                    }
+                    else
+                    {
+                        <span>No Link Submitted</span>
                     }
                 </td>
                 <td>
@@ -50,4 +62,3 @@
         }
     </tbody>
 </table>
-

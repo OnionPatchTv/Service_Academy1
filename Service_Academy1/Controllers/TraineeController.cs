@@ -102,20 +102,21 @@ namespace ServiceAcademy.Controllers
                 return RedirectToAction("MyLearning");
             }
 
-            // Get the trainee's enrollment ID for this program
             var enrollmentId = _context.Enrollment
                 .Where(e => e.TraineeId == userId && e.ProgramId == programId)
                 .Select(e => e.EnrollmentId)
                 .FirstOrDefault();
 
-            // Get evaluations related to the current user and program
             var evaluations = _context.EvaluationResponses
-                .Where(e => e.EnrollmentId == enrollmentId) // Filter by enrollment ID
+                .Where(e => e.EnrollmentId == enrollmentId)
                 .Include(x => x.EvaluationQuestions)
                 .AsSplitQuery()
                 .ToList();
 
-            // Create the view model
+            var traineeModuleResults = _context.TraineeModuleResults
+                .Where(tmr => tmr.EnrollmentId == enrollmentId)
+                .ToList();
+
             var viewModel = new MyLearningStreamViewModel
             {
                 ProgramId = program.ProgramId,
@@ -126,15 +127,17 @@ namespace ServiceAcademy.Controllers
                 Quizzes = program.Quizzes.ToList(),
                 Activities = program.Activities.ToList(),
                 Enrollment = _context.Enrollment
-                                 .Where(e => e.TraineeId == userId && e.ProgramId == programId)
-                                 .Include(e => e.ProgramsModel)
-                                 .AsSplitQuery()
-                                 .ToList(),
-                Evaluations = evaluations // Pass the evaluation data
+                                  .Where(e => e.TraineeId == userId && e.ProgramId == programId)
+                                  .Include(e => e.ProgramsModel)
+                                  .AsSplitQuery()
+                                  .ToList(),
+                Evaluations = evaluations,
+                TraineeModuleResults = traineeModuleResults
             };
 
             return View(viewModel);
         }
+
         [HttpPost]
         public IActionResult MarkAsRead(int programId, int moduleId)
         {

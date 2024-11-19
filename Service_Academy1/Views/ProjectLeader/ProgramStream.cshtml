@@ -16,20 +16,19 @@
     <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
 }
 
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+else if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 <div class="container">
-    @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["Message"]
-        </div>
-    }
-    else if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-        </div>
-    }
-
     <div class="breadcrumb">
         <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
         <span class="separator">&gt;</span>

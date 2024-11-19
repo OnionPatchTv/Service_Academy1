@@ -12,8 +12,8 @@ namespace Service_Academy1.Models
         [ForeignKey("ProgramsModel")]
         public int ProgramId { get; set; } // Foreign key for ProgramsModel
 
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime StartDate { get; set; } = DateTime.MinValue;
+        public DateTime EndDate { get; set; } = DateTime.MinValue;
         public bool IsArchived { get; set; } = false;
         public bool IsActive { get; set; } = false;
         public string IsApproved { get; set; } = string.Empty;

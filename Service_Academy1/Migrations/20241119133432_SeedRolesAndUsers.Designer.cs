@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Service_Academy1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119112933_SeedRolesAndUsers")]
+    [Migration("20241119133432_SeedRolesAndUsers")]
     partial class SeedRolesAndUsers
     {
         /// <inheritdoc />
@@ -621,6 +621,10 @@ namespace Service_Academy1.Migrations
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("LinkPath")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("RawScore")
                         .HasColumnType("integer");

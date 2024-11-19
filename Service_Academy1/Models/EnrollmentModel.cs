@@ -17,7 +17,7 @@ namespace Service_Academy1.Models
         public DateTime EnrollmentDate { get; set; } //enrollment date
         public string ProgramStatus { get; set; } = string.Empty; //completion of the program default is incomplete
 
-        public DateTime? StatusDate { get; set; } // completiion date
+        public DateTime? StatusDate { get; set; } = DateTime.MinValue; // completiion date
 
         public string? ReasonForDenial { get; set; }
         // Navigation property to the instructor

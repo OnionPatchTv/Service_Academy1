@@ -73,9 +73,26 @@
                 {
                     @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                     {
-                        <button class="module-title" onclick="loadModuleContent('@module.FilePath')">@module.Title</button>
+                        // Check if the module is marked as completed
+                        var isCompleted = Model.TraineeModuleResults
+                        .FirstOrDefault(tmr => tmr.ModuleId == module.ModuleId)?
+                        .IsCompleted ?? false;
+
+                        <button class="module-title" onclick="loadModuleContent('@module.FilePath')">
+                            @module.Title
+                            @if (isCompleted)
+                            {
+                                <i class="fa fa-check-circle" aria-hidden="true"></i> <!-- FontAwesome check icon -->
+                            }
+                        </button>
+
                         <form action="@Url.Action("MarkAsRead", "Trainee", new { programId = Model.ProgramId, moduleId = module.ModuleId })" method="post">
-                            <button type="submit" class="btn btn-primary">Mark as Read</button>
+                            <button type="submit" class="btn btn-primary" @if (isCompleted)
+                            {
+                                <text>disabled</text>
+                            }>
+                    <i class="fa fa-check" aria-hidden="true"></i> Mark as Read
+                </button>
                         </form>
                     }
                 }
@@ -136,10 +153,15 @@
 
                             <!-- Upload or Link Submission -->
                             <div class="form-group">
-                                <label for="submissionLinkOrFile">Submission (Link or File Choose the Appropriate Option)</label>
-                                <input type="text" id="submissionLinkOrFile" name="SubmissionLink" class="form-control" placeholder="Paste your link here" />
-                                <input type="file" id="submissionFile" name="SubmissionFile" class="form-control mt-2" />
+                                <label for="submissionLink">Submission Link (Optional)</label>
+                                <input type="text" id="submissionLink" name="SubmissionLink" class="form-control" placeholder="Paste your link here (Google Drive, YouTube, etc.)" />
                             </div>
+                            <div class="form-group">
+                                <label for="submissionFile">Upload File (Optional)</label>
+                                <input type="file" id="submissionFile" name="SubmissionFile" class="form-control mt-2" />
+                                <small id="submissionFileDisplay" class="form-text text-muted mt-1">No file uploaded</small>
+                            </div>
+
 
                             <!-- Score Display -->
                             <div class="form-group">

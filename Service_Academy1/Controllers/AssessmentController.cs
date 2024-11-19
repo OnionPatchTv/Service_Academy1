@@ -494,10 +494,10 @@ namespace ServiceAcademy.Controllers
                 return NotFound();
             }
 
-            return Json(new { submission.FilePath });
+            return Json(new { submission.FilePath, submission.LinkPath });
         }
 
-        public async Task<IActionResult> SubmitActivity(int activitiesId, string submissionLink, IFormFile? submissionFile)
+        public async Task<IActionResult> SubmitActivity(int activitiesId, string? submissionLink, IFormFile? submissionFile)
         {
             // Retrieve the activity and validate
             var activity = _context.Activities.Include(a => a.ProgramsModel)
@@ -538,7 +538,12 @@ namespace ServiceAcademy.Controllers
             if (existingSubmission != null)
             {
                 // Update existing submission
-                existingSubmission.FilePath = !string.IsNullOrEmpty(filePath) ? filePath : submissionLink;
+                if (!string.IsNullOrEmpty(filePath))
+                    existingSubmission.FilePath = filePath;
+
+                if (!string.IsNullOrEmpty(submissionLink))
+                    existingSubmission.LinkPath = submissionLink;
+
                 existingSubmission.SubmittedAt = DateTime.UtcNow;
                 _context.TraineeActivities.Update(existingSubmission);
             }
@@ -549,7 +554,8 @@ namespace ServiceAcademy.Controllers
                 {
                     ActivitiesId = activitiesId,
                     EnrollmentId = enrollment.EnrollmentId, // Link to the correct enrollment
-                    FilePath = !string.IsNullOrEmpty(filePath) ? filePath : submissionLink,
+                    FilePath = !string.IsNullOrEmpty(filePath) ? filePath : "No Document",
+                    LinkPath = !string.IsNullOrEmpty(submissionLink) ? submissionLink : "No Link Pasted",
                     RawScore = 0,
                     ComputedScore = 0,
                     IsCompleted = true,
@@ -563,6 +569,7 @@ namespace ServiceAcademy.Controllers
             TempData["Message"] = "Successfully uploaded an activity.";
             return RedirectToAction("MyLearningStream", "Trainee", new { programId = activity.ProgramId });
         }
+
         [HttpGet]
         public IActionResult GetScores(int activitiesId)
         {
@@ -648,6 +655,8 @@ namespace ServiceAcademy.Controllers
             // Fallback for unsupported types
             return BadRequest("Unsupported file type.");
         }
+
+
         #endregion
     }
 }
