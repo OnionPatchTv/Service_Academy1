@@ -87,3 +87,9 @@ function openSubmitActivityModal(activityId, title, description, totalScore) {
     $('#submitActivityModal').modal('show');
 }
 
+$(document).ready(function () {
+    // Optional: If you'd like to keep auto-hiding the alert after a few seconds while still allowing manual close
+    setTimeout(function () {
+        $(".alert").fadeOut("slow");
+    }, 5000);
+});

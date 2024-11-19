@@ -16,10 +16,15 @@
 </head>
 <body>
     <div class="header">
-        <a href="@Url.Action("Home", "Home")" class="logo-container">
+        <a href="@(User.IsInRole("ProjectLeader") ? Url.Action("ProjectLeaderDashboard", "ProjectLeader") :
+            User.IsInRole("Student") ? Url.Action("MyLearning", "Trainee") :
+            User.IsInRole("Coordinator") ? Url.Action("CoordManageProgram", "Coordinator") :
+            User.IsInRole("Admin") ? Url.Action("Dashboard", "Admin") :
+            Url.Action("Home", "Home"))" class="logo-container">
             <img src="~/Images/logo.png" alt="Logo" class="logo">
             <span class="service-academy">Service Academy</span>
         </a>
+
         <nav class="nav-links">
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
@@ -120,6 +125,7 @@
         <div class="footer-container">
             <div class="footer-top">
                 <div class="logo">
+                     <img src="~/Images/BSU.png" alt="Logo" class="logo">
                     <img src="~/Images/logo.png" alt="Logo" class="logo">
                     <span class="service-academy">Service Academy</span>
                 </div>
