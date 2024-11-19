@@ -207,18 +207,24 @@ body {
 
 /* If you want to avoid the button stretching behavior in all cases, you can use a fixed width */
 .btnActivate, .btnDeactivate {
-    width: 150px; /* Fixed width (optional, adjust as needed) */
+    width: 200px; /* Fixed width (optional, adjust as needed) */
 }
 
 /* Button States */
 .btnActivate {
     background-color: #55BE24; /* Green for activate */
     color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 
 .btnDeactivate {
     background-color: #E02200; /* Red for deactivate */
     color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 
     /* Disabled Button */

@@ -256,6 +256,19 @@ button {
             background-color: #bcbcbc;
         }
 
+    button.close {
+        background-color: transparent; /* Removes background color */
+        color: inherit; /* Inherits text color */
+        border: none; /* Removes any border */
+        font-size: 1.4rem; /* Adjust font size as needed */
+        padding: 0; /* Removes padding for a cleaner look */
+        cursor: pointer; /* Makes the button clickable */
+    }
+
+        button.close:hover {
+            color: #1f1f45; /* Optional hover effect for text color */
+        }
+
 /* Flexbox layout for buttons */
 .trainee-item div,
 .trainee-request div {
@@ -306,3 +319,13 @@ a.active {
         color: #666;
         font-weight: 300;
     }
+
+
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+    margin-top: 10px;
+}
+
+
