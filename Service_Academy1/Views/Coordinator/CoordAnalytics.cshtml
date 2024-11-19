@@ -2,15 +2,15 @@
     ViewData["Title"] = "Analytics Page";
     //Layout = "~/Views/Shared/_layoutAdmin.cshtml";
 }
- 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/AdminScript/Admin.js"></script>
+}
 @section Styles {
     <link rel="stylesheet" href="~/css/AdminStyle/AnalyticsStyle.css">
 }
-
-@section Scripts {
-    <script src="~/js/AdminScript/Admin.js"></script>
-}
-
 
 <div class="container">
     <div class="row">
@@ -82,8 +82,10 @@
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="program-performance-chart"></canvas>
-                        </div>
+                            <canvas id="program-performance-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramTitles))'
+                                    data-values='@Html.Raw(Json.Serialize(ViewBag.AverageRatings))'>
+                            </canvas>
+                        </div>                    
                     </div>
                 </div>
             </div>

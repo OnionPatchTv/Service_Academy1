@@ -78,15 +78,59 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-function loadModuleContent(filePath, moduleTitle) {
-        // Update the iframe source
-        document.getElementById("moduleContentFrame").src = filePath;
+function loadModuleContent(filePath, moduleTitle, linkPath) {
+    // Update the iframe source
+    document.getElementById("moduleContentFrame").src = filePath;
 
-        // Update the Module Viewer title
-        document.getElementById("moduleViewerTitle").textContent = moduleTitle || "Module Viewer";
+    // Update the Module Viewer title
+    document.getElementById("moduleViewerTitle").textContent = moduleTitle || "Module Viewer";
+
+    // Update the video icon state
+    const videoIcon = document.getElementById("videoIcon");
+    const moduleVideoLink = document.getElementById("moduleVideoLink");
+
+    if (linkPath && linkPath !== "No Link Available") {
+        videoIcon.style.color = "orange"; // Highlight the icon
+        videoIcon.title = "View Module Video";
+        moduleVideoLink.href = linkPath; // Set the link
+        moduleVideoLink.style.pointerEvents = "auto"; // Enable clicking
+    } else {
+        videoIcon.style.color = "grey"; // Grey out the icon
+        videoIcon.title = "No Link Available";
+        moduleVideoLink.href = "#"; // Remove the link
+        moduleVideoLink.style.pointerEvents = "none"; // Disable clicking
     }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadModuleForm = document.querySelector('#uploadModuleModal form');
+    const updateModuleForm = document.querySelector('#updateModuleModal form');
+
+    const validateLink = (input) => {
+        const value = input.value.trim();
+        const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com)/;
+        const youtubePattern = /^https:\/\/(www\.youtube\.com|youtu\.be)/;
+
+        if (value && !googleDrivePattern.test(value) && !youtubePattern.test(value)) {
+            alert('Please enter a valid Google Drive or YouTube link.');
+            return false;
+        }
+        return true;
+    };
+
+    // Add event listeners for both forms
+    [uploadModuleForm, updateModuleForm].forEach((form) => {
+        if (form) {
+            form.addEventListener('submit', (event) => {
+                const linkInput = form.querySelector('#linkPath');
+                if (!validateLink(linkInput)) {
+                    event.preventDefault();
+                }
+            });
+        }
+    });
+});
 // Function to insert bullet list
-function openUpdateModuleModal(moduleId, moduleTitle) {
+function openUpdateModuleModal(moduleId, moduleTitle, currentLinkPath) {
     const prefix = moduleTitle.split(': ')[0]; // Extract "Module X"
     const titleWithoutPrefix = moduleTitle.split(': ')[1]; // Extract title without "Module X"
 
@@ -94,6 +138,9 @@ function openUpdateModuleModal(moduleId, moduleTitle) {
     document.getElementById('updateModuleModalLabel').textContent = prefix;
     document.getElementById('moduleIdInput').value = moduleId;
     document.getElementById('moduleTitleInput').value = titleWithoutPrefix;
+
+    // Set the current link path if available or an empty string if not
+    document.getElementById('linkPath').value = currentLinkPath || "";
 
     // Show the modal
     $('#updateModuleModal').modal('show');

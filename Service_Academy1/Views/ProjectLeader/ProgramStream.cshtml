@@ -97,8 +97,8 @@
                     <div class="dropdown-content">
                         @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                         {
-                            <button onclick="loadModuleContent('@module.FilePath', '@module.Title')">
-                                <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Update"></i>
+                            <button onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath')">
+                                <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)'); event.stopPropagation();" title="Update"></i>
                                 <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
                                 @module.Title
                             </button>
@@ -143,6 +143,9 @@
             </aside>
             <section class="module-viewer">
                 <h3 id="moduleViewerTitle">Module Viewer</h3>
+                <a id="moduleVideoLink" href="#" target="_blank">
+                    <i id="videoIcon" class="fa-regular fa-file-video" style="color: grey;" title="No Link Available"></i>
+                </a>
                 <div class="viewer-content">
                     <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
                 </div>
@@ -167,8 +170,8 @@
                                 <label for="fileInput">Upload New File (Optional)</label>
                                 <input type="file" id="fileInput" class="form-control" name="file" accept=".pdf,.pptx" required />
 
-                                <label for="title">Module Viewd(Optional)</label>
-                                <input type="text" class="form-control" name="link" placeholder="Enter Link (e.g., YoutubeLink)" />
+                                <label for="linkPath">Video Link (Optional)</label>
+                                <input type="text" class="form-control" id="linkPath" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btnYes">Upload Module</button>
@@ -198,6 +201,10 @@
                                 <div class="form-group">
                                     <label for="fileInput">Upload New File (Optional)</label>
                                     <input type="file" id="fileInput" class="form-control" name="file" accept=".pdf,.pptx" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="linkPath">Video Link (Optional)</label>
+                                    <input type="text" class="form-control" id="linkPath" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
                                 </div>
                             </div>
                             <div class="modal-footer">

@@ -25,11 +25,71 @@ namespace Service_Academy1.Controllers
         }
 
         // Analytics action
-        public IActionResult CoordAnalytics()
+        public async Task<IActionResult> CoordAnalytics()
         {
             ViewData["ActivePage"] = "Analytics";
+
+            // Get the coordinator's department ID
+            var coordinatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var coordinator = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == coordinatorId);
+
+            if (coordinator == null || coordinator.DepartmentId == null)
+            {
+                return Unauthorized(); // Return if coordinator or department not found
+            }
+
+            var departmentId = coordinator.DepartmentId.Value;
+
+            // Fetch programs for the coordinator's department
+            var programs = await _context.Programs
+                .Where(p => p.DepartmentId == departmentId)
+                .ToListAsync();
+
+            // Get a list of ProgramIds for the coordinator's department
+            var programIds = programs.Select(p => p.ProgramId).ToList();
+
+            // Fetch evaluation response data grouped by program ID for the programs in the coordinator's department
+            var programEvaluationData = await _context.EvaluationResponses
+                .Include(r => r.EvaluationQuestions)
+                .Where(r => programIds.Contains(r.EvaluationQuestions.ProgramId)) // Filter by program IDs from the department
+                .GroupBy(r => r.EvaluationQuestions.ProgramId)
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    AverageRating = g.Average(r => r.Rating)
+                })
+                .ToListAsync();
+
+            // Get the top 3 programs with the highest average ratings
+            var topPrograms = programEvaluationData
+                .OrderByDescending(p => p.AverageRating)
+                .Take(3)
+                .ToList();
+
+            // Prepare data for chart
+            var programTitles = new List<string>();
+            var averageRatings = new List<double>();
+
+            foreach (var program in topPrograms)
+            {
+                var programTitle = await _context.Programs
+                    .Where(p => p.ProgramId == program.ProgramId)
+                    .Select(p => p.Title)
+                    .FirstOrDefaultAsync();
+
+                programTitles.Add(programTitle);
+                averageRatings.Add(program.AverageRating);
+            }
+
+            // Prepare the view model or ViewBag
+            ViewBag.ProgramTitles = programTitles;
+            ViewBag.AverageRatings = averageRatings;
+
             return View();
         }
+
+
         private string GetAgendaFullName(string agendaCode)
         {
             return agendaCode switch

@@ -1,11 +1,23 @@
 ﻿//MYLEARNINGSCRIPT
 document.addEventListener("DOMContentLoaded", function () {
-    const dropdownButtons = document.querySelectorAll(".dropdown-btn");
-    dropdownButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            const content = this.nextElementSibling;
-            content.style.display = content.style.display === "block" ? "none" : "block";
-        });
+    // When the form is submitted
+    const submitActivityForm = document.getElementById('submitActivityForm');
+    submitActivityForm.addEventListener('submit', function (event) {
+        const submissionLinkOrFile = document.getElementById('submissionLinkOrFile');
+        const submissionLink = submissionLinkOrFile.value.trim();
+
+        // Define regex patterns for allowed links
+        const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com|sheets\.google\.com|slides\.google\.com)/;
+        const youtubePattern = /^https:\/\/(www\.youtube\.com|youtu\.be)/;
+        const canvaPattern = /^https:\/\/(www\.canva\.com)/;
+
+        // If a link is provided and doesn't match any of the valid patterns, show an alert and prevent form submission
+        if (submissionLink && !googleDrivePattern.test(submissionLink) &&
+            !youtubePattern.test(submissionLink) && !canvaPattern.test(submissionLink)) {
+            alert("Please enter a valid link. Only Google Drive, YouTube, Google Docs, Sheets, Slides, or Canva links are allowed.");
+            event.preventDefault();  // Prevent form submission
+            return false;
+        }
     });
 });
 function loadModuleContent(filePath) {

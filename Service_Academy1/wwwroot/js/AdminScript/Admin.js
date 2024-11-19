@@ -69,27 +69,37 @@ var coursePerformanceChart = new Chart(ctx, {
 });
 
 // Program Performance Chart
-var ctx = document.getElementById('program-performance-chart').getContext('2d');
-var programPerformanceChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['Program 1', 'Program 2', 'Program 3'],
-        datasets: [{
-            label: 'Completion Rates',
-            data: [75, 85, 90],
-            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-            borderColor: 'rgba(153, 102, 255, 1)',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
+document.addEventListener('DOMContentLoaded', () => {
+    const chartCanvas = document.getElementById('program-performance-chart');
+    if (chartCanvas) {
+        // Fetch labels and values from data attributes
+        const labels = JSON.parse(chartCanvas.dataset.labels);
+        const values = JSON.parse(chartCanvas.dataset.values);
+
+        const ctx = chartCanvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Average Evaluation Rating',
+                    data: values,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
-        }
+        });
     }
 });
+
 
 // Mastery Analytics Chart
 var ctx = document.getElementById('mastery-analytics-chart').getContext('2d');

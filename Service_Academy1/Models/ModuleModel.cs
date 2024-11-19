@@ -16,7 +16,7 @@ namespace Service_Academy1.Models
 
         public string FilePath { get; set; } = string.Empty;// Stores the file path for the PDF/PPT file
 
-        public string LinkPath { get; set; } = string.Empty;
+        public string LinkPath { get; set; } = "No Link Available";
 
         public virtual ProgramsModel? ProgramsModel { get; set; } // Navigation property
     }

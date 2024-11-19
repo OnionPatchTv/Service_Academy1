@@ -212,7 +212,7 @@ namespace ServiceAcademy.Controllers
         }
         #region Module Management
         [HttpPost]
-        public async Task<IActionResult> UploadModule(int programId, string title, IFormFile file)
+        public async Task<IActionResult> UploadModule(int programId, string title, IFormFile file, string linkPath = "No Link Available")
         {
             if (file == null || file.Length == 0)
             {
@@ -220,14 +220,10 @@ namespace ServiceAcademy.Controllers
                 return RedirectToAction("ProgramStream", new { programId });
             }
 
-            // Determine next module number
             var moduleCount = _context.Modules.Count(m => m.ProgramId == programId);
             var moduleNumber = moduleCount + 1;
-
-            // Format the title as "Module X: title" for saving
             var moduleTitle = $"Module {moduleNumber}: {title}";
 
-            // Save the file
             var uploads = Path.Combine(_environment.WebRootPath, "ModuleUploads");
             var filePath = Path.Combine(uploads, file.FileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -235,22 +231,22 @@ namespace ServiceAcademy.Controllers
                 await file.CopyToAsync(fileStream);
             }
 
-            // Create module with the formatted title
             var module = new ModuleModel
             {
                 ProgramId = programId,
                 Title = moduleTitle,
-                FilePath = "/ModuleUploads/" + file.FileName
+                FilePath = "/ModuleUploads/" + file.FileName,
+                LinkPath = string.IsNullOrWhiteSpace(linkPath) ? "No Link Available" : linkPath
             };
 
             _context.Modules.Add(module);
             await _context.SaveChangesAsync();
-
+            TempData["Message"] = "Module uploaded successfully.";
             return RedirectToAction("ProgramStream", new { programId });
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateModule(int moduleId, string moduleTitle, IFormFile file)
+        public async Task<IActionResult> UpdateModule(int moduleId, string moduleTitle, IFormFile file, string linkPath)
         {
             var module = await _context.Modules.FindAsync(moduleId);
             if (module == null)
@@ -259,26 +255,22 @@ namespace ServiceAcademy.Controllers
                 return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
             }
 
-            // Extract the "Module X" prefix from the existing title
             var moduleNumberPrefix = module.Title.Split(':')[0];
             module.Title = $"{moduleNumberPrefix}: {moduleTitle}";
+            module.LinkPath = string.IsNullOrWhiteSpace(linkPath) ? "No Link Available" : linkPath;
 
-            // Optionally update file if provided
             if (file != null && file.Length > 0)
             {
                 var uploads = Path.Combine(_environment.WebRootPath, "ModuleUploads");
                 var filePath = Path.Combine(uploads, file.FileName);
-
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
-
                 module.FilePath = "/ModuleUploads/" + file.FileName;
             }
 
             await _context.SaveChangesAsync();
-
             TempData["Message"] = "Module updated successfully.";
             return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
         }
@@ -310,7 +302,7 @@ namespace ServiceAcademy.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Module deleted and modules renumbered successfully.";
+            TempData["Message"] = "Module deleted and renumbered successfully.";
             return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
         }
         #endregion
