@@ -55,7 +55,7 @@
     </section>
 
     <!-- Main Content Section -->
-    <main class="main-content">
+    
         <!-- Announcements Section -->
         <section class="announcements">
             <h3>Announcements</h3>
@@ -97,10 +97,13 @@
                     <div class="dropdown-content">
                         @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                         {
-                            <button onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath')">
-                                <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)'); event.stopPropagation();" title="Update"></i>
-                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
-                                @module.Title
+                            <button class="dropdown-item" onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath')">
+                                @*Added class dropdown-item*@
+                                <div class="button-content">
+                                    <span class="module-title-text">@module.Title</span>  @* Wrapped title in a span *@
+                                    <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)'); event.stopPropagation();" title="Update"></i>
+                                    <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
+                                </div>
                             </button>
                         }
                         <button class="add-item-btn" data-toggle="modal" data-target="#uploadModuleModal">Add Module</button>
@@ -112,8 +115,11 @@
                     <div class="dropdown-content">
                         @foreach (var quiz in Model.Quizzes)
                         {
-                            <button onclick="location.href='@Url.Action("ViewQuiz", "Assessment", new { quizId = quiz.QuizId })'">
-                                @quiz.QuizTitle
+                            <button class="dropdown-item quizzes" onclick="location.href='@Url.Action("ViewQuiz", "Assessment", new { quizId = quiz.QuizId })'">
+                                @*Added dropdown-item and quizzes classes*@
+                                <div class="button-content">
+                                    <span class="quizzes-title-text">@quiz.QuizTitle</span> @*Added quizzes-title-text span*@
+                                </div>
                             </button>
                         }
                         <button class="add-item-btn" data-toggle="modal" data-target="#createAssessmentModal">Add Quiz</button>
@@ -125,10 +131,13 @@
                     <div class="dropdown-content">
                         @foreach (var activity in Model.Activities)
                         {
-                            <button onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
-                                @activity.ActivitiesTitle
-                                <i class="fa fa-edit" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
-                                <i class="fa fa-trash" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
+                            <button class="dropdown-item activities" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
+                                @*Added dropdown-item and activities classes*@
+                                <div class="button-content">
+                                    <span class="activities-title-text">@activity.ActivitiesTitle</span> @*Added activities-title-text span*@
+                                    <i class="fa fa-edit" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
+                                    <i class="fa fa-trash" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
+                                </div>
                             </button>
                         }
                         <button class="add-item-btn" data-toggle="modal" data-target="#createActivityModal">Add Activity</button>
@@ -141,10 +150,13 @@
                 </div>
             </aside>
             <section class="module-viewer">
-                <h3 id="moduleViewerTitle">Module Viewer</h3>
-                <a id="moduleVideoLink" href="#" target="_blank">
-                    <i id="videoIcon" class="fa-regular fa-file-video" style="color: grey;" title="No Link Available"></i>
-                </a>
+                <div class="module-header">
+                    @* Added a container for title and icon *@
+                    <h3 id="moduleViewerTitle">Module Viewer</h3>
+                    <a id="moduleVideoLink" href="#" target="_blank">
+                        <i id="videoIcon" class="fa-regular fa-file-video" title="No Link Available"></i>
+                    </a>
+                </div>
                 <div class="viewer-content">
                     <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
                 </div>
@@ -366,5 +378,5 @@
                 </div>
             </div>
         </div>
-    </main>
+
 </div>
