@@ -97,9 +97,10 @@
                     <div class="dropdown-content">
                         @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                         {
-                            <button onclick="loadModuleContent('@module.FilePath')">
+                            <button onclick="loadModuleContent('@module.FilePath', '@module.Title')">
                                 <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Update"></i>
-                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>@module.Title
+                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
+                                @module.Title
                             </button>
                         }
                         <button class="add-item-btn" data-toggle="modal" data-target="#uploadModuleModal">Add Module</button>
@@ -141,7 +142,7 @@
                 </div>
             </aside>
             <section class="module-viewer">
-                <h3>Module Viewer</h3>
+                <h3 id="moduleViewerTitle">Module Viewer</h3>
                 <div class="viewer-content">
                     <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
                 </div>
