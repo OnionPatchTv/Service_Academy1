@@ -1,49 +1,4 @@
-﻿/* Reset and box-sizing */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Root variables */
-:root {
-    --primary-color: #2b2b5f;
-    --secondary-color: #f4f4f4;
-    --banner-bg-color: #4a4a7d; /* Banner background color */
-    --font-family: 'Poppins', sans-serif;
-    --shadow-color: rgba(0, 0, 0, 0.1); /* Add shadow color variable */
-}
-
-/* Body */
-body {
-    font-family: var(--font-family);
-    background-color: var(--secondary-color);
-}
-
-.navbar {
-    display: flex;
-    gap: 10px;
-    margin: 10px;
-    padding-left: 80px;
-}
-
-    .navbar a {
-        color: black;
-        text-decoration: none;
-        font-size: 1.2rem;
-        font-weight: 500;
-        position: relative; /* Positioning for the separator */
-    }
-
-        .navbar a:not(:last-child)::after { /* Add separator after each item except the last */
-            content: "|"; /* Separator */
-            margin-left: 10px; /* Space between text and separator */
-            color: black; /* Color of the separator */
-        }
-
-        .navbar a:hover {
-            color: #ddd;
-        }
+﻿
 
 /* Class Banner Section */
 .class-banner {
@@ -240,7 +195,7 @@ body {
 .content-sections {
     display: flex;
     justify-content: space-between;
-    padding: 20px 100px;
+    padding: 20px 80px;
     gap: 20px;
 }
 /* Container for the buttons to align them on the right */
@@ -302,17 +257,48 @@ body {
     border: 2px solid #ccc; /* Add border to module viewer */
 }
 
+    .module-viewer .module-header { /* Added the module-viewer prefix */
+        display: flex;
+        align-items: center;
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+
+        .module-viewer .module-header h3 {
+            margin-right: 10px;
+            overflow: hidden; /* Hide overflowing text */
+            text-overflow: ellipsis; /* Add ellipsis (...) */
+            flex-grow: 1; /* Allow title to take up available space */
+        }
+
+        .module-viewer .module-header a { /* Styles for the icon link */
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0; /* Prevent the icon from shrinking */
+        }
+
+            .module-viewer .module-header a i {
+                /* ... other styles ... */
+                position: relative;
+                top: -3px; /* Adjust this negative value to move up */
+                font-size: 1.5em; /* Or 1.5em, 24px, etc. - adjust as needed */
+            }
+
+        .module-viewer .module-header i { /* Added the module-viewer prefix */
+            color: gray;
+            font-size: 1.2em;
+        }
+
 .module-list .module {
     margin-bottom: 20px;
 }
 
 /* Base styles for the button */
-.module-title, .quiz-title , .activity-title {
+.module-title, .quiz-title, .activity-title {
     background-color: var(--primary-color);
     color: white;
     border: none;
     width: 100%;
-    padding: 10px;
+    padding: 10px 20px;
     text-align: left;
     cursor: pointer;
     border-radius: 5px;
@@ -321,6 +307,9 @@ body {
     display: flex;
     align-items: center; /* Aligning icons and text */
     justify-content: space-between; /* Ensuring icons are on the right */
+    overflow: hidden; /* Hide overflowing content */
+    text-overflow: ellipsis; /* Add ellipsis (...) */
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
     /* Adjust icon spacing using nth-child */
@@ -328,6 +317,11 @@ body {
         margin-left: 35px; /* Custom spacing between the first icon and the text */
     }
 
+    .module-title i, .quiz-title i, .activity-title i {
+        /* ... other styles ... */
+        position: absolute; /* Absolutely position the icon */
+        right: 15px; /* Position it from the right edge */
+    }
     /* Icon styles */
     .module-title i {
         font-size: 18px;
@@ -364,28 +358,6 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-    .class-banner {
-        padding: 30px 20px;
-    }
-
-    .banner-content .class-title {
-        font-size: 1.5rem;
-    }
-
-    .banner-content .trainees-count {
-        font-size: 1rem;
-    }
-
-    .content-sections {
-        flex-direction: column;
-    }
-
-    .modules,
-    .module-viewer {
-        width: 100%; /* Full width on mobile */
-    }
-}
 
 
 .close-btn {
@@ -406,7 +378,7 @@ body {
 }
 
 .sidebar {
-    width: 250px;
+    width: 300px;
     background-color: #f8f9fa;
     padding: 15px;
     border-right: 1px solid #ddd;
@@ -454,47 +426,59 @@ body {
     padding: 0px; /* Optional padding */
 }
 
-    .dropdown-content button {
-        display: block; /* Occupy full width */
-        width: 100%; /* Full width within dropdown */
-        text-align: left; /* Align text left */
-        padding: 10px 15px;
+    .dropdown-content .dropdown-item, /* Module items */
+    .dropdown-content .dropdown-item.quizzes, /* Quizzes items */
+    .dropdown-content .dropdown-item.activities, /* Activities items */
+    .dropdown-content .add-item-btn { /* "Add" buttons */
+        display: flex;
+        align-items: center;
+        width: 100%;
+        overflow: hidden; /* Hide overflow */
+        padding: 10px 15px; /* Add padding */
         border: none; /* Remove border */
-        background: transparent; /* No background */
-        margin-bottom: 0; /* No margin bottom */
-        cursor: pointer;
-        font-size: 14px;
-        border-radius: 0; /* Remove border-radius from individual buttons */
-        color: #333; /* Set text color */
+        background: transparent; /* Make transparent */
+        text-align: left; /* Align text left */
+        white-space: nowrap; /* Prevent text wrapping */
+        color: #333; /* Default text color */ /* Default color for consistency */
+        cursor: pointer; /* Make it look clickable */
+        margin-bottom: 5px; /*Space between buttons */
+        border-radius: 5px; /*Rounded border for button*/
     }
 
-        .dropdown-content button:hover {
-            background-color: #f0f0f0;
-        }
 
-        .dropdown-content button:last-child {
-            border-bottom: none; /* Remove border from the last button */
-        }
-
-        .dropdown-content button i {
-            margin-right: 10px;
+        .dropdown-content .dropdown-item:hover,
+        .dropdown-content .dropdown-item.quizzes:hover,
+        .dropdown-content .dropdown-item.activities:hover,
+        .dropdown-content .add-item-btn:hover {
+            background-color: #f0f0f0; /* Hover background color */
         }
 
 
-.dropdown-btn.active + .dropdown-content { /* Remove :hover */
-    display: flex;
-}
+        .dropdown-content .dropdown-item .button-content, /*For Module items*/
+        .dropdown-content .dropdown-item.quizzes .button-content, /*For quiz items*/
+        .dropdown-content .dropdown-item.activities .button-content { /*For activities items*/
+            display: flex;
+            align-items: center; /* Vertically center text and icons */
+            width: 100%; /* Full button width */
+        }
 
-.add-item-btn {
-    background: #28a745;
-    color: white;
-    font-weight: bold;
-}
+        .dropdown-content .dropdown-item .module-title-text, /* For module titles */
+        .dropdown-content .dropdown-item.quizzes .quizzes-title-text, /* For quizzes titles*/
+        .dropdown-content .dropdown-item.activities .activities-title-text { /* For activity titles */
+            flex-grow: 1; /* Allow text to grow */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis */
+            white-space: nowrap; /* Prevent text wrap */
+            margin-right: 10px; /* Add space before icons */
+        }
 
-    .add-item-btn:hover {
-        background: #218838;
-    }
-
+        .dropdown-content .dropdown-item i,
+        .dropdown-content .dropdown-item.quizzes i, /*For quiz icon*/
+        .dropdown-content .dropdown-item.activities i { /*For activities icon*/
+            flex-shrink: 0; /* Prevent icons from shrinking */
+            cursor: pointer; /* Show pointer cursor */
+            margin-left: 10px; /* Add space between icons */
+        }
 .module-viewer {
     flex-grow: 1;
     padding: 15px;

@@ -118,12 +118,11 @@
 
                         <button class="activity-title"
                                 onclick="openSubmitActivityModal(@activity.ActivitiesId, '@activity.ActivitiesTitle','@activity.ActivityDirection','@activity.TotalScore')">
-                            @if (traineeActivity != null)
-                            {
+                            @activity.ActivitiesTitle
+                            @if (traineeActivity != null){
                                 // Display the check icon if IsCompleted is true
                                 <i class="fa fa-check"></i>
                             }
-                            @activity.ActivitiesTitle
                         </button>
                     }
                 }
