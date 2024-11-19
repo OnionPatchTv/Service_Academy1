@@ -135,6 +135,49 @@ namespace ServiceAcademy.Controllers
 
             return View(viewModel);
         }
+        [HttpPost]
+        public IActionResult MarkAsRead(int programId, int moduleId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user (trainee)
+
+            // Get the trainee's enrollment ID for the current program
+            var enrollment = _context.Enrollment
+                .FirstOrDefault(e => e.TraineeId == userId && e.ProgramId == programId);
+
+            if (enrollment == null)
+            {
+                TempData["Error"] = "Enrollment not found.";
+                return RedirectToAction("MyLearningStream", new { programId = programId });
+            }
+
+            // Check if there's already an existing TraineeModuleResult record
+            var traineeModuleResult = _context.TraineeModuleResults
+                .FirstOrDefault(tmr => tmr.EnrollmentId == enrollment.EnrollmentId && tmr.ModuleId == moduleId);
+
+            if (traineeModuleResult == null)
+            {
+                // Insert a new record into the TraineeModuleResult table
+                traineeModuleResult = new TraineeModuleResult
+                {
+                    EnrollmentId = enrollment.EnrollmentId,
+                    ModuleId = moduleId,
+                    IsCompleted = true
+                };
+
+                _context.TraineeModuleResults.Add(traineeModuleResult);
+            }
+            else
+            {
+                // If the record exists, just update the IsCompleted status to true
+                traineeModuleResult.IsCompleted = true;
+            }
+
+            // Save changes to the database
+            _context.SaveChanges();
+
+            TempData["Success"] = "Module marked as read!";
+            return RedirectToAction("MyLearningStream", new { programId = programId });
+        }
 
         [HttpGet]
         public IActionResult RedirectToQuizOrResult(int quizId)

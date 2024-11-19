@@ -681,14 +681,11 @@ namespace Service_Academy1.Migrations
                     b.Property<int>("ModuleId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ModulesModuleId")
-                        .HasColumnType("integer");
-
                     b.HasKey("TraineeModuleResultId");
 
                     b.HasIndex("EnrollmentId");
 
-                    b.HasIndex("ModulesModuleId");
+                    b.HasIndex("ModuleId");
 
                     b.ToTable("TraineeModuleResults");
                 });
@@ -827,13 +824,13 @@ namespace Service_Academy1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ApplicationUser", "currentTrainee")
+                    b.HasOne("ApplicationUser", "CurrentTrainee")
                         .WithMany()
                         .HasForeignKey("TraineeId");
 
-                    b.Navigation("ProgramsModel");
+                    b.Navigation("CurrentTrainee");
 
-                    b.Navigation("currentTrainee");
+                    b.Navigation("ProgramsModel");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestionModel", b =>
@@ -896,13 +893,13 @@ namespace Service_Academy1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ApplicationUser", "currentProjectLeader")
+                    b.HasOne("ApplicationUser", "CurrentProjectLeader")
                         .WithMany()
                         .HasForeignKey("ProjectLeaderId");
 
-                    b.Navigation("Department");
+                    b.Navigation("CurrentProjectLeader");
 
-                    b.Navigation("currentProjectLeader");
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.QuestionModel", b =>
@@ -973,15 +970,15 @@ namespace Service_Academy1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Service_Academy1.Models.ModuleModel", "Modules")
+                    b.HasOne("Service_Academy1.Models.ModuleModel", "Module")
                         .WithMany()
-                        .HasForeignKey("ModulesModuleId")
+                        .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Enrollment");
 
-                    b.Navigation("Modules");
+                    b.Navigation("Module");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.TraineeQuizResultModel", b =>

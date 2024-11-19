@@ -445,8 +445,7 @@ namespace Service_Academy1.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ModuleId = table.Column<int>(type: "integer", nullable: false),
                     EnrollmentId = table.Column<int>(type: "integer", nullable: false),
-                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
-                    ModulesModuleId = table.Column<int>(type: "integer", nullable: false)
+                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -458,8 +457,8 @@ namespace Service_Academy1.Migrations
                         principalColumn: "EnrollmentId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TraineeModuleResults_Modules_ModulesModuleId",
-                        column: x => x.ModulesModuleId,
+                        name: "FK_TraineeModuleResults_Modules_ModuleId",
+                        column: x => x.ModuleId,
                         principalTable: "Modules",
                         principalColumn: "ModuleId",
                         onDelete: ReferentialAction.Cascade);
@@ -699,9 +698,9 @@ namespace Service_Academy1.Migrations
                 column: "EnrollmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TraineeModuleResults_ModulesModuleId",
+                name: "IX_TraineeModuleResults_ModuleId",
                 table: "TraineeModuleResults",
-                column: "ModulesModuleId");
+                column: "ModuleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TraineeQuizResults_EnrollmentId",
