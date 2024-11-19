@@ -12,13 +12,14 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
+    <link rel="stylesheet" href="~/css/TraineeStyle/TraineeStreamStyle.css">
 }
 
-<nav class="navbar">
+<div class="breadcrumb">
     <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
+    <span class="separator">></span>
     <a href="javascript:void(0);" class="@(Html.IsActive("MyLearningStream", "Trainee") ? "active" : "")" onclick="location.reload();">Stream</a>
-</nav>
+</div>
 
 <!-- Full Width Class Banner Section -->
 <section class="class-banner">
@@ -29,13 +30,39 @@
         <div class="banner-text">
             <h2 class="class-title">@Model.Title</h2>
             <p class="description">@Model.Description</p>
-            <div class="trainees">
-                <i class="fa-solid fa-graduation-cap"></i> 45 Trainees
-            </div>
+
+
+            <!-- Enrollment and Evaluation Section MOVED HERE-->
+            @foreach (var enrollment in Model.Enrollment)
+            {
+                @if (enrollment.ProgramId == Model.ProgramId)
+                {
+                    // Check if the user has already evaluated the program using EnrollmentId
+                    bool hasEvaluated = Model.Evaluations.Any(e =>
+                    e.EvaluationQuestions != null &&
+                    e.EvaluationQuestions.ProgramId == Model.ProgramId &&
+                    e.EnrollmentId == enrollment.EnrollmentId
+                    );
+
+                    <div class="evaluation-section">
+                        @*Added a container for styling*@
+                        @if (!hasEvaluated)
+                        {
+                            <a asp-controller="Evaluation" asp-action="EvaluationForm" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary evaluate-program-button">
+                                @*Added evaluate-button class*@
+                                Evaluate Program
+                            </a>
+                        }
+                        else
+                        {
+                            <span>You have already submitted an evaluation for this program.</span>
+                        }
+                    </div>
+                }
+            }
         </div>
     </div>
 </section>
-
 <!-- Main Content Section -->
 <main class="main-content">
     <section class="content-sections">
@@ -46,7 +73,7 @@
                 {
                     @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                     {
-                        <button class="module-title" onclick="loadModuleContent('@module.FilePath')">Module @module.Title</button>
+                        <button class="module-title" onclick="loadModuleContent('@module.FilePath')">@module.Title</button>
                     }
                 }
 
@@ -137,28 +164,6 @@
             </div>
         </section>
     </section>
-    <!-- Enrollment and Evaluation Section -->
-    @foreach (var enrollment in Model.Enrollment)
-    {
-        @if (enrollment.ProgramId == Model.ProgramId)
-        {
-            // Check if the user has already evaluated the program using EnrollmentId
-            bool hasEvaluated = Model.Evaluations.Any(e =>
-            e.EvaluationQuestions != null &&
-            e.EvaluationQuestions.ProgramId == Model.ProgramId &&
-            e.EnrollmentId == enrollment.EnrollmentId // Compare by EnrollmentId
-            );
-
-            @if (!hasEvaluated)
-            {
-                <a asp-controller="Evaluation" asp-action="EvaluationForm" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary">Evaluate Program</a>
-            }
-            else
-            {
-                <span>You have already submitted an evaluation for this program.</span>
-            }
-        }
-    }
 </main>
 
 
