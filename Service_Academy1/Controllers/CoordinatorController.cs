@@ -46,13 +46,12 @@ namespace Service_Academy1.Controllers
                 .Where(p => p.DepartmentId == departmentId)
                 .ToListAsync();
 
-            // Get a list of ProgramIds for the coordinator's department
             var programIds = programs.Select(p => p.ProgramId).ToList();
 
-            // Fetch evaluation response data grouped by program ID for the programs in the coordinator's department
+            // *** Existing Program Performance Chart Code ***
             var programEvaluationData = await _context.EvaluationResponses
                 .Include(r => r.EvaluationQuestions)
-                .Where(r => programIds.Contains(r.EvaluationQuestions.ProgramId)) // Filter by program IDs from the department
+                .Where(r => programIds.Contains(r.EvaluationQuestions.ProgramId))
                 .GroupBy(r => r.EvaluationQuestions.ProgramId)
                 .Select(g => new
                 {
@@ -61,13 +60,11 @@ namespace Service_Academy1.Controllers
                 })
                 .ToListAsync();
 
-            // Get the top 3 programs with the highest average ratings
             var topPrograms = programEvaluationData
                 .OrderByDescending(p => p.AverageRating)
                 .Take(3)
                 .ToList();
 
-            // Prepare data for chart
             var programTitles = new List<string>();
             var averageRatings = new List<double>();
 
@@ -82,13 +79,149 @@ namespace Service_Academy1.Controllers
                 averageRatings.Add(program.AverageRating);
             }
 
-            // Prepare the view model or ViewBag
+            // *** Program Completion Rate ***
+            var completionRates = await _context.Enrollment
+                .Where(e => programIds.Contains(e.ProgramId))
+                .GroupBy(e => e.ProgramId)
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    CompletionRate = g.Count(e => e.ProgramStatus == "Completed") * 100.0 / g.Count()
+                })
+                .ToListAsync();
+
+            var completionTitles = new List<string>();
+            var completionValues = new List<double>();
+
+            foreach (var rate in completionRates)
+            {
+                var programTitle = await _context.Programs
+                    .Where(p => p.ProgramId == rate.ProgramId)
+                    .Select(p => p.Title)
+                    .FirstOrDefaultAsync();
+
+                completionTitles.Add(programTitle);
+                completionValues.Add(rate.CompletionRate);
+            }
+
+            // *** Quiz Performance Analytics ***
+            var quizPerformanceByProgram = await _context.TraineeQuizResults
+                    .Include(r => r.Quiz)
+                    .Where(r => programIds.Contains(r.Quiz.ProgramId)) // Filter by the coordinator's programs
+                    .GroupBy(r => r.Quiz.ProgramId) // Group by ProgramId instead of QuizId
+                    .Select(g => new
+                    {
+                        ProgramId = g.Key,
+                        AverageScore = g.Average(r => r.ComputedScore), // Average score across all quizzes in the program
+                        AverageRetries = g.Average(r => r.Retries)     // Average retries across all quizzes in the program
+                    })
+                    .ToListAsync();
+
+            // Prepare data for the chart
+            var quizProgramTitles = new List<string>();
+            var programAverageScores = new List<double>();
+            var programAverageRetries = new List<double>();
+
+            foreach (var programData in quizPerformanceByProgram)
+            {
+                var programTitle = await _context.Programs
+                    .Where(p => p.ProgramId == programData.ProgramId)
+                    .Select(p => p.Title)
+                    .FirstOrDefaultAsync();
+
+                quizProgramTitles.Add(programTitle);
+                programAverageScores.Add(programData.AverageScore);
+                programAverageRetries.Add(programData.AverageRetries);
+            }
+            // Activity Completion Rate and Average Score Analytics
+            var activityPerformanceByProgram = await _context.TraineeActivities
+                .Include(r => r.Activities)
+                .Where(r => programIds.Contains(r.Activities.ProgramId)) // Filter by the coordinator's programs
+                .GroupBy(r => r.Activities.ProgramId) // Group by ProgramId
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    AverageScore = g.Average(r => r.ComputedScore), // Average score across all activities in the program
+                    CompletionRate = g.Count(r => r.IsCompleted) * 100.0 / g.Count() // Completion rate
+                })
+                .ToListAsync();
+
+            // Prepare data for the activity performance chart
+            var activityProgramTitles = new List<string>();
+            var programActivityAverageScores = new List<double>();
+            var programActivityCompletionRates = new List<double>();
+
+            foreach (var programData in activityPerformanceByProgram)
+            {
+                var programTitle = await _context.Programs
+                    .Where(p => p.ProgramId == programData.ProgramId)
+                    .Select(p => p.Title)
+                    .FirstOrDefaultAsync();
+
+                activityProgramTitles.Add(programTitle);
+                programActivityAverageScores.Add(programData.AverageScore);
+                programActivityCompletionRates.Add(programData.CompletionRate);
+            }
+            var overallProgramProgress = await _context.Programs
+             .Where(p => programIds.Contains(p.ProgramId))
+             .Select(p => new
+             {
+                 ProgramId = p.ProgramId,
+                 ProgramTitle = p.Title,
+
+                 // Module Progress (using DefaultIfEmpty to avoid nulls)
+                 ModuleProgress = _context.TraineeModuleResults
+                    .Where(m => m.Module.ProgramId == p.ProgramId)
+                    .GroupBy(m => m.Module.ProgramId)
+                    .Select(g => g.Average(m => m.IsCompleted ? 1 : 0))
+                    .FirstOrDefault(),
+
+                 // Quiz Progress (default to 0 for nulls)
+                 QuizProgress = _context.TraineeQuizResults
+                    .Where(q => q.Quiz.ProgramId == p.ProgramId)
+                    .DefaultIfEmpty() // If there are no results, return 0 as the default value
+                    .Average(q => q.ComputedScore == null ? 0 : q.ComputedScore),
+
+                 // Activity Progress (default to 0 for nulls)
+                 ActivityProgress = _context.TraineeActivities
+                     .Where(a => a.Activities.ProgramId == p.ProgramId)
+                     .DefaultIfEmpty() // If there are no results, return 0 as the default value
+                     .Average(q => q.ComputedScore == null ? 0 : q.ComputedScore),
+             })
+             .ToListAsync();
+
+
+            // Calculate the Overall Progress as an average of these components
+            var programProgressTitles = new List<string>();
+            var programOverallProgress = new List<double>();
+
+            foreach (var programData in overallProgramProgress)
+            {
+                // Combine the different progress metrics for each program
+                var overallProgress = (programData.ModuleProgress + programData.QuizProgress + programData.ActivityProgress) / 3;
+
+                programProgressTitles.Add(programData.ProgramTitle);
+                programOverallProgress.Add(overallProgress);
+            }
+
+
+            // Pass data to ViewBag
             ViewBag.ProgramTitles = programTitles;
             ViewBag.AverageRatings = averageRatings;
+            ViewBag.CompletionTitles = completionTitles;
+            ViewBag.CompletionValues = completionValues;
+            ViewBag.QuizProgramTitles = quizProgramTitles;
+            ViewBag.ProgramAverageScores = programAverageScores;
+            ViewBag.ProgramAverageRetries = programAverageRetries;
+            ViewBag.ActivityProgramTitles = activityProgramTitles;
+            ViewBag.ProgramActivityAverageScores = programActivityAverageScores;
+            ViewBag.ProgramActivityCompletionRates = programActivityCompletionRates;
+            ViewBag.ProgramProgressTitles = programProgressTitles;
+            ViewBag.ProgramOverallProgress = programOverallProgress;
+
 
             return View();
         }
-
 
         private string GetAgendaFullName(string agendaCode)
         {

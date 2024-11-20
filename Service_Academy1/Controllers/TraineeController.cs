@@ -15,29 +15,43 @@ namespace ServiceAcademy.Controllers
         }
         public IActionResult MyLearning()
         {
-            // Retrieve the messages from TempData
-            ViewBag.SuccessMessage = TempData["SuccessMessage"];
-            ViewBag.ErrorMessage = TempData["ErrorMessage"];
-
-            // Get the logged-in user's ID
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Fetch programs the trainee is enrolled in, including enrollment status and reason for denial
-            var enrolledPrograms = _context.Enrollment
-                .Where(e => e.TraineeId == userId)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Current user's ID
+            var enrollments = _context.Enrollment
                 .Include(e => e.ProgramsModel)
-                    .ThenInclude(p => p.ProgramManagement) // Include ProgramManagement for IsArchived
-                .AsSplitQuery()  // Split the query to avoid joining too many tables
-                .Select(e => new
+                .Include(e => e.ProgramsModel.Modules)
+                .Include(e => e.ProgramsModel.Quizzes)
+                .Include(e => e.ProgramsModel.Activities)
+                .Include(e => e.ProgramsModel.EvaluationQuestions)
+                .Where(e => e.TraineeId == userId)
+                .Select(e => new MyLearningViewModel
                 {
-                    Program = e.ProgramsModel,
-                    e.EnrollmentStatus,
-                    e.ProgramStatus,
-                    e.ReasonForDenial,
-                    IsArchived = e.ProgramsModel.ProgramManagement.Any(pm => pm.IsArchived) // Check if any ProgramManagement entry is archived
-                })
-                .ToList();
-            return View(enrolledPrograms);
+                    ProgramId = e.ProgramId,
+                    Title = e.ProgramsModel.Title,
+                    Agenda = e.ProgramsModel.Agenda,
+                    PhotoPath = e.ProgramsModel.PhotoPath,
+                    EnrollmentStatus = e.EnrollmentStatus,
+                    ProgramStatus = e.ProgramStatus,
+                    ReasonForDenial = e.ReasonForDenial,
+                    IsArchived = e.ProgramsModel.ProgramManagement.Any(pm => pm.IsArchived),
+
+                    // Calculate progress
+                    ModulesProgress = e.ProgramsModel.Modules.Any()
+                        ? e.ProgramsModel.Modules.Count(m => e.TraineeModuleResults.Any(tmr => tmr.ModuleId == m.ModuleId && tmr.IsCompleted)) * 15.0 / e.ProgramsModel.Modules.Count()
+                        : 0,
+                    ActivitiesProgress = e.ProgramsModel.Activities.Any()
+                        ? e.ProgramsModel.Activities.Count(a => e.TraineeActivities.Any(ta => ta.ActivitiesId == a.ActivitiesId && ta.IsCompleted)) * 40.0 / e.ProgramsModel.Activities.Count()
+                        : 0,
+                    QuizzesProgress = e.ProgramsModel.Quizzes.Any()
+                        ? e.ProgramsModel.Quizzes.Sum(q =>
+                            e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId && tqr.IsCompleted) ? 1.0 :
+                            e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId) ? 0.5 : 0) * 30.0 / e.ProgramsModel.Quizzes.Count()
+                        : 0,
+                    EvaluationProgress = e.ProgramsModel.EvaluationQuestions.Any()
+                        ? e.ProgramsModel.EvaluationQuestions.All(eq => e.EvaluationResponses.Any(er => er.EvaluationQuestionId == eq.EvaluationQuestionId)) ? 15.0 : 0
+                        : 0
+                }).ToList();
+
+            return View(enrollments);
         }
 
         [HttpPost]
@@ -116,6 +130,9 @@ namespace ServiceAcademy.Controllers
             var traineeModuleResults = _context.TraineeModuleResults
                 .Where(tmr => tmr.EnrollmentId == enrollmentId)
                 .ToList();
+            var traineeQuizResults = _context.TraineeQuizResults
+    .Where(tmr => tmr.EnrollmentId == enrollmentId)
+    .ToList();
 
             var viewModel = new MyLearningStreamViewModel
             {
@@ -132,7 +149,8 @@ namespace ServiceAcademy.Controllers
                                   .AsSplitQuery()
                                   .ToList(),
                 Evaluations = evaluations,
-                TraineeModuleResults = traineeModuleResults
+                TraineeModuleResults = traineeModuleResults,
+                 TraineeQuizResults = traineeQuizResults
             };
 
             return View(viewModel);

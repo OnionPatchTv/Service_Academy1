@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Service_Academy1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119133432_SeedRolesAndUsers")]
+    [Migration("20241120031310_SeedRolesAndUsers")]
     partial class SeedRolesAndUsers
     {
         /// <inheritdoc />
@@ -331,7 +331,7 @@ namespace Service_Academy1.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnrollmentId"));
 
-                    b.Property<DateTime>("EnrollmentDate")
+                    b.Property<DateTime?>("EnrollmentDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("EnrollmentStatus")
@@ -470,7 +470,7 @@ namespace Service_Academy1.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProgramManagementId"));
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
@@ -489,7 +489,7 @@ namespace Service_Academy1.Migrations
                     b.Property<string>("ReasonForDenial")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ProgramManagementId");
@@ -854,7 +854,7 @@ namespace Service_Academy1.Migrations
             modelBuilder.Entity("Service_Academy1.Models.EvaluationResponseModel", b =>
                 {
                     b.HasOne("Service_Academy1.Models.EnrollmentModel", "Enrollment")
-                        .WithMany()
+                        .WithMany("EvaluationResponses")
                         .HasForeignKey("EnrollmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -940,7 +940,7 @@ namespace Service_Academy1.Migrations
                         .IsRequired();
 
                     b.HasOne("Service_Academy1.Models.EnrollmentModel", "Enrollment")
-                        .WithMany()
+                        .WithMany("TraineeActivities")
                         .HasForeignKey("EnrollmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -972,7 +972,7 @@ namespace Service_Academy1.Migrations
             modelBuilder.Entity("Service_Academy1.Models.TraineeModuleResult", b =>
                 {
                     b.HasOne("Service_Academy1.Models.EnrollmentModel", "Enrollment")
-                        .WithMany()
+                        .WithMany("TraineeModuleResults")
                         .HasForeignKey("EnrollmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -991,7 +991,7 @@ namespace Service_Academy1.Migrations
             modelBuilder.Entity("Service_Academy1.Models.TraineeQuizResultModel", b =>
                 {
                     b.HasOne("Service_Academy1.Models.EnrollmentModel", "Enrollment")
-                        .WithMany()
+                        .WithMany("TraineeQuizResults")
                         .HasForeignKey("EnrollmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1010,6 +1010,17 @@ namespace Service_Academy1.Migrations
             modelBuilder.Entity("Service_Academy1.Models.ActivitiesModel", b =>
                 {
                     b.Navigation("TraineeActivities");
+                });
+
+            modelBuilder.Entity("Service_Academy1.Models.EnrollmentModel", b =>
+                {
+                    b.Navigation("EvaluationResponses");
+
+                    b.Navigation("TraineeActivities");
+
+                    b.Navigation("TraineeModuleResults");
+
+                    b.Navigation("TraineeQuizResults");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestionModel", b =>

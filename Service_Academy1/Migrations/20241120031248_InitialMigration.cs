@@ -269,7 +269,7 @@ namespace Service_Academy1.Migrations
                     TraineeId = table.Column<string>(type: "text", nullable: true),
                     ProgramId = table.Column<int>(type: "integer", nullable: false),
                     EnrollmentStatus = table.Column<string>(type: "text", nullable: false),
-                    EnrollmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EnrollmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ProgramStatus = table.Column<string>(type: "text", nullable: false),
                     StatusDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ReasonForDenial = table.Column<string>(type: "text", nullable: true)
@@ -340,8 +340,8 @@ namespace Service_Academy1.Migrations
                     ProgramManagementId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProgramId = table.Column<int>(type: "integer", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsArchived = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     IsApproved = table.Column<string>(type: "text", nullable: false),

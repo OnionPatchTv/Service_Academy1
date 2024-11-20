@@ -17,6 +17,7 @@ namespace Service_Academy1.Models
         public List<EnrollmentModel>? Enrollment { get; set; }
         public List<EvaluationResponseModel>? Evaluations { get; set; }
         public List<TraineeModuleResult> TraineeModuleResults { get; set; } = [];
+        public List<TraineeQuizResultModel> TraineeQuizResults { get; set; } = [];
         public string UserId { get; set; } = Guid.NewGuid().ToString();
     }
 }

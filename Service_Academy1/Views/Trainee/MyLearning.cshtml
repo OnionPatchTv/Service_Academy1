@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic> // Change the model to dynamic to accommodate both program and status
+﻿@model IEnumerable<MyLearningViewModel>
 
 @{
     ViewData["Title"] = "My Learning Page";
@@ -84,31 +84,31 @@
                             {
                                 foreach (var enrollment in Model)
                                 {
-                                    <div class="program-card" data-title="@enrollment.Program.Title" data-agenda="@enrollment.Program.Agenda">
+                                    <div class="program-card" data-title="@enrollment.Title" data-agenda="@enrollment.Agenda">
                                         <div class="program-image">
                                             <!-- Check both EnrollmentStatus and IsArchived -->
                                             @if (enrollment.EnrollmentStatus == "Approved" && !enrollment.IsArchived)
                                             {
-                                                <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.Program.ProgramId })">
-                                                    <img src="@Url.Content(enrollment.Program.PhotoPath)" alt="@enrollment.Program.Title">
+                                                <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.ProgramId })">
+                                                    <img src="@Url.Content(enrollment.PhotoPath)" alt="@enrollment.Title">
                                                 </a>
                                             }
                                             else
                                             {
-                                                <img src="@Url.Content(enrollment.Program.PhotoPath)" alt="@enrollment.Program.Title">
+                                                <img src="@Url.Content(enrollment.PhotoPath)" alt="@enrollment.Title">
                                             }
                                         </div>
                                         <div class="program-content">
                                             <h3>
                                                 @if (enrollment.EnrollmentStatus == "Approved" && !enrollment.IsArchived)
                                                 {
-                                                    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.Program.ProgramId })">
-                                                        @enrollment.Program.Title
+                                                    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.ProgramId })">
+                                                        @enrollment.Title
                                                     </a>
                                                 }
                                                 else
                                                 {
-                                                    @enrollment.Program.Title
+                                                    @enrollment.Title
                                                 }
                                             </h3>
 
@@ -116,7 +116,14 @@
                                                 <span>Status: @enrollment.EnrollmentStatus</span>
                                                 <span>Status: @enrollment.ProgramStatus</span>
                                             </div>
-
+                                            <div class="progress-bar-container">
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: @enrollment.TotalProgress%"
+                                                         aria-valuenow="@enrollment.TotalProgress" aria-valuemin="0" aria-valuemax="100">
+                                                        @enrollment.TotalProgress%
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <!-- Display archive message if program is archived -->
                                             @if (enrollment.IsArchived)
                                             {
@@ -132,13 +139,13 @@
                                             <!-- Enable Delete button if status is denied or program is archived -->
                                             @if (enrollment.EnrollmentStatus == "Denied" || enrollment.IsArchived)
                                             {
-                                                <button class="delete-button" data-toggle="modal" data-target="#deleteModal-@enrollment.Program.ProgramId" style="background: none; border: none; padding: 0;">
+                                                <button class="delete-button" data-toggle="modal" data-target="#deleteModal-@enrollment.ProgramId" style="background: none; border: none; padding: 0;">
                                                     <i class="fas fa-trash" style="color: var(--primary-color); cursor: pointer; font-size: 1.5rem;"></i>
                                                 </button>
                                             }
 
                                             <!-- Delete Program Modal -->
-                                            <div class="modal fade" id="deleteModal-@enrollment.Program.ProgramId" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal fade" id="deleteModal-@enrollment.ProgramId" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div id="modalForm" class="modal-form">
@@ -149,7 +156,7 @@
                                                                 </button>
                                                             </div>
                                                             <form method="post" action="@Url.Action("DeleteProgram", "Trainee")">
-                                                                <input type="hidden" name="programId" value="@enrollment.Program.ProgramId" />
+                                                                <input type="hidden" name="programId" value="@enrollment.ProgramId" />
                                                                 <div class="modal-body">
                                                                     <p>Do you want to delete the Enrollment? Once deleted, you cannot rollback.</p>
                                                                 </div>
