@@ -1,16 +1,15 @@
 ﻿@{
     ViewData["Title"] = "Analytics Page";
-    //Layout = "~/Views/Shared/_layoutAdmin.cshtml";
 }
- 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/AdminScript/AnalyticsScript.js"></script>
+}
 @section Styles {
     <link rel="stylesheet" href="~/css/AdminStyle/AnalyticsStyle.css">
 }
-
-@section Scripts {
-    <script src="~/js/AdminScript/Admin.js"></script>
-}
-
 
 <div class="container">
     <div class="row">
@@ -45,8 +44,13 @@
                         <button id="student-reports-export">Export</button>
                     </div>
                     <div class="card-body">
+                        <!-- Activity Completion and Score Chart -->
                         <div class="chart-container">
-                            <canvas id="student-reports-chart"></canvas>
+                            <canvas id="activity-performance-program-chart"
+                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.ActivityProgramTitles))'
+                                    data-scores='@Html.Raw(Json.Serialize(ViewBag.ProgramActivityAverageScores))'
+                                    data-completionrates='@Html.Raw(Json.Serialize(ViewBag.ProgramActivityCompletionRates))'>
+                            </canvas>
                         </div>
                     </div>
                 </div>
@@ -56,8 +60,13 @@
                         <button id="engagement-analytics-export">Export</button>
                     </div>
                     <div class="card-body">
+                        <!-- Quiz Performance Chart -->
                         <div class="chart-container">
-                            <canvas id="engagement-analytics-chart"></canvas>
+                            <canvas id="quiz-performance-program-chart"
+                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.QuizProgramTitles))'
+                                    data-scores='@Html.Raw(Json.Serialize(ViewBag.ProgramAverageScores))'
+                                    data-retries='@Html.Raw(Json.Serialize(ViewBag.ProgramAverageRetries))'>
+                            </canvas>
                         </div>
                     </div>
                 </div>
@@ -71,7 +80,9 @@
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="course-performance-chart"></canvas>
+                            <canvas id="completion-rate-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.CompletionTitles))'
+                                    data-values='@Html.Raw(Json.Serialize(ViewBag.CompletionValues))'>
+                            </canvas>
                         </div>
                     </div>
                 </div>
@@ -82,7 +93,9 @@
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="program-performance-chart"></canvas>
+                            <canvas id="program-performance-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramTitles))'
+                                    data-values='@Html.Raw(Json.Serialize(ViewBag.AverageRatings))'>
+                            </canvas>
                         </div>
                     </div>
                 </div>
@@ -95,19 +108,27 @@
                         <button id="mastery-analytics-export">Export</button>
                     </div>
                     <div class="card-body">
+                        <!-- Overall Program Progress Chart -->
                         <div class="chart-container">
-                            <canvas id="mastery-analytics-chart"></canvas>
+                            <canvas id="overall-program-progress-chart"
+                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramProgressTitles))'
+                                    data-progress='@Html.Raw(Json.Serialize(ViewBag.ProgramOverallProgress))'>
+                            </canvas>
                         </div>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <h2>Custom Reports</h2>
-                        <button id="custom-reports-export">Export</button>
+                        <h2>Arli AI Recommendations</h2>
+                        <!-- Form that sends a post request to trigger recommendation generation -->
+                        <form method="post" asp-action="GenerateRecommendation" asp-controller="Admin">
+                            <button type="submit" class="btn btn-primary">Generate recommendation</button>
+                        </form>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="custom-reports-chart"></canvas>
+                            <h3>Recommendation:</h3>
+                            <p>@ViewBag.Recommendation</p>
                         </div>
                     </div>
                 </div>

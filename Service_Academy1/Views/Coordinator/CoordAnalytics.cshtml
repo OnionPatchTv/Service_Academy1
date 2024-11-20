@@ -120,12 +120,16 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <h2>Custom Reports</h2>
-                        <button id="custom-reports-export">Export</button>
+                        <h2>Arli AI Recommendations</h2>
+                        <!-- Form that sends a post request to trigger recommendation generation -->
+                        <form method="post" asp-action="GenerateRecommendation" asp-controller="Coordinator">
+                            <button type="submit" class="btn btn-primary">Generate recommendation</button>
+                        </form>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="custom-reports-chart"></canvas>
+                            <h3>Recommendation:</h3>
+                            <p>@ViewBag.Recommendation</p>
                         </div>
                     </div>
                 </div>
