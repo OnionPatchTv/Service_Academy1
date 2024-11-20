@@ -12,6 +12,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Register the ArliAIService
+builder.Services.AddHttpClient<ArliAIService>(); // Register HttpClient
+builder.Services.AddSingleton<ArliAIService>(); // Register the custom service
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

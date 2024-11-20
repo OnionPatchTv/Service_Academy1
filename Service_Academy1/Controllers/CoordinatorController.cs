@@ -13,10 +13,12 @@ namespace Service_Academy1.Controllers
     {
         private readonly ILogger<CoordinatorController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly ArliAIService _arliAIService;
 
-        public CoordinatorController(ILogger<CoordinatorController> logger, ApplicationDbContext context)
+
+        public CoordinatorController(ILogger<CoordinatorController> logger, ApplicationDbContext context, ArliAIService arliAIService)
         {
-            (_logger, _context) = (logger, context);
+            (_logger, _context, _arliAIService) = (logger, context, arliAIService);
         }
         public IActionResult CoordDashboard()
         {
@@ -48,7 +50,7 @@ namespace Service_Academy1.Controllers
 
             var programIds = programs.Select(p => p.ProgramId).ToList();
 
-            // *** Existing Program Performance Chart Code ***
+            // *** Existing Program Performance Code ***
             var programEvaluationData = await _context.EvaluationResponses
                 .Include(r => r.EvaluationQuestions)
                 .Where(r => programIds.Contains(r.EvaluationQuestions.ProgramId))
@@ -62,7 +64,7 @@ namespace Service_Academy1.Controllers
 
             var topPrograms = programEvaluationData
                 .OrderByDescending(p => p.AverageRating)
-                .Take(3)
+                .Take(5)
                 .ToList();
 
             var programTitles = new List<string>();
@@ -79,7 +81,7 @@ namespace Service_Academy1.Controllers
                 averageRatings.Add(program.AverageRating);
             }
 
-            // *** Program Completion Rate ***
+            // *** Program Completion Rates ***
             var completionRates = await _context.Enrollment
                 .Where(e => programIds.Contains(e.ProgramId))
                 .GroupBy(e => e.ProgramId)
@@ -106,18 +108,17 @@ namespace Service_Academy1.Controllers
 
             // *** Quiz Performance Analytics ***
             var quizPerformanceByProgram = await _context.TraineeQuizResults
-                    .Include(r => r.Quiz)
-                    .Where(r => programIds.Contains(r.Quiz.ProgramId)) // Filter by the coordinator's programs
-                    .GroupBy(r => r.Quiz.ProgramId) // Group by ProgramId instead of QuizId
-                    .Select(g => new
-                    {
-                        ProgramId = g.Key,
-                        AverageScore = g.Average(r => r.ComputedScore), // Average score across all quizzes in the program
-                        AverageRetries = g.Average(r => r.Retries)     // Average retries across all quizzes in the program
-                    })
-                    .ToListAsync();
+                .Include(r => r.Quiz)
+                .Where(r => programIds.Contains(r.Quiz.ProgramId))
+                .GroupBy(r => r.Quiz.ProgramId)
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    AverageScore = g.Average(r => r.ComputedScore),
+                    AverageRetries = g.Average(r => r.Retries)
+                })
+                .ToListAsync();
 
-            // Prepare data for the chart
             var quizProgramTitles = new List<string>();
             var programAverageScores = new List<double>();
             var programAverageRetries = new List<double>();
@@ -133,20 +134,20 @@ namespace Service_Academy1.Controllers
                 programAverageScores.Add(programData.AverageScore);
                 programAverageRetries.Add(programData.AverageRetries);
             }
-            // Activity Completion Rate and Average Score Analytics
+
+            // *** Activity Performance Analytics ***
             var activityPerformanceByProgram = await _context.TraineeActivities
                 .Include(r => r.Activities)
-                .Where(r => programIds.Contains(r.Activities.ProgramId)) // Filter by the coordinator's programs
-                .GroupBy(r => r.Activities.ProgramId) // Group by ProgramId
+                .Where(r => programIds.Contains(r.Activities.ProgramId))
+                .GroupBy(r => r.Activities.ProgramId)
                 .Select(g => new
                 {
                     ProgramId = g.Key,
-                    AverageScore = g.Average(r => r.ComputedScore), // Average score across all activities in the program
-                    CompletionRate = g.Count(r => r.IsCompleted) * 100.0 / g.Count() // Completion rate
+                    CompletionRate = g.Count(r => r.IsCompleted) * 100.0 / g.Count(),
+                    AverageScore = g.Average(r => r.ComputedScore)
                 })
                 .ToListAsync();
 
-            // Prepare data for the activity performance chart
             var activityProgramTitles = new List<string>();
             var programActivityAverageScores = new List<double>();
             var programActivityCompletionRates = new List<double>();
@@ -162,50 +163,43 @@ namespace Service_Academy1.Controllers
                 programActivityAverageScores.Add(programData.AverageScore);
                 programActivityCompletionRates.Add(programData.CompletionRate);
             }
+
+            // *** Overall Program Progress ***
             var overallProgramProgress = await _context.Programs
-             .Where(p => programIds.Contains(p.ProgramId))
-             .Select(p => new
-             {
-                 ProgramId = p.ProgramId,
-                 ProgramTitle = p.Title,
+                .Where(p => programIds.Contains(p.ProgramId))
+                .Select(p => new
+                {
+                    ProgramId = p.ProgramId,
+                    ProgramTitle = p.Title,
+                    ModuleProgress = _context.TraineeModuleResults
+                        .Where(m => m.Module.ProgramId == p.ProgramId)
+                        .GroupBy(m => m.Module.ProgramId)
+                        .Select(g => g.Average(m => m.IsCompleted ? 1 : 0))
+                        .FirstOrDefault(),
+                    QuizProgress = _context.TraineeQuizResults
+                        .Where(q => q.Quiz.ProgramId == p.ProgramId)
+                        .DefaultIfEmpty()
+                        .Average(q => q.ComputedScore == null ? 0 : q.ComputedScore),
+                    ActivityProgress = _context.TraineeActivities
+                        .Where(a => a.Activities.ProgramId == p.ProgramId)
+                        .DefaultIfEmpty()
+                        .Average(q => q.ComputedScore == null ? 0 : q.ComputedScore),
+                })
+                .ToListAsync();
 
-                 // Module Progress (using DefaultIfEmpty to avoid nulls)
-                 ModuleProgress = _context.TraineeModuleResults
-                    .Where(m => m.Module.ProgramId == p.ProgramId)
-                    .GroupBy(m => m.Module.ProgramId)
-                    .Select(g => g.Average(m => m.IsCompleted ? 1 : 0))
-                    .FirstOrDefault(),
-
-                 // Quiz Progress (default to 0 for nulls)
-                 QuizProgress = _context.TraineeQuizResults
-                    .Where(q => q.Quiz.ProgramId == p.ProgramId)
-                    .DefaultIfEmpty() // If there are no results, return 0 as the default value
-                    .Average(q => q.ComputedScore == null ? 0 : q.ComputedScore),
-
-                 // Activity Progress (default to 0 for nulls)
-                 ActivityProgress = _context.TraineeActivities
-                     .Where(a => a.Activities.ProgramId == p.ProgramId)
-                     .DefaultIfEmpty() // If there are no results, return 0 as the default value
-                     .Average(q => q.ComputedScore == null ? 0 : q.ComputedScore),
-             })
-             .ToListAsync();
-
-
-            // Calculate the Overall Progress as an average of these components
             var programProgressTitles = new List<string>();
             var programOverallProgress = new List<double>();
 
             foreach (var programData in overallProgramProgress)
             {
-                // Combine the different progress metrics for each program
                 var overallProgress = (programData.ModuleProgress + programData.QuizProgress + programData.ActivityProgress) / 3;
-
                 programProgressTitles.Add(programData.ProgramTitle);
                 programOverallProgress.Add(overallProgress);
             }
 
 
-            // Pass data to ViewBag
+            // Pass data to ViewBag for displaying charts and other analytics
+            ViewBag.Recommendation = TempData["Recommendation"] as string;
             ViewBag.ProgramTitles = programTitles;
             ViewBag.AverageRatings = averageRatings;
             ViewBag.CompletionTitles = completionTitles;
@@ -219,11 +213,92 @@ namespace Service_Academy1.Controllers
             ViewBag.ProgramProgressTitles = programProgressTitles;
             ViewBag.ProgramOverallProgress = programOverallProgress;
 
-
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> GenerateRecommendation()
+        {
+            // Get the coordinator's department ID
+            var coordinatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var coordinator = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == coordinatorId);
 
-        private string GetAgendaFullName(string agendaCode)
+            if (coordinator == null || coordinator.DepartmentId == null)
+            {
+                return Unauthorized(); // Return if coordinator or department not found
+            }
+
+            var departmentId = coordinator.DepartmentId.Value;
+
+            // Fetch programs for the coordinator's department
+            var programs = await _context.Programs
+                .Where(p => p.DepartmentId == departmentId)
+                .ToListAsync();
+
+            var programIds = programs.Select(p => p.ProgramId).ToList();
+
+            if (!programIds.Any())
+            {
+                // No programs found for the department
+                TempData["Recommendation"] = "No data available to generate a recommendation for this department.";
+                return RedirectToAction("CoordAnalytics");
+            }
+
+            // Collect analytics data
+            var programEvaluationData = await _context.EvaluationResponses
+                .Include(r => r.EvaluationQuestions)
+                .Where(r => programIds.Contains(r.EvaluationQuestions.ProgramId))
+                .ToListAsync();
+
+            var completionRates = await _context.Enrollment
+                .Where(e => programIds.Contains(e.ProgramId))
+                .ToListAsync();
+
+            var quizPerformanceByProgram = await _context.TraineeQuizResults
+                .Include(r => r.Quiz)
+                .Where(r => programIds.Contains(r.Quiz.ProgramId))
+                .ToListAsync();
+
+            var activityPerformanceByProgram = await _context.TraineeActivities
+                .Include(r => r.Activities)
+                .Where(r => programIds.Contains(r.Activities.ProgramId))
+                .ToListAsync();
+
+            // Validate if there is sufficient data
+            if (!programEvaluationData.Any() && !completionRates.Any() && !quizPerformanceByProgram.Any() && !activityPerformanceByProgram.Any())
+            {
+                // Insufficient data for analysis
+                TempData["Recommendation"] = "Insufficient data to generate meaningful recommendations for this department.";
+                return RedirectToAction("CoordAnalytics");
+            }
+
+            // Build the prompt dynamically based on available data
+            var prompt = $@"
+        Provide a recommendation based on the following analytics for the department {coordinator.DepartmentId}:
+
+        - Average Ratings by Program: {string.Join(", ", programEvaluationData.Select(p => $"Program {p.EvaluationQuestions.ProgramId}: {p.Rating:F2}"))}
+        - Completion Rates by Program: {string.Join(", ", completionRates.Select(c => $"Program {c.ProgramId}: {c.ProgramStatus == "Completed"}"))}
+        - Quiz Performance by Program: {string.Join(", ", quizPerformanceByProgram.Select(q => $"Program {q.Quiz.ProgramId}: {q.ComputedScore:F2}"))}
+        - Activity Performance by Program: {string.Join(", ", activityPerformanceByProgram.Select(a => $"Program {a.Activities.ProgramId}: Completion {a.IsCompleted}, Avg Score {a.ComputedScore:F2}"))}
+
+        Format the response as follows:
+        1. Start with 1-2 sentences introducing the department's overall performance.
+        2. Provide 1-3 actionable recommendations as bullet points, each consisting of a single sentence.
+        3. End with a 1-sentence conclusion summarizing the next steps or overall strategy.
+
+        Ensure clarity and brevity in the response.";
+
+            // Get the recommendation from ArliAI
+            var recommendation = await _arliAIService.GetRecommendation(prompt);
+
+            // Store the recommendation in TempData for the next request
+            TempData["Recommendation"] = recommendation;
+
+            // Redirect back to the original CoordAnalytics view, keeping all data and the recommendation
+            return RedirectToAction("CoordAnalytics");
+        }
+
+        private static string GetAgendaFullName(string agendaCode)
         {
             return agendaCode switch
             {
@@ -243,7 +318,7 @@ namespace Service_Academy1.Controllers
             };
         }
 
-        private string GetSdgFullName(string sdgCode)
+        private static string GetSdgFullName(string sdgCode)
         {
             return sdgCode switch
             {
