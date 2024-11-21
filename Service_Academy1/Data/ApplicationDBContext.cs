@@ -27,6 +27,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<EvaluationCriteria> EvaluationCriteria { get; set; }
     public DbSet<EvaluationQuestionModel> EvaluationQuestions { get; set; }
     public DbSet<EvaluationResponseModel> EvaluationResponses { get; set; }
+    public DbSet<SystemUsageLogModel> SystemUsageLogs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

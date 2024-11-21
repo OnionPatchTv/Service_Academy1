@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Service_Academy1.Services;
 
 
 namespace ServiceAcademy.Controllers
@@ -14,14 +15,16 @@ namespace ServiceAcademy.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<AccountController> _logger;
+        private readonly LogSystemUsageService _logUsageService;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                           SignInManager<ApplicationUser> signInManager,
-                          ILogger<AccountController> logger)
+                          ILogger<AccountController> logger, LogSystemUsageService logUsageService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _logUsageService = logUsageService;
         }
 
         // Registration View
@@ -95,6 +98,9 @@ namespace ServiceAcademy.Controllers
                     var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
+                        var userId = _userManager.GetUserId(User);
+                        await _logUsageService.LogSystemUsageAsync(userId, "Login");
+
                         var roles = await _userManager.GetRolesAsync(user);
                         // Debug output to see assigned roles
                         Debug.WriteLine($"Roles for user {user.Email}: {string.Join(", ", roles)}");
@@ -110,11 +116,11 @@ namespace ServiceAcademy.Controllers
                         }
                         else if (roles.Contains("Coordinator"))
                         {
-                            return RedirectToAction("CoordDashboard", "Coordinator");
+                            return RedirectToAction("CoordAnalyticsDashboard", "Coordinator");
                         }
                         else if (roles.Contains("Admin"))
                         {
-                            return RedirectToAction("Dashboard", "Admin");
+                            return RedirectToAction("AnalyticsDashboard", "Admin");
                         }
                         // Default redirect if no specific role
                         return RedirectToAction("Home", "Home");

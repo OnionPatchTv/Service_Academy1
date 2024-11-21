@@ -66,15 +66,8 @@ namespace ServiceAcademy.Controllers
                 _ => sdgCode // Return the acronym if no match found
             };
         }
-        // Dashboard action
-        public IActionResult Dashboard()
-        {
-            ViewData["ActivePage"] = "Dashboard";
-            return View();
-        }
-
         // Analytics action
-        public async Task<IActionResult> Analytics()
+        public async Task<IActionResult> AnalyticsDashboard()
         {
             ViewData["ActivePage"] = "Analytics";
 
@@ -318,7 +311,7 @@ namespace ServiceAcademy.Controllers
             TempData["Recommendation"] = recommendation;
 
             // Redirect to Analytics view
-            return RedirectToAction("Analytics");
+            return RedirectToAction("AnalyticsDashboard");
         }
 
 

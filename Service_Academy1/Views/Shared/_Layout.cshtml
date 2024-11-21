@@ -41,15 +41,13 @@
 
                 }
                 else if (User.IsInRole("Coordinator"))
-                {
-                    <a href="@Url.Action("CoordDashboard", "Coordinator")" class="@(Html.IsActive("CoordDashboard", "Coordinator") ? "active" : "")">Dashboard</a>
-                    <a href="@Url.Action("CoordAnalytics", "Coordinator")" class="@(Html.IsActive("CoordAnalytics", "Coordinator") ? "active" : "")">Analytics</a>
+                {                
+                    <a href="@Url.Action("CoordAnalyticsDashboard", "Coordinator")" class="@(Html.IsActive("CoordAnalyticsDashboard", "Coordinator") ? "active" : "")">Analytics</a>
                     <a href="@Url.Action("CoordManageProgram", "Coordinator")" class="@(Html.IsActive("CoordManageProgram", "Coordinator") ? "active" : "")">Manage Programs</a>
                 }
                 else if (User.IsInRole("Admin"))
                 {
-                    <a href="@Url.Action("Dashboard", "Admin")" class="@(Html.IsActive("Dashboard", "Admin") ? "active" : "")">Dashboard</a>
-                    <a href="@Url.Action("Analytics", "Admin")" class="@(Html.IsActive("Analytics", "Admin") ? "active" : "")">Analytics</a>
+                    <a href="@Url.Action("AnalyticsDashboard", "Admin")" class="@(Html.IsActive("AnalyticsDashboard", "Admin") ? "active" : "")">Analytics</a>
                     <a href="@Url.Action("ManageAccount", "Admin")" class="@(Html.IsActive("ManageAccount", "Admin") ? "active" : "")">Manage Accounts</a>
                     <a href="@Url.Action("ManageProgram", "Admin")" class="@(Html.IsActive("ManageProgram", "Admin") ? "active" : "")">Manage Programs</a>
                 }

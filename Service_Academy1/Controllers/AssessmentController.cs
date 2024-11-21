@@ -4,6 +4,7 @@ using Service_Academy1.Models;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Diagnostics;
 using System.Security.Claims;
+using Service_Academy1.Services;
 
 namespace ServiceAcademy.Controllers
 {
@@ -12,9 +13,10 @@ namespace ServiceAcademy.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
-        public AssessmentController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
+        private readonly LogSystemUsageService _logUsageService;
+        public AssessmentController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment environment, LogSystemUsageService logUsageService)
         {
-            (_logger, _context, _environment) = (logger, context, environment);
+            (_logger, _context, _environment, _logUsageService) = (logger, context, environment, logUsageService);
         }
         #region Quiz Management
         [HttpPost]
@@ -356,6 +358,7 @@ namespace ServiceAcademy.Controllers
             }
 
             await _context.SaveChangesAsync();
+            await _logUsageService.LogSystemUsageAsync(enrollment.TraineeId, "QuizSubmission", quizId);
 
             return RedirectToAction("QuizResult", new { resultId = result.TraineeQuizResultId });
         }

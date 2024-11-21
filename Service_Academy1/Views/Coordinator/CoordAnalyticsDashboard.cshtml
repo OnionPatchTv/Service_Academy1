@@ -41,7 +41,7 @@
             <div class="card-group">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Student Reports</h2>
+                        <h2>Activity Performance Reports</h2>
                         <button id="student-reports-export">Export</button>
                     </div>
                     <div class="card-body">
@@ -57,7 +57,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <h2>Engagement Analytics</h2>
+                        <h2>Quiz Performance Analytics</h2>
                         <button id="engagement-analytics-export">Export</button>
                     </div>
                     <div class="card-body">
@@ -76,7 +76,7 @@
             <div class="card-group">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Course Performance</h2>
+                        <h2>Completion Rate</h2>
                         <button id="course-performance-export">Export</button>
                     </div>
                     <div class="card-body">
@@ -97,7 +97,7 @@
                             <canvas id="program-performance-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramTitles))'
                                     data-values='@Html.Raw(Json.Serialize(ViewBag.AverageRatings))'>
                             </canvas>
-                        </div>                    
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
             <div class="card-group">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Mastery Analytics</h2>
+                        <h2>Program Progress Analytics</h2>
                         <button id="mastery-analytics-export">Export</button>
                     </div>
                     <div class="card-body">
@@ -130,6 +130,23 @@
                         <div class="chart-container">
                             <h3>Recommendation:</h3>
                             <p>@ViewBag.Recommendation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-group">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Mastery Analytics</h2>
+                        <button id="mastery-analytics-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Overall Program Progress Chart -->
+                        <div class="chart-container">
+                            <canvas id="overall-program-progress-chart"
+                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramProgressTitles))'
+                                    data-progress='@Html.Raw(Json.Serialize(ViewBag.ProgramOverallProgress))'>
+                            </canvas>
                         </div>
                     </div>
                 </div>

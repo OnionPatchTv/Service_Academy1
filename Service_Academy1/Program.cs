@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Service_Academy1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 // Register the ArliAIService
 builder.Services.AddHttpClient<ArliAIService>(); // Register HttpClient
 builder.Services.AddSingleton<ArliAIService>(); // Register the custom service
+builder.Services.AddScoped<LogSystemUsageService>();
 
 builder.Services.AddControllersWithViews();
 

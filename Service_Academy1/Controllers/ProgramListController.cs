@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Service_Academy1.Models;
+using Service_Academy1.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,12 @@ namespace Service_Academy1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager; // Added UserManager
+        private readonly LogSystemUsageService _logUsageService;
 
-        public ProgramListController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) // Updated constructor
+
+        public ProgramListController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, LogSystemUsageService logUsageService) // Updated constructor
         {
-            (_userManager, _context) = (userManager, context);
+            (_userManager, _context, _logUsageService) = (userManager, context, logUsageService);
         }
 
         // Action method for ProgramList that filters by Agenda
@@ -146,6 +149,8 @@ namespace Service_Academy1.Controllers
                 _context.Enrollment.Add(enrollment);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Enrollment successful!";
+
+                _logUsageService.LogSystemUsageAsync(userId, "ProgramEnrollment", programId);
             }
             catch (Exception ex)
             {
