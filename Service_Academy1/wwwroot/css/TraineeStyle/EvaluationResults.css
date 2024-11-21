@@ -1,0 +1,40 @@
+﻿/* General styling for the container */
+.container {
+    display: flex;
+    gap: 10px; /* Space between the elements */
+    align-items: stretch; /* Ensures the canvas and right column have the same height */
+}
+
+/* Styling for the left canvas (chart) */
+.canvas-container {
+    flex: 2; /* Takes up 2 parts of the space */
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 600px; /* Fixed height for the canvas */
+}
+
+/* Styling for the right column (analysis and impact assessment) */
+.right-column {
+    flex: 1.5; /* Takes up 1 part of the space */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between analysis and impact assessment sections */
+    height: 600px; /* Matches the height of the canvas */
+}
+
+/* Styling for individual boxes in the right column */
+.box {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    text-align:justify;
+    height: 300px; /* Fixed height for each box */
+    overflow-y: auto; /* Makes content scrollable if it overflows */
+    background-color: #f9f9f9; /* Light background for better contrast */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+}
