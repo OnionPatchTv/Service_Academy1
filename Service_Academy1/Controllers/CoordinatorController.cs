@@ -88,7 +88,7 @@ namespace Service_Academy1.Controllers
                 .Select(g => new
                 {
                     ProgramId = g.Key,
-                    CompletionRate = g.Count(e => e.ProgramStatus == "Completed") * 100.0 / g.Count()
+                    CompletionRate = g.Count(e => e.ProgramStatus == "Complete") * 100.0 / g.Count()
                 })
                 .ToListAsync();
 
