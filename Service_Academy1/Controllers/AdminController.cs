@@ -121,7 +121,7 @@ namespace ServiceAcademy.Controllers
                 .Select(g => new
                 {
                     ProgramId = g.Key,
-                    CompletionRate = g.Count(e => e.ProgramStatus == "Completed") * 100.0 / g.Count()
+                    CompletionRate = g.Count(e => e.ProgramStatus == "Complete") * 100.0 / g.Count()
                 })
                 .ToListAsync();
 
@@ -233,6 +233,30 @@ namespace ServiceAcademy.Controllers
                 programProgressTitles.Add(programData.ProgramTitle);
                 programOverallProgress.Add(overallProgress);
             }
+            var systemUsageData = await _context.SystemUsageLogs
+                   .GroupBy(log => new { log.ActionType, log.Timestamp.Date })
+                   .Select(g => new
+                   {
+                       ActionType = g.Key.ActionType,
+                       Date = g.Key.Date,
+                       Count = g.Count()
+                   })
+                   .ToListAsync();
+
+            // Organize data for each ActionType
+            var loginData = systemUsageData.Where(d => d.ActionType == "Login").ToList();
+            var quizSubmissionData = systemUsageData.Where(d => d.ActionType == "QuizSubmission").ToList();
+            var activitySubmissionData = systemUsageData.Where(d => d.ActionType == "ActivitySubmission").ToList();
+            var programEnrollmentData = systemUsageData.Where(d => d.ActionType == "ProgramEnrollment").ToList();
+
+            // Get unique dates sorted by date
+            var dates = systemUsageData.Select(d => d.Date.ToString("yyyy-MM-dd")).Distinct().OrderBy(d => d).ToList();
+
+            // Prepare counts for each action type
+            var loginCounts = dates.Select(date => loginData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
+            var quizSubmissionCounts = dates.Select(date => quizSubmissionData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
+            var activitySubmissionCounts = dates.Select(date => activitySubmissionData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
+            var programEnrollmentCounts = dates.Select(date => programEnrollmentData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
 
             // Pass data to ViewBag
             ViewBag.Recommendation = TempData["Recommendation"] as string;
@@ -248,6 +272,11 @@ namespace ServiceAcademy.Controllers
             ViewBag.ProgramActivityCompletionRates = programActivityCompletionRates;
             ViewBag.ProgramProgressTitles = programProgressTitles;
             ViewBag.ProgramOverallProgress = programOverallProgress;
+            ViewBag.Dates = dates;
+            ViewBag.LoginCounts = loginCounts;
+            ViewBag.QuizSubmissionCounts = quizSubmissionCounts;
+            ViewBag.ActivitySubmissionCounts = activitySubmissionCounts;
+            ViewBag.ProgramEnrollmentCounts = programEnrollmentCounts;
 
             return View();
         }
@@ -294,16 +323,11 @@ namespace ServiceAcademy.Controllers
                 $"a completion rate of {d.CompletionRate:F2}%, and an overall progress score of {d.OverallProgress:F2}."));
 
             var prompt = $@"
-                    Generate a structured recommendation in the following format:
-                    1-2 sentence introduction.
-                    Three bullet points with one-sentence recommendations.
-                    1 sentence conclusion.
-
-                    The data for each department is as follows:
-                    {departmentComparisons}
-
-                    Based on this data, provide actionable insights. Highlight which departments excel and which need improvement, and suggest strategies to improve overall program performance.";
-
+            Analyze the following dataset which includes  {departmentComparisons}, program evaluation data, completion rates, quiz and activity performance, and overall progress metrics.
+            Consider the average ratings for top programs, completion rates by program, quiz scores and retries, activity completion and scoring, and  holistic program progress blending module, quiz, and activity performance.
+            Provide a clear, concise 3-5 sentence of insight into the overall effectiveness and areas for improvement in program delivery and engagement, with actionable recommendations for optimizing trainee outcomes 
+            and enhancing program performance. Avoid using lists or bullet points; write in a cohesive essay style.";
+                 
             // Get recommendation from ArliAI
             var recommendation = await _arliAIService.GetRecommendation(prompt);
 

@@ -13,10 +13,12 @@ namespace Service_Academy1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ArliAIService _arliAIService;
 
-        public EvaluationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public EvaluationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ArliAIService arliAIService)
         {
-            (_userManager, _context) = (userManager, context);
+            (_userManager, _context, _arliAIService) = (userManager, context, arliAIService);
+
         }
 
         public async Task<IActionResult> EvaluationForm(int programId)
@@ -144,6 +146,12 @@ namespace Service_Academy1.Controllers
 
         public async Task<IActionResult> EvaluationResults(int programId)
         {
+            // Ensure programId is passed via the URL
+            if (programId == 0)
+            {
+                return RedirectToAction("Error");
+            }
+
             // Fetch evaluation response data, grouped by category and rating
             var evaluationResults = await _context.EvaluationResponses
                 .Include(r => r.EvaluationQuestions)
@@ -162,7 +170,7 @@ namespace Service_Academy1.Controllers
                 .Where(e => e.ProgramId == programId && e.EnrollmentStatus == "Approved")
                 .CountAsync();
 
-            // Count how many trainees have submitted their evaluations
+            // Count how many distinct trainees have submitted evaluations (based on EnrollmentId)
             var evaluatedCount = await _context.EvaluationResponses
                 .Where(r => r.EvaluationQuestions.ProgramId == programId)
                 .Select(r => r.EnrollmentId)
@@ -172,7 +180,7 @@ namespace Service_Academy1.Controllers
             // The number of unevaluated trainees
             var unevaluatedCount = totalTrainees - evaluatedCount;
 
-            // Calculate average ratings by category
+            // Calculate average ratings by category (corrected to avoid multiple counts)
             var averageRatings = evaluationResults
                 .GroupBy(r => r.Category)
                 .Select(g => new AverageRatingViewModel
@@ -182,10 +190,42 @@ namespace Service_Academy1.Controllers
                 })
                 .ToList();
 
+            // Prepare the first dynamic prompt for ArliAI
+            var analysisPrompt = $@"
+                Analyze the following dataset from a program's evaluation results, including evaluation responses categorized by rating, 
+                total trainees, evaluated and unevaluated counts, and average ratings across categories. Consider the distribution of 
+                evaluation responses, the proportion of evaluated versus unevaluated trainees, and the calculated average ratings for 
+                each category. Provide a 3-5 sentence of cohesive analysis of the program's evaluation engagement and performance, offering actionable 
+                insights to improve response rates, address gaps in trainee feedback, and enhance overall program effectiveness.
+                Avoid using lists or bullet points; write in a cohesive essay style.";
+
+            // Call ArliAI service to generate the first analysis
+            var evaluationAnalysis = await _arliAIService.GetAnalysis(analysisPrompt);
+
+            // Prepare the impact assessment prompt based on the first analysis
+            var impactPrompt = $@"
+                Based on the following analysis insights:
+                {evaluationAnalysis}
+
+                Assess the potential impact these recommendations could have on the program's overall quality, trainee satisfaction, and 
+                program engagement. Include a 3-5 sentence analysis of how these changes might influence future evaluations, retention rates, and 
+                stakeholder confidence. Provide a 3 sentence actionable next steps to ensure effective implementation of these recommendations.
+                Avoid using lists or bullet points; write in a cohesive essay style.";
+
+            // Call ArliAI service to generate the impact assessment
+            var impactAssessment = await _arliAIService.GetImpact(impactPrompt);
+
+            // Retrieve the program title and any other needed data
+            var program = await _context.Programs.FindAsync(programId);
+            if (program == null)
+            {
+                return RedirectToAction("Error");
+            }
+
             // Prepare the view model
             var viewModel = new EvaluationResultsViewModel
             {
-                ProgramTitle = (await _context.Programs.FindAsync(programId))?.Title,
+                ProgramTitle = program.Title,
                 TotalTrainees = totalTrainees,
                 EvaluatedCount = evaluatedCount,
                 UnevaluatedCount = unevaluatedCount,
@@ -194,8 +234,14 @@ namespace Service_Academy1.Controllers
                 EvaluationDetails = evaluationResults
             };
 
-            // Return the view
+            // Store the evaluation analysis and impact assessment in ViewBag for the view
+            ViewBag.Analysis = evaluationAnalysis;
+            ViewBag.ImpactAssessment = impactAssessment;
+
+            // Return the view with the populated view model
             return View(viewModel);
         }
+
+
     }
 }
