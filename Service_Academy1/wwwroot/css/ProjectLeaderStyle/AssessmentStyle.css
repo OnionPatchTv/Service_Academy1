@@ -50,6 +50,33 @@ input[type="text"] {
         outline: none;
     }
 
+#submitQuizButton {
+    padding: 10px 20px;
+    background-color: #007BFF; /* Primary blue color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    position: absolute; /* Use absolute positioning */
+    bottom: 20px; /* Adjust distance from the bottom */
+    right: 20px; /* Adjust distance from the right */
+    transition: background-color 0.3s ease;
+}
+
+    #submitQuizButton:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+form {
+    position: relative; /* Required for the absolute positioning of the button */
+    padding-bottom: 80px; /* Add padding to create space for the button */
+}
+
+.modal-content{
+    border: 0;
+}
 /* Button styles */
 .btn {
     background-color: #4A90E2;
@@ -204,3 +231,4 @@ input[type="text"] {
     cursor: pointer;
     border-radius: 5px;
 }
+
