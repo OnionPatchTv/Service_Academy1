@@ -122,12 +122,11 @@
                         <h2>Arli AI Recommendations</h2>
                         <!-- Form that sends a post request to trigger recommendation generation -->
                         <form method="post" asp-action="GenerateRecommendation" asp-controller="Admin">
-                            <button type="submit" class="btn btn-primary">Generate recommendation</button>
+                            <button type="submit" class="generate-btn">Generate</button>
                         </form>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <h3>Recommendation:</h3>
                             <p>@ViewBag.Recommendation</p>
                         </div>
                     </div>
