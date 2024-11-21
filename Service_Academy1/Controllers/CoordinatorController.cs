@@ -196,6 +196,30 @@ namespace Service_Academy1.Controllers
                 programProgressTitles.Add(programData.ProgramTitle);
                 programOverallProgress.Add(overallProgress);
             }
+            var systemUsageData = await _context.SystemUsageLogs
+               .GroupBy(log => new { log.ActionType, log.Timestamp.Date })
+               .Select(g => new
+               {
+                   ActionType = g.Key.ActionType,
+                   Date = g.Key.Date,
+                   Count = g.Count()
+               })
+               .ToListAsync();
+
+            // Organize data for each ActionType
+            var loginData = systemUsageData.Where(d => d.ActionType == "Login").ToList();
+            var quizSubmissionData = systemUsageData.Where(d => d.ActionType == "QuizSubmission").ToList();
+            var activitySubmissionData = systemUsageData.Where(d => d.ActionType == "ActivitySubmission").ToList();
+            var programEnrollmentData = systemUsageData.Where(d => d.ActionType == "ProgramEnrollment").ToList();
+
+            // Get unique dates sorted by date
+            var dates = systemUsageData.Select(d => d.Date.ToString("yyyy-MM-dd")).Distinct().OrderBy(d => d).ToList();
+
+            // Prepare counts for each action type
+            var loginCounts = dates.Select(date => loginData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
+            var quizSubmissionCounts = dates.Select(date => quizSubmissionData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
+            var activitySubmissionCounts = dates.Select(date => activitySubmissionData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
+            var programEnrollmentCounts = dates.Select(date => programEnrollmentData.Where(d => d.Date.ToString("yyyy-MM-dd") == date).Sum(d => d.Count)).ToList();
 
 
             // Pass data to ViewBag for displaying charts and other analytics
@@ -212,6 +236,11 @@ namespace Service_Academy1.Controllers
             ViewBag.ProgramActivityCompletionRates = programActivityCompletionRates;
             ViewBag.ProgramProgressTitles = programProgressTitles;
             ViewBag.ProgramOverallProgress = programOverallProgress;
+            ViewBag.Dates = dates;
+            ViewBag.LoginCounts = loginCounts;
+            ViewBag.QuizSubmissionCounts = quizSubmissionCounts;
+            ViewBag.ActivitySubmissionCounts = activitySubmissionCounts;
+            ViewBag.ProgramEnrollmentCounts = programEnrollmentCounts;
 
             return View();
         }
@@ -274,19 +303,10 @@ namespace Service_Academy1.Controllers
 
             // Build the prompt dynamically based on available data
             var prompt = $@"
-        Provide a recommendation based on the following analytics for the department {coordinator.DepartmentId}:
-
-        - Average Ratings by Program: {string.Join(", ", programEvaluationData.Select(p => $"Program {p.EvaluationQuestions.ProgramId}: {p.Rating:F2}"))}
-        - Completion Rates by Program: {string.Join(", ", completionRates.Select(c => $"Program {c.ProgramId}: {c.ProgramStatus == "Completed"}"))}
-        - Quiz Performance by Program: {string.Join(", ", quizPerformanceByProgram.Select(q => $"Program {q.Quiz.ProgramId}: {q.ComputedScore:F2}"))}
-        - Activity Performance by Program: {string.Join(", ", activityPerformanceByProgram.Select(a => $"Program {a.Activities.ProgramId}: Completion {a.IsCompleted}, Avg Score {a.ComputedScore:F2}"))}
-
-        Format the response as follows:
-        1. Start with 1-2 sentences introducing the department's overall performance.
-        2. Provide 1-3 actionable recommendations as bullet points, each consisting of a single sentence.
-        3. End with a 1-sentence conclusion summarizing the next steps or overall strategy.
-
-        Ensure clarity and brevity in the response.";
+            Analyze the following dataset which includes program evaluation data, completion rates, quiz and activity performance, and overall progress metrics.
+            Consider the average ratings for top programs, completion rates by program, quiz scores and retries, activity completion and scoring, and  holistic program progress blending module, quiz, and activity performance.
+           Provide a clear, concise 3-5 sentence of insight into the overall effectiveness and areas for improvement in program delivery and engagement, with actionable recommendations for optimizing trainee outcomes 
+            and enhancing program performance. Avoid using lists or bullet points; write in a cohesive essay style.";
 
             // Get the recommendation from ArliAI
             var recommendation = await _arliAIService.GetRecommendation(prompt);

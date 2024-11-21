@@ -10,6 +10,23 @@
 <h2>Evaluation Results for @Model.ProgramTitle</h2>
 <p>Evaluated: @Model.EvaluatedCount / @Model.TotalTrainees (@Model.UnevaluatedCount unevaluated)</p>
 
+<div class="card">
+    <div class="card-body">
+        <div class="Analysis-container">
+            <h3>Analysis:</h3>
+            <p>@ViewBag.Analysis</p>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="Impact Assessment-container">
+            <h3>Impact Assessment:</h3>
+            <p>@ViewBag.ImpactAssessment</p>
+        </div>
+    </div>
+</div>
+
 @if (Model != null)
 {
     <canvas id="evaluationChart"

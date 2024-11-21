@@ -6,6 +6,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="~/js/CoordinatorScript/CoordAnalyticsScript.js"></script>
 }
 @section Styles {
@@ -19,7 +21,6 @@
                 <label for="report-type">Report Type:</label>
                 <select id="report-type" name="report-type">
                     <option value="pdf">PDF</option>
-                    <option value="xlsx">Spreadsheet</option>
                 </select>
 
                 <label for="start-date">Start Date:</label>
@@ -28,96 +29,9 @@
                 <label for="end-date">End Date:</label>
                 <input type="date" id="end-date" name="end-date">
 
-                <label for="filters">Filters:</label>
-                <select id="filters" name="filters">
-                    <option value="course">Course</option>
-                    <option value="program">Program</option>
-                    <option value="student-demographics">Student Demographics</option>
-                </select>
                 <button type="submit">Generate Report</button>
             </form>
-
-            <!-- Data Visualization Section -->
             <div class="card-group">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Activity Performance Reports</h2>
-                        <button id="student-reports-export">Export</button>
-                    </div>
-                    <div class="card-body">
-                        <!-- Activity Completion and Score Chart -->
-                        <div class="chart-container">
-                            <canvas id="activity-performance-program-chart"
-                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.ActivityProgramTitles))'
-                                    data-scores='@Html.Raw(Json.Serialize(ViewBag.ProgramActivityAverageScores))'
-                                    data-completionrates='@Html.Raw(Json.Serialize(ViewBag.ProgramActivityCompletionRates))'>
-                            </canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Quiz Performance Analytics</h2>
-                        <button id="engagement-analytics-export">Export</button>
-                    </div>
-                    <div class="card-body">
-                        <!-- Quiz Performance Chart -->
-                        <div class="chart-container">
-                            <canvas id="quiz-performance-program-chart"
-                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.QuizProgramTitles))'
-                                    data-scores='@Html.Raw(Json.Serialize(ViewBag.ProgramAverageScores))'
-                                    data-retries='@Html.Raw(Json.Serialize(ViewBag.ProgramAverageRetries))'>
-                            </canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-group">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Completion Rate</h2>
-                        <button id="course-performance-export">Export</button>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="completion-rate-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.CompletionTitles))'
-                                    data-values='@Html.Raw(Json.Serialize(ViewBag.CompletionValues))'>
-                            </canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Program Performance</h2>
-                        <button id="program-performance-export">Export</button>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="program-performance-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramTitles))'
-                                    data-values='@Html.Raw(Json.Serialize(ViewBag.AverageRatings))'>
-                            </canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-group">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Program Progress Analytics</h2>
-                        <button id="mastery-analytics-export">Export</button>
-                    </div>
-                    <div class="card-body">
-                        <!-- Overall Program Progress Chart -->
-                        <div class="chart-container">
-                            <canvas id="overall-program-progress-chart"
-                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramProgressTitles))'
-                                    data-progress='@Html.Raw(Json.Serialize(ViewBag.ProgramOverallProgress))'>
-                            </canvas>
-                        </div>
-                    </div>
-                </div>
                 <div class="card">
                     <div class="card-header">
                         <h2>Arli AI Recommendations</h2>
@@ -134,14 +48,85 @@
                     </div>
                 </div>
             </div>
+            <!-- Data Visualization Section -->
             <div class="card-group">
+                <!-- Activity Completion and Score Chart -->
                 <div class="card">
                     <div class="card-header">
-                        <h2>Mastery Analytics</h2>
-                        <button id="mastery-analytics-export">Export</button>
+                        <h2>Activity Performance Reports</h2>
+                        <button id="activitiy-performance-programexport">Export</button>
                     </div>
                     <div class="card-body">
-                        <!-- Overall Program Progress Chart -->
+                        <span id="activitiy-performance-program">This report tracks trainee engagement with program activities, assessing completion rates and average scores. It helps identify areas where participants might need additional support to improve performance.</span>
+                        <div class="chart-container">
+                            <canvas id="activity-performance-program-chart"
+                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.ActivityProgramTitles))'
+                                    data-scores='@Html.Raw(Json.Serialize(ViewBag.ProgramActivityAverageScores))'
+                                    data-completionrates='@Html.Raw(Json.Serialize(ViewBag.ProgramActivityCompletionRates))'>
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Quiz Performance Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Quiz Performance Analytics</h2>
+                        <button id="quiz-performance-program-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <span id="quiz-performance-program">This metric evaluates the average scores and retry rates for quizzes across programs. It provides insight into how well trainees understand the material and whether additional review or support is needed.</span>
+                        <div class="chart-container">
+                            <canvas id="quiz-performance-program-chart"
+                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.QuizProgramTitles))'
+                                    data-scores='@Html.Raw(Json.Serialize(ViewBag.ProgramAverageScores))'
+                                    data-retries='@Html.Raw(Json.Serialize(ViewBag.ProgramAverageRetries))'>
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-group">
+                <!-- Completion  Rate Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Completion Rate</h2>
+                        <button id="completion-rate-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <span id="completion-rate">This analytics shows the percentage of participants who complete a program relative to those enrolled. It helps gauge program engagement and identify potential barriers preventing full participation.</span>
+                        <div class="chart-container">
+                            <canvas id="completion-rate-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.CompletionTitles))'
+                                    data-values='@Html.Raw(Json.Serialize(ViewBag.CompletionValues))'>
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Program Performance  Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Program Performance</h2>
+                        <button id="program-performance-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <span id="program-performance">This analysis looks at the average ratings for each program, based on participant feedback. It identifies strengths and areas for improvement in program content and delivery, guiding decisions on future program enhancements.</span>
+                        <div class="chart-container">
+                            <canvas id="program-performance-chart" data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramTitles))'
+                                    data-values='@Html.Raw(Json.Serialize(ViewBag.AverageRatings))'>
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-group">
+                <!-- Overall Program Progress Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Program Progress Analytics</h2>
+                        <button id="overall-program-progress-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <span id="overall-program-progress">This measure calculates the overall progress of trainees within a program, combining module completion, quiz performance, and activity engagement. It helps coordinators monitor how effectively participants are advancing through the program and where they may need further guidance.</span>
                         <div class="chart-container">
                             <canvas id="overall-program-progress-chart"
                                     data-labels='@Html.Raw(Json.Serialize(ViewBag.ProgramProgressTitles))'
@@ -150,8 +135,26 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
+                <!-- System Usage  Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>System Usage</h2>
+                        <button id="mastery-analytics-export">Export</button>
+                    </div>
+                    <div class="card-body">
+                        <span id="overall-program-progress">This analytics tracks how users interact with the system, including logins, program access, and activity completion. It helps identify trends in user engagement, assess the effectiveness of the platform, and detect any potential issues with user adoption or activity participation.</span>
+                        <div class="chart-container">
+                            <canvas id="system-usage-chart"
+                                    data-labels='@Html.Raw(Json.Serialize(ViewBag.Dates))'
+                                    data-logins='@Html.Raw(Json.Serialize(ViewBag.LoginCounts))'
+                                    data-quiz-submissions='@Html.Raw(Json.Serialize(ViewBag.QuizSubmissionCounts))'
+                                    data-activity-submissions='@Html.Raw(Json.Serialize(ViewBag.ActivitySubmissionCounts))'
+                                    data-program-enrollments='@Html.Raw(Json.Serialize(ViewBag.ProgramEnrollmentCounts))'>
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>        
         </div>
     </div>
 </div>
