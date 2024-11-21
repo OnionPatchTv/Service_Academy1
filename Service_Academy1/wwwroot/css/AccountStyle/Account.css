@@ -1,6 +1,9 @@
 body {
     margin: 0;
     padding: 0;
+    background-image: url('../../Images/Alangilan-background.jpg');
+    background-size: cover;
+    background-position: center;
     height: 120vh; /* Keep this for scrolling */
     overflow-y: auto; /* Enable scrolling */
 }
@@ -12,7 +15,10 @@ body {
     top: 0;
     left: 0;
     z-index: 1; /* Lower z-index for overlay */
-    pointer-events: none; /* Disable pointer events to allow clicks to go through */
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    /*pointer-events: none;*/ /* Disable pointer events to allow clicks to go through */
 }
 
 #loginForm {
