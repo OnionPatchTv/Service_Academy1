@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 });
-function loadModuleContent(filePath, moduleTitle, linkPath) {
+function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
     // Update the iframe source
     document.getElementById("moduleContentFrame").src = filePath;
 
@@ -122,7 +122,16 @@ function loadModuleContent(filePath, moduleTitle, linkPath) {
         moduleVideoLink.href = "#"; // Remove the link
         moduleVideoLink.style.pointerEvents = "none"; // Disable clicking
     }
+
+    // Display the module description
+    const moduleDescriptionElement = document.getElementById("moduleDescription");
+    if (moduleDescription && moduleDescription !== "") {
+        moduleDescriptionElement.textContent = moduleDescription;
+    } else {
+        moduleDescriptionElement.textContent = "No description available.";
+    }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
     const uploadModuleForm = document.querySelector('#uploadModuleModal form');
     const updateModuleForm = document.querySelector('#updateModuleModal form');
@@ -163,10 +172,12 @@ function openUpdateModuleModal(moduleId, moduleTitle, currentLinkPath) {
 
     // Set the current link path if available or an empty string if not
     document.getElementById('linkPath').value = currentLinkPath || "";
+    document.getElementById("moduleDescriptionInput").value = moduleDescription || "";
 
     // Show the modal
     $('#updateModuleModal').modal('show');
 }
+
 
 function openDeleteModuleModal(moduleId, moduleTitle) {
     // Set the values in the modal before showing it

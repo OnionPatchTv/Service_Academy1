@@ -212,7 +212,7 @@ namespace ServiceAcademy.Controllers
         }
         #region Module Management
         [HttpPost]
-        public async Task<IActionResult> UploadModule(int programId, string title, IFormFile file, string linkPath = "No Link Available")
+        public async Task<IActionResult> UploadModule(int programId, string title, IFormFile file, string moduleDescription, string linkPath = "No Link Available")
         {
             if (file == null || file.Length == 0)
             {
@@ -236,7 +236,8 @@ namespace ServiceAcademy.Controllers
                 ProgramId = programId,
                 Title = moduleTitle,
                 FilePath = "/ModuleUploads/" + file.FileName,
-                LinkPath = string.IsNullOrWhiteSpace(linkPath) ? "No Link Available" : linkPath
+                LinkPath = string.IsNullOrWhiteSpace(linkPath) ? "No Link Available" : linkPath,
+                ModuleDescription = moduleDescription
             };
 
             _context.Modules.Add(module);
@@ -246,7 +247,7 @@ namespace ServiceAcademy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateModule(int moduleId, string moduleTitle, IFormFile file, string linkPath)
+        public async Task<IActionResult> UpdateModule(int moduleId, string moduleTitle, IFormFile file, string moduleDescription, string linkPath)
         {
             var module = await _context.Modules.FindAsync(moduleId);
             if (module == null)
@@ -258,6 +259,7 @@ namespace ServiceAcademy.Controllers
             var moduleNumberPrefix = module.Title.Split(':')[0];
             module.Title = $"{moduleNumberPrefix}: {moduleTitle}";
             module.LinkPath = string.IsNullOrWhiteSpace(linkPath) ? "No Link Available" : linkPath;
+            module.ModuleDescription = moduleDescription;
 
             if (file != null && file.Length > 0)
             {
@@ -340,6 +342,34 @@ namespace ServiceAcademy.Controllers
 
             return View(enrolledTrainees);
         }
+        [HttpPost]
+        public IActionResult ApproveCompletion(int enrollmentId)
+        {
+            try
+            {
+                var enrollment = _context.Enrollment.FirstOrDefault(e => e.EnrollmentId == enrollmentId);
+                if (enrollment == null)
+                {
+                    return NotFound();
+                }
+
+                // Update ProgramStatus and StatusDate
+                enrollment.ProgramStatus = "Complete";
+                enrollment.StatusDate = DateTime.UtcNow;
+
+                // Save changes to the database
+                _context.SaveChanges();
+
+                // Optionally, redirect or return a success response
+                return RedirectToAction("ProgramStream", new { programId = enrollment.ProgramId });
+            }
+            catch (Exception ex)
+            {
+                // Log the error and handle as needed
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpGet]
         public IActionResult GetTraineeActivities(int enrollmentId, int programId)
         {

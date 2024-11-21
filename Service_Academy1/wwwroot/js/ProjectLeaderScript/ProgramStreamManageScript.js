@@ -4,6 +4,31 @@ function openDenyModal(enrollmentId) {
     $('#enrollmentId').val(enrollmentId);  // Set enrollment ID in the hidden input
     $('#denyModal').modal('show');         // Show the modal
 }
+function openApproveCompletionModal(enrollmentId) {
+    // Set the hidden input value with the enrollment ID
+    $('#approveCompletionEnrollmentId').val(enrollmentId);
+    // Show the modal
+    $('#approveCompletionModal').modal('show');
+}
+$('#approveCompletionForm').submit(function (event) {
+    event.preventDefault(); // Prevent form default submission
+    var enrollmentId = $('#approveCompletionEnrollmentId').val();
+
+    $.ajax({
+        url: '/ProjectLeader/ApproveCompletion',
+        type: 'POST',
+        data: { enrollmentId: enrollmentId },
+        success: function () {
+            // Close the modal
+            $('#approveCompletionModal').modal('hide');
+            // Optionally, update the UI (mark as complete)
+            $(`.trainee-item[data-enrollment-id='${enrollmentId}'] .status`).text("Complete").removeClass("incomplete").addClass("complete");
+        },
+        error: function () {
+            alert('An error occurred while updating completion.');
+        }
+    });
+});
 $(document).ready(function () {
     $('#viewGradeModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal

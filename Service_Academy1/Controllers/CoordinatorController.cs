@@ -27,9 +27,9 @@ namespace Service_Academy1.Controllers
         }
 
         // Analytics action
-        public async Task<IActionResult> CoordAnalytics()
+        public async Task<IActionResult> CoordAnalyticsDashboard()
         {
-            ViewData["ActivePage"] = "Analytics";
+            ViewData["ActivePage"] = "Analytics Dashboard";
 
             // Get the coordinator's department ID
             var coordinatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -88,7 +88,7 @@ namespace Service_Academy1.Controllers
                 .Select(g => new
                 {
                     ProgramId = g.Key,
-                    CompletionRate = g.Count(e => e.ProgramStatus == "Completed") * 100.0 / g.Count()
+                    CompletionRate = g.Count(e => e.ProgramStatus == "Complete") * 100.0 / g.Count()
                 })
                 .ToListAsync();
 
@@ -295,7 +295,7 @@ namespace Service_Academy1.Controllers
             TempData["Recommendation"] = recommendation;
 
             // Redirect back to the original CoordAnalytics view, keeping all data and the recommendation
-            return RedirectToAction("CoordAnalytics");
+            return RedirectToAction("CoordAnalyticsDashboard");
         }
 
         private static string GetAgendaFullName(string agendaCode)

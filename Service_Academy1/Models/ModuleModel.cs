@@ -18,6 +18,7 @@ namespace Service_Academy1.Models
 
         public string LinkPath { get; set; } = "No Link Available";
 
+        public string ModuleDescription { get; set; } = string.Empty;
         public virtual ProgramsModel? ProgramsModel { get; set; } // Navigation property
     }
 }
