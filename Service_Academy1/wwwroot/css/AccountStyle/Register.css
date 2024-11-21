@@ -1,25 +1,39 @@
-﻿/* Card styling for register form */
+﻿body {
+    margin: 0;
+    padding: 0;
+    background-image: url('../../Images/Alangilan-background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body covers viewport */
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1; /* Ensure overlay is above background */
+}
+
+/* Card styling for register form */
 #registerForm {
     position: relative; /* Change to relative for scrolling */
     margin: auto; /* Center it horizontally */
     width: 90%;
     max-width: 500px;
     padding: 30px;
-    background-color: #ffffff;
+    background-color: #fff;
+    z-index: 2;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     overflow-y: auto; /* Add scrolling if the content exceeds the height */
-}
-
-#overlay {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.3); /* Slight transparency */
-    z-index: 1;
-    backdrop-filter: blur(5px); /* Optional: adds blur to background */
 }
 
 /* Centered title inside the card */
@@ -49,7 +63,8 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
+
 }
 
 /* Label styling */
@@ -78,39 +93,38 @@ select {
 /* Styling for rows and columns */
 .row {
     display: flex;
-    gap: 10px;
+    gap: 10px; /* Adjust as needed */
 }
 
 .column {
     flex: 1;
+    position: relative; /* Important: For absolute positioning of the eye icon */
 }
 
-/* Password container styling */
 .password-container {
-    position: relative;
+    position: relative; /* So that the eye icon can be positioned relative to this */
 }
 
-    .password-container input {
-        width: 100%;
-        padding-right: 40px; /* Space for the eye icon */
+    .password-container input[type="password"], /* Styles when password is hidden */
+    .password-container input[type="text"] { /* Styles when password is visible */
+        width: calc(100% - 30px); /* Adjust this value to account for the icon */
     }
 
-    /* Eye icon styling */
-    .password-container .eye-icon {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        font-size: 18px;
-        color: #888;
-        cursor: pointer;
-        transition: color 0.3s;
-    }
 
-        /* Change color on hover */
-        .password-container .eye-icon:hover {
-            color: #FF6600; /* Change to the orange color on hover */
-        }
+.eye-icon { /* Makes sure the eye icon is clickable */
+    position: absolute;
+    top: 50%;
+    right: 1px; /* Adjust the right offset as needed */
+    transform: translateY(-50%); /* Vertically center icon*/
+    cursor: pointer;
+    pointer-events: all; /* Ensure icon is clickable */
+    font-size: 1.2em;
+    color: #999; /* Example icon color */
+}
+
+    .eye-icon:hover {
+        color: #ff6a00; /* Change to the orange color on hover */
+    }
 
 /* Button styling */
 .btn {

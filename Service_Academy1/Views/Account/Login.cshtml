@@ -50,9 +50,7 @@
         };
 
         function closeForm() {
-            // Hides the form and overlay without redirecting
-            document.getElementById("overlay").style.display = "none";
-            document.getElementById("loginForm").style.display = "none";
+            window.location.href = '@Url.Action("Home", "Home")';
         }
 
         function togglePasswordVisibility() {
@@ -68,6 +66,7 @@
                 eyeIcon.classList.add('fa-eye');
             }
         }
+
     </script>
 </body>
 </html>

@@ -22,8 +22,7 @@
             <span class="service-academy">Service Academy</span>
         </div>
         <nav class="nav-links">
-            <a href="@Url.Action("Dashboard", "Admin")" class="@(Html.IsActive("Dashboard", "Admin") ? "active" : "")">Dashboard</a>
-            <a href="@Url.Action("Analytics", "Admin")" class="@(Html.IsActive("Analytics", "Admin") ? "active" : "")">Analytics</a>
+            <a href="@Url.Action("AnalyticsDashboard", "Admin")" class="@(Html.IsActive("Analytics", "Admin") ? "active" : "")">Analytics</a>
             <a href="@Url.Action("ManageAccount", "Admin")" class="@(Html.IsActive("ManageAccount", "Admin") ? "active" : "")">Manage Accounts</a>
             <a href="@Url.Action("ManageProgram", "Admin")" class="@(Html.IsActive("ManageProgram", "Admin") ? "active" : "")">Manage Programs</a>
         </nav>
