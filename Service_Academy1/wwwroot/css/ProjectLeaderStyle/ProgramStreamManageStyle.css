@@ -184,3 +184,31 @@ a.active {
 }
 
 
+.modal-dialog {
+    max-width: 1150px; /* Set a maximum width for the modal */
+}
+
+.modal-body {
+    /* This will ensure the table fits inside the modal, with horizontal scroll if necessary */
+    overflow-x: auto;
+}
+
+    .modal-body table.table {
+        width: 100%; /* Make tables occupy full width of modal body */
+        table-layout: fixed; /* Ensures columns have equal width distribution */
+        word-wrap: break-word; /* Allows long words to wrap */
+    }
+        .modal-body table.table th,
+        .modal-body table.table td {
+            overflow: hidden; /* Hide content overflowing cells */
+            text-overflow: ellipsis; /* Adds ellipsis (...) for truncated text */
+            white-space: nowrap; /* Prevents text from wrapping within cells */
+        }
+
+/* Responsive Table (Optional, for smaller screens) */
+@media (max-width: 768px) { /* Adjust breakpoint as needed */
+    .modal-body table.table {
+        display: block; /* Makes the table scrollable on smaller screens */
+        overflow-x: auto; /* Allows horizontal scrolling if needed */
+    }
+}
