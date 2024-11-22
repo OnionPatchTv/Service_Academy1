@@ -81,7 +81,7 @@
                         <div class="module-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <!-- Button for loading module content -->
                             <button class="module-title"
-                                    onclick="loadModuleContent('@module.FilePath')"
+                                    onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')"
                                     style="flex-grow: 1; text-align: left; border: none; background: none; color: #007bff; cursor: pointer; font-size: 16px;">
                                 @module.Title
                             </button>
@@ -225,9 +225,18 @@
             </div>
         </div>
         <section class="module-viewer">
-            <h3>Module Viewer</h3>
+            <div class="module-header">
+                <h3 id="moduleViewerTitle">Module Viewer</h3>
+                <a id="moduleVideoLink" href="#" target="_blank">
+                    <i id="videoIcon" class="fa-regular fa-file-video" title="No Link Available"></i>
+                </a>
+            </div>
             <div class="viewer-content">
                 <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
+            </div>
+            <!-- Add the description section below the content -->
+            <div id="moduleDescription" class="module-description">
+                <!-- Module description will be updated here -->
             </div>
         </section>
     </section>

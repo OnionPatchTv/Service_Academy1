@@ -36,19 +36,19 @@ namespace ServiceAcademy.Controllers
 
                     // Calculate progress
                     ModulesProgress = e.ProgramsModel.Modules.Any()
-                        ? e.ProgramsModel.Modules.Count(m => e.TraineeModuleResults.Any(tmr => tmr.ModuleId == m.ModuleId && tmr.IsCompleted)) * 15.0 / e.ProgramsModel.Modules.Count()
-                        : 0,
-                    ActivitiesProgress = e.ProgramsModel.Activities.Any()
-                        ? e.ProgramsModel.Activities.Count(a => e.TraineeActivities.Any(ta => ta.ActivitiesId == a.ActivitiesId && ta.IsCompleted)) * 40.0 / e.ProgramsModel.Activities.Count()
-                        : 0,
-                    QuizzesProgress = e.ProgramsModel.Quizzes.Any()
-                        ? e.ProgramsModel.Quizzes.Sum(q =>
-                            e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId && tqr.IsCompleted) ? 1.0 :
-                            e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId) ? 0.5 : 0) * 30.0 / e.ProgramsModel.Quizzes.Count()
-                        : 0,
-                    EvaluationProgress = e.ProgramsModel.EvaluationQuestions.Any()
-                        ? e.ProgramsModel.EvaluationQuestions.All(eq => e.EvaluationResponses.Any(er => er.EvaluationQuestionId == eq.EvaluationQuestionId)) ? 15.0 : 0
-                        : 0
+                    ? Math.Round(e.ProgramsModel.Modules.Count(m => e.TraineeModuleResults.Any(tmr => tmr.ModuleId == m.ModuleId && tmr.IsCompleted)) * 15.0 / e.ProgramsModel.Modules.Count(), 2)
+                    : 0,
+                        ActivitiesProgress = e.ProgramsModel.Activities.Any()
+                    ? Math.Round(e.ProgramsModel.Activities.Count(a => e.TraineeActivities.Any(ta => ta.ActivitiesId == a.ActivitiesId && ta.IsCompleted)) * 40.0 / e.ProgramsModel.Activities.Count(), 2)
+                    : 0,
+                        QuizzesProgress = e.ProgramsModel.Quizzes.Any()
+                    ? Math.Round(e.ProgramsModel.Quizzes.Sum(q =>
+                        e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId && tqr.IsCompleted) ? 1.0 :
+                        e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId) ? 0.5 : 0) * 30.0 / e.ProgramsModel.Quizzes.Count(), 2)
+                    : 0,
+                        EvaluationProgress = e.ProgramsModel.EvaluationQuestions.Any()
+                    ? Math.Round(e.ProgramsModel.EvaluationQuestions.All(eq => e.EvaluationResponses.Any(er => er.EvaluationQuestionId == eq.EvaluationQuestionId)) ? 15.0 : 0, 2)
+                    : 0
                 }).ToList();
 
             return View(enrollments);
@@ -131,8 +131,8 @@ namespace ServiceAcademy.Controllers
                 .Where(tmr => tmr.EnrollmentId == enrollmentId)
                 .ToList();
             var traineeQuizResults = _context.TraineeQuizResults
-    .Where(tmr => tmr.EnrollmentId == enrollmentId)
-    .ToList();
+                .Where(tmr => tmr.EnrollmentId == enrollmentId)
+                .ToList();
 
             var viewModel = new MyLearningStreamViewModel
             {

@@ -21,8 +21,36 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function loadModuleContent(filePath) {
+function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
+    // Update the iframe source
     document.getElementById("moduleContentFrame").src = filePath;
+
+    // Update the Module Viewer title
+    document.getElementById("moduleViewerTitle").textContent = moduleTitle || "Module Viewer";
+
+    // Update the video icon state
+    const videoIcon = document.getElementById("videoIcon");
+    const moduleVideoLink = document.getElementById("moduleVideoLink");
+
+    if (linkPath && linkPath !== "No Link Available") {
+        videoIcon.style.color = "orange"; // Highlight the icon
+        videoIcon.title = "View Module Video";
+        moduleVideoLink.href = linkPath; // Set the link
+        moduleVideoLink.style.pointerEvents = "auto"; // Enable clicking
+    } else {
+        videoIcon.style.color = "grey"; // Grey out the icon
+        videoIcon.title = "No Link Available";
+        moduleVideoLink.href = "#"; // Remove the link
+        moduleVideoLink.style.pointerEvents = "none"; // Disable clicking
+    }
+
+    // Display the module description
+    const moduleDescriptionElement = document.getElementById("moduleDescription");
+    if (moduleDescription && moduleDescription !== "") {
+        moduleDescriptionElement.textContent = moduleDescription;
+    } else {
+        moduleDescriptionElement.textContent = "No description available.";
+    }
 }
 function filterPrograms() {
     // Get values from search input and filter dropdowns

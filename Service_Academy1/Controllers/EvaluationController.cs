@@ -190,42 +190,10 @@ namespace Service_Academy1.Controllers
                 })
                 .ToList();
 
-            // Prepare the first dynamic prompt for ArliAI
-            var analysisPrompt = $@"
-                Analyze the following dataset from a program's evaluation results, including evaluation responses categorized by rating, 
-                total trainees, evaluated and unevaluated counts, and average ratings across categories. Consider the distribution of 
-                evaluation responses, the proportion of evaluated versus unevaluated trainees, and the calculated average ratings for 
-                each category. Provide a 3-5 sentence of cohesive analysis of the program's evaluation engagement and performance, offering actionable 
-                insights to improve response rates, address gaps in trainee feedback, and enhance overall program effectiveness.
-                Avoid using lists or bullet points; write in a cohesive essay style.";
-
-            // Call ArliAI service to generate the first analysis
-            var evaluationAnalysis = await _arliAIService.GetAnalysis(analysisPrompt);
-
-            // Prepare the impact assessment prompt based on the first analysis
-            var impactPrompt = $@"
-                Based on the following analysis insights:
-                {evaluationAnalysis}
-
-                Assess the potential impact these recommendations could have on the program's overall quality, trainee satisfaction, and 
-                program engagement. Include a 3-5 sentence analysis of how these changes might influence future evaluations, retention rates, and 
-                stakeholder confidence. Provide a 3 sentence actionable next steps to ensure effective implementation of these recommendations.
-                Avoid using lists or bullet points; write in a cohesive essay style.";
-
-            // Call ArliAI service to generate the impact assessment
-            var impactAssessment = await _arliAIService.GetImpact(impactPrompt);
-
-            // Retrieve the program title and any other needed data
-            var program = await _context.Programs.FindAsync(programId);
-            if (program == null)
-            {
-                return RedirectToAction("Error");
-            }
-
             // Prepare the view model
             var viewModel = new EvaluationResultsViewModel
             {
-                ProgramTitle = program.Title,
+                ProgramTitle = (await _context.Programs.FindAsync(programId))?.Title,
                 TotalTrainees = totalTrainees,
                 EvaluatedCount = evaluatedCount,
                 UnevaluatedCount = unevaluatedCount,
@@ -234,14 +202,48 @@ namespace Service_Academy1.Controllers
                 EvaluationDetails = evaluationResults
             };
 
-            // Store the evaluation analysis and impact assessment in ViewBag for the view
-            ViewBag.Analysis = evaluationAnalysis;
-            ViewBag.ImpactAssessment = impactAssessment;
+            // If no evaluation results or no evaluated trainees, skip ArliAI analysis
+            if (evaluationResults.Any() && evaluatedCount > 0)
+            {
+                // Prepare the first dynamic prompt for ArliAI
+                var analysisPrompt = $@"
+            Analyze the following dataset from a program's evaluation results, including evaluation responses categorized by rating, 
+            total trainees, evaluated and unevaluated counts, and average ratings across categories. Consider the distribution of 
+            evaluation responses, the proportion of evaluated versus unevaluated trainees, and the calculated average ratings for 
+            each category. Provide a 3-5 sentence of cohesive analysis of the program's evaluation engagement and performance, offering actionable 
+            insights to improve response rates, address gaps in trainee feedback, and enhance overall program effectiveness.
+            Avoid using lists or bullet points; write in a cohesive essay style.";
+
+                // Call ArliAI service to generate the first analysis
+                var evaluationAnalysis = await _arliAIService.GetAnalysis(analysisPrompt);
+
+                // Prepare the impact assessment prompt based on the first analysis
+                var impactPrompt = $@"
+            Based on the following analysis insights:
+            {evaluationAnalysis}
+
+            Assess the potential impact these recommendations could have on the program's overall quality, trainee satisfaction, and 
+            program engagement. Include a 3-5 sentence analysis of how these changes might influence future evaluations, retention rates, and 
+            stakeholder confidence. Provide a 3 sentence actionable next steps to ensure effective implementation of these recommendations.
+            Avoid using lists or bullet points; write in a cohesive essay style.";
+
+                // Call ArliAI service to generate the impact assessment
+                var impactAssessment = await _arliAIService.GetImpact(impactPrompt);
+
+                // Store the evaluation analysis and impact assessment in ViewBag for the view
+                ViewBag.Analysis = evaluationAnalysis;
+                ViewBag.ImpactAssessment = impactAssessment;
+            }
+            else
+            {
+                // If no results or no evaluated trainees, provide a message
+                ViewBag.Analysis = "No evaluation data available to analyze.";
+                ViewBag.ImpactAssessment = "No impact assessment can be generated due to lack of evaluation responses.";
+            }
 
             // Return the view with the populated view model
             return View(viewModel);
         }
-
 
     }
 }
