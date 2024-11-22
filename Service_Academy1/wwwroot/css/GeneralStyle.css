@@ -103,6 +103,13 @@ body {
             height: 100%; /* Make the image fill the anchor's height */
         }
 
+.bsu-logo {
+    transition: transform 0.3s;
+}
+
+    .bsu-logo:hover {
+        transform: scale(1.1); /* Adjust the scale value to control the size of the "pop" */
+    }
 .service-academy {
     font-size: 1.5em; /* Adjusted font size */
     font-weight: bold;

@@ -183,13 +183,20 @@ body {
     font-size: 0.9rem;
     color: #555;
 }
+
+
 .action-buttons {
-    margin-top: 40px; /* Space above the action buttons */
+    margin-top: 40px;
     display: flex;
-    justify-content: center; /* Center the buttons horizontally */
-    gap: 10px; /* Optional: Space between the buttons */
-    width: 100%; /* Make the container take up full width */
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
 }
+
+    .action-buttons.has-denial-reason {
+        margin-top: 0; /* Remove margin when denial reason is present */
+    }
+
 /* Action Buttons */
 .btnActivate, .btnDeactivate {
     padding: 10px 20px; /* Adjust padding */
@@ -333,6 +340,7 @@ body {
     height: 60px;
     font-size: 1.2rem;
     font-weight: bold;
+    font-weight: bold;
     color: #fff;
     background-color: #5cd03d; /* Initial active color */
     border: none;
@@ -362,3 +370,4 @@ button.disabled {
         background-color: #e0e0e0; /* Keep greyed-out on hover */
         color: #b0b0b0;
     }
+

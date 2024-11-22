@@ -113,15 +113,14 @@
                                     </div>
 
                                     <!-- Buttons aligned with Icons -->
-                                    <div class="action-buttons">
+                                    <div class="action-buttons @(isApproved == "Pending" || isApproved == "Denied" ? "has-denial-reason" : "")">
                                         @if (isArchived)
                                         {
                                             <button class="btnActivate disabled" type="button" disabled>Archived</button>
                                         }
                                         else if (isApproved == "Pending" || isApproved == "Denied")
                                         {
-                                            <div class="denial-reason text-danger">Reason for Denial: @program.ProgramManagement.FirstOrDefault()?.ReasonForDenial</div>
-                                            <button class="btnActivate disabled" type="button" disabled>@(isApproved == "Pending" ? "Pending Approval" : "Denied")</button>
+                                            <div class="denial-reason text-danger">@program.ProgramManagement.FirstOrDefault()?.ReasonForDenial</div>
                                         }
                                         else if (program.ProgramManagement.FirstOrDefault()?.IsActive == true)
                                         {
