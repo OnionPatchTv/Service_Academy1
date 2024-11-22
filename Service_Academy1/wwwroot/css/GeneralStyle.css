@@ -90,7 +90,7 @@ body {
 }
 
 .logo {
-    height: 40px; /* Increased height for the logo */
+    height: 55px; /* Increased height for the logo */
     margin-right: 10px;
 }
     .logo a { /* Target the anchor tag, not the image directly */
