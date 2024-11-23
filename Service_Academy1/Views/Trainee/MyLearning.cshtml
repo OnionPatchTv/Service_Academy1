@@ -102,13 +102,15 @@
                                             <h3>
                                                 @if (enrollment.EnrollmentStatus == "Approved" && !enrollment.IsArchived)
                                                 {
-                                                    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.ProgramId })">
+                                                    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.ProgramId })" title="@enrollment.Title">
                                                         @enrollment.Title
                                                     </a>
                                                 }
                                                 else
                                                 {
-                                                    @enrollment.Title
+                                                    <span title="@enrollment.Title">
+                                                        @enrollment.Title
+                                                    </span>
                                                 }
                                             </h3>
 

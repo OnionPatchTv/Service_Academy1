@@ -83,13 +83,13 @@
                                     <h3>
                                         @if (canRedirectToStream)
                                         {
-                                            <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = program.ProgramId })">
+                                            <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = program.ProgramId })" title="@program.Title">
                                                 @program.Title
                                             </a>
                                         }
                                         else
                                         {
-                                            <span>@program.Title</span>
+                                            <span title="@program.Title">@program.Title</span>
                                         }
                                     </h3>
                                     <div class="instructor">
