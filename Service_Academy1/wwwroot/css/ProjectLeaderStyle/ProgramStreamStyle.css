@@ -493,18 +493,33 @@
     border-radius: 5px;
 }
 
-.description {
-    max-width: 100%; /* Set the maximum width */
-    max-height: calc(1.5em * 4); /* Adjust height for 4 lines (line-height x number of lines) */
-    overflow: hidden; /* Hide the overflowing text */
-    text-overflow: ellipsis; /* Show "..." for truncated text */
-    display: -webkit-box; /* Enable the flexbox model for truncation */
-    -webkit-line-clamp: 4; /* Show only 4 lines */
-    -webkit-box-orient: vertical; /* Set the box orientation to vertical */
-    line-height: 1.5em; /* Line height to control spacing between lines */
-    font-size: 1rem; /* Set the font size */
-    white-space: normal; /* Allow multi-line truncation */
+.description-container {
+    /* Remove or adjust max-height */
+    max-height: fit-content; /* Or a very large value if needed for initial layout */
+    overflow: hidden; /* Keep this for the initial truncation */
+    transition: max-height 0.3s ease-in-out;
+    cursor: pointer;
 }
+
+.description {
+    /* Original styles */
+    max-width: 100%;
+    line-height: 1.5em;
+    font-size: 1rem;
+    white-space: normal;
+    /* Initial truncated state (4 lines) */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden; /* Needed for initial truncation */
+    text-overflow: ellipsis;
+}
+
+    .description.expanded {
+        -webkit-line-clamp: initial; /* Remove line clamp */
+        max-height: none; /* Allow full expansion */
+        overflow: visible; /* Show all content */
+    }
 
 
 .modal-content{

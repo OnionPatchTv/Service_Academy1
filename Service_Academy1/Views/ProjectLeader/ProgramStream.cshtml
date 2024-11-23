@@ -45,8 +45,12 @@ else if (TempData["Error"] != null)
             </div>
             <div class="banner-text">
                 <h2 class="class-title">@Model.Title</h2>
-                <p class="description">@Model.Description</p>
-                <div class="trainees">
+                <div class="description-container">
+                    <p class="description" onclick="toggleDescription(this)">
+                        @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
+                    </p>
+                </div>
+                <div class="trainees" style="padding-top: 15px;">
                     <i class="fa-solid fa-graduation-cap"></i> @approvedCount Trainees
                 </div>
             </div>
