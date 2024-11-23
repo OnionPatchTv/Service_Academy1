@@ -112,7 +112,7 @@ namespace ServiceAcademy.Controllers
 
             if (program == null)
             {
-                TempData["Error"] = "Program not found.";
+                TempData["ErrorMessage"] = "Program not found.";
                 return RedirectToAction("MyLearning");
             }
 
@@ -167,7 +167,7 @@ namespace ServiceAcademy.Controllers
 
             if (enrollment == null)
             {
-                TempData["Error"] = "Enrollment not found.";
+                TempData["ErrorMessage"] = "Enrollment not found.";
                 return RedirectToAction("MyLearningStream", new { programId = programId });
             }
 
@@ -196,7 +196,7 @@ namespace ServiceAcademy.Controllers
             // Save changes to the database
             _context.SaveChanges();
 
-            TempData["Success"] = "Module marked as read!";
+            TempData["SuccessMessage"] = "Module marked as read!";
             return RedirectToAction("MyLearningStream", new { programId = programId });
         }
 
@@ -212,7 +212,7 @@ namespace ServiceAcademy.Controllers
 
             if (enrollment == null)
             {
-                TempData["Error"] = "Enrollment not found for this quiz.";
+                TempData["ErrorMessage"] = "Enrollment not found for this quiz.";
                 return RedirectToAction("MyLearningStream");
             }
 

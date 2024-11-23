@@ -15,6 +15,21 @@
     <link rel="stylesheet" href="~/css/TraineeStyle/TraineeStreamStyle.css">
 }
 
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+
 <div class="breadcrumb">
     <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
     <span class="separator">></span>

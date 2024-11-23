@@ -414,7 +414,7 @@ namespace ServiceAcademy.Controllers
             _context.Activities.Add(activityModel);
             _context.SaveChanges();
 
-            TempData["ActivitySuccessMessage"] = "Successfully created an Activity.";
+            TempData["Message"] = "Successfully created an Activity.";
             return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = ProgramId });
         }
 
@@ -569,7 +569,7 @@ namespace ServiceAcademy.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["Message"] = "Successfully uploaded an activity.";
+            TempData["SuccessMessage"] = "Successfully uploaded an activity.";
             return RedirectToAction("MyLearningStream", "Trainee", new { programId = activity.ProgramId });
         }
 
