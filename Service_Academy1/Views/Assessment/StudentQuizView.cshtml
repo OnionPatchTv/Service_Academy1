@@ -14,47 +14,44 @@
     <link rel="stylesheet" href="~/css/TraineeStyle/StudentQuizViewStyle.css">
 }
 
-<h2>@Model.QuizTitle</h2>
-<p>@Model.QuizDirection</p>
+<div class="quiz-container">
+    <div class="breadcrumb">
+        <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = Model.ProgramId })">@ViewBag.ProgramTitle</a>
+        <span class="separator" style="border: none;">></span>
+        <span>@Model.QuizTitle Assessment</span>
+    </div>
 
-<div class="breadcrumb">
-    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = Model.ProgramId })">@ViewBag.ProgramTitle</a>
-    <span class="separator">&gt;</span>
-    <span>@Model.QuizTitle Assessment</span>
+    <div class="quiz-header">
+        <h2>@Model.QuizTitle</h2>
+        <p>@Model.QuizDirection</p>
+    </div>
+
+
+    <hr class="separator" />
+    <label class="questions-label">Questions</label>
+    <form id="quizForm" method="post" action="@Url.Action("SubmitQuiz", "Assessment")">
+        <input type="hidden" name="QuizId" value="@Model.QuizId" />
+        <input type="hidden" name="EnrollmentId" value="@ViewBag.EnrollmentId" />
+        <div class="questions-container">
+            @{
+                int questionNumber = 1;
+            }  @* Initialize counter *@
+            @foreach (var question in Model.Questions)
+            {
+                <div class="question-box">
+                    <h4>Question @questionNumber: @question.Question</h4>  @* Display question number *@
+                    <input type="text" name="answers[@question.QuestionId]" class="answer-field" placeholder="Your answer here" />
+                </div>
+                questionNumber++;  @* Increment counter *@
+            }
+        </div>
+
+
+        <div class="action-buttons">
+            <button type="button" id="submitQuizButton">Submit</button>
+        </div>
+    </form>
 </div>
 
-<form id="quizForm" method="post" action="@Url.Action("SubmitQuiz", "Assessment")">
-    <input type="hidden" name="QuizId" value="@Model.QuizId" />
-    <input type="hidden" name="EnrollmentId" value="@ViewBag.EnrollmentId" /> <!-- Pass EnrollmentId here -->
-    @foreach (var question in Model.Questions)
-    {
-        <div class="question">
-            <h3>@question.Question</h3>
-            <input type="text" name="answers[@question.QuestionId]" class="answer-field" placeholder="Your answer here" />
-        </div>
-    }
-
-    <!-- Trigger Modal Button -->
-    <button type="button" id="submitQuizButton">Submit</button>
-</form>
-
-<!-- Submit Confirmation Modal -->
 <div class="modal fade" id="submitQuizModal" tabindex="-1" role="dialog" aria-labelledby="submitQuizModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div id="modalForm" class="modal-form">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="submitQuizModalLabel">Confirm Quiz Submission</h5>
-                    <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to submit your quiz? Once submitted, you cannot retake it.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="confirmSubmitButton" class="btnYes btn btn-primary">Yes, Submit</button>
-                    <button type="button" class="btnNo btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>

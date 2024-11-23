@@ -20,13 +20,13 @@ h4 {
 form {
     background: white;
     border-radius: 8px;
-    padding: 20px;
+    padding: 40px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Input group styles */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 /* Label styles */
@@ -209,13 +209,6 @@ form {
     margin-top: 20px;
 }
 
-.delete-button .fa-trash {
-    color: darkorange;
-    cursor: pointer;
-    font-size: 24px; /* Adjust size to match the button */
-    line-height: 46px
-}
-
 .update-button button {
     background-color: #4CAF50; /* Adjust color as needed */
     color: white;
@@ -251,3 +244,63 @@ form {
     #retry-btn:hover {
         background-color: #0056b3; /* Darker blue on hover */
     }
+
+.quiz-header {
+    margin-bottom: 10px; /* Add margin below header */
+}
+.title-description {
+    display: flex; /* Put title and description on same line */
+    align-items: center; /* Vertically align the inputs */
+    gap: 20px; /* Spacing between title and description */
+}
+.title-field { /* Style the title input container */
+    flex: 1; /* Allows title input to grow and fill available space*/
+}
+.description-field { /* Style the description input container */
+    flex: 2; /* Description takes up twice the space as title */
+}
+
+
+.separator {
+    margin: 10px 0; /* Space above and below the separator */
+    border: 1px solid #ddd;
+}
+
+/* Style the "Questions" Label */
+.questions-container > label { /* Style the label directly within question container*/
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.update-quiz-label, /* Style the "Update Quiz" label */
+.questions-label { /* Style the "Questions" label */
+    display: block;
+    font-size: 1.7em; /* Larger font size */
+    font-weight: bold;
+    margin-bottom: 10px; /* Added margin */
+}
+.question-box {
+    margin-bottom: 30px;
+}
+
+.action-buttons button { /* Style ALL buttons in action-buttons */
+    background-color: #4CAF50; /* Green - adjust as needed */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.action-buttons .delete-quiz-btn { /* Style the delete button specifically */
+    background-color: #f44336; /* Red */
+}
+
+.action-buttons button:hover { /* Hover effect for all buttons */
+    opacity: 0.8;
+}
