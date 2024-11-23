@@ -3,6 +3,7 @@ using Service_Academy1.Models;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Service_Academy1.Services;
 
 namespace ServiceAcademy.Controllers
 {
@@ -10,10 +11,11 @@ namespace ServiceAcademy.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, EmailService emailService)
         {
-            (_logger, _context) = (logger, context);
+            (_logger, _context, _emailService) = (logger, context, emailService);
         }
 
         // Action method for Home.cshtml
@@ -70,7 +72,34 @@ namespace ServiceAcademy.Controllers
             ViewData["ActivePage"] = "Contact";
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> SendMessage(string name, string email, string message)
+        {
+            // Validate the form data (optional)
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(message))
+            {
+                return Content("Please fill in all fields.");
+            }
 
+            try
+            {
+                // Send email via the email service
+                await _emailService.SendEmailAsync(
+                    toEmail: "serviceacademyedu@gmail.com",  // The email address where the form is sent
+                    subject: $"Contact Us - {name}",  // Subject including the sender's name
+                    body: $"<h1>Message from {name}</h1><p>{message}</p><p>Reply to: {email}</p>", // Email body
+                    replyToEmail: email // Set the Reply-To header to the user's email address
+                );
+
+                // Provide success message to the user
+                return Content("Your message has been sent successfully. We'll get back to you shortly.");
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during email sending
+                return Content($"Error: {ex.Message}");
+            }
+        }
         public IActionResult Faqs()
         {
             ViewData["ActivePage"] = "Faqs";

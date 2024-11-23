@@ -16,6 +16,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 // Register the ArliAIService
 builder.Services.AddHttpClient<ArliAIService>(); // Register HttpClient
 builder.Services.AddSingleton<ArliAIService>(); // Register the custom service
+builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<LogSystemUsageService>();
 
 builder.Services.AddControllersWithViews();
