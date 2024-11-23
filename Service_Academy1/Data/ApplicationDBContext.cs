@@ -24,7 +24,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<TraineeAnswerModel> TraineeAnswers { get; set; }
     public DbSet<TraineeQuizResultModel> TraineeQuizResults { get; set; }
     public DbSet<TraineeModuleResult> TraineeModuleResults { get; set; }
-    public DbSet<AnnouncementModel> Announcemnets { get; set; }
+    public DbSet<AnnouncementModel> Announcements { get; set; }
     public DbSet<EvaluationCriteria> EvaluationCriteria { get; set; }
     public DbSet<EvaluationQuestionModel> EvaluationQuestions { get; set; }
     public DbSet<EvaluationResponseModel> EvaluationResponses { get; set; }

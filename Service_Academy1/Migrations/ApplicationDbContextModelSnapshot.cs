@@ -263,7 +263,11 @@ namespace Service_Academy1.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AnnouncementId"));
 
-                    b.Property<string>("Announcement")
+                    b.Property<string>("AnnouncementTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -274,7 +278,7 @@ namespace Service_Academy1.Migrations
 
                     b.HasIndex("ProgramId");
 
-                    b.ToTable("Announcemnets");
+                    b.ToTable("Announcements");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.AnswerModel", b =>

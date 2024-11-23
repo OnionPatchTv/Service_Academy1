@@ -62,28 +62,45 @@
     <!-- Main Content Section -->
     
         <!-- Announcements Section -->
-        <section class="announcements">
-            <h3>Announcements</h3>
-            <div class="announcement-container">
-                <div class="announcement-prompt" onclick="toggleAnnouncementInput()">
-                    Announce something to your class...
-                </div>
+    <section class="announcements">
+        <h3>Announcements</h3>
+        <div class="announcement-container">
+            <div class="announcement-prompt" onclick="toggleAnnouncementInput()">
+                Announce something to your class...
+            </div>
+            @using (Html.BeginForm("CreateAnnouncement", "ProjectLeader", FormMethod.Post, new { id = "announcementForm" }))
+            {
+                @Html.AntiForgeryToken()
                 <div class="announcement-input" id="announcement-input" style="display: none;">
+                    <label asp-for="Announcement.AnnouncementTitle">Title:</label><br />
+                    <input asp-for="Announcement.AnnouncementTitle" type="text" id="announcement-title" placeholder="Enter title" class="form-control" />
+                    <span asp-validation-for="Announcement.AnnouncementTitle" class="text-danger"></span><br />
+
                     <div class="input-toolbar">
                         <button onclick="applyFormat('bold')"><b>B</b></button>
                         <button onclick="applyFormat('italic')"><i>I</i></button>
                         <button onclick="applyFormat('underline')"><u>U</u></button>
                         <button onclick="insertList()">• Bullet</button>
                     </div>
-                    <div contenteditable="true" id="announcement-textarea" class="editable-textarea" placeholder="Type your announcement here..."></div>
+
+                    <label asp-for="Announcement.Content">Content:</label><br />
+                    <textarea asp-for="Announcement.Content" contenteditable="true" id="announcement-textarea" class="editable-textarea" placeholder="Type your announcement here..."></textarea>
+                    <span asp-validation-for="Announcement.Content" class="text-danger"></span><br />
+
+                    <input type="hidden" asp-for="Announcement.ProgramId" value="@Model.ProgramId" />
+
                     <div class="input-buttons">
-                        <button class="cancel-btn" onclick="cancelPost()">Cancel</button>
-                        <button class="post-btn" onclick="postAnnouncement()">Post</button>
+                        <button type="button" class="cancel-btn" onclick="cancelPost()">Cancel</button>
+                        <button type="submit" class="send-btn">Send</button>
                     </div>
                 </div>
-            </div>
-            <div class="posts" id="posts"></div>
-        </section>
+            }
+
+            @* ... success/error message display ... *@
+
+            <div class="posts" id="posts"></div> @* Container for displayed announcements *@
+
+    </section>
         <!--
         <div class="button-container">
             <button type="button" class="btn upload-module" data-toggle="modal" data-target="#uploadModuleModal" @(Model.IsArchived ? "disabled" : "")>Upload Module</button>

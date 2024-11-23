@@ -134,15 +134,19 @@ namespace ServiceAcademy.Controllers
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user != null)
                 {
-                    // Confirm the email and enable 2FA
+                    // Confirm the email and enable 2FA for registration
                     user.EmailConfirmed = true;
                     user.TwoFactorEnabled = true;
 
                     // Save changes to user
                     await _userManager.UpdateAsync(user);
 
-                    // Sign the user in
+                    // Sign the user in (this will trigger 2FA)
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    // Disable 2FA for subsequent logins
+                    user.TwoFactorEnabled = false;
+                    await _userManager.UpdateAsync(user); // Disable 2FA after successful registration
 
                     TempData["SuccessMessage"] = "Registration successful!";
                     return RedirectToAction("MyLearning", "Trainee");
@@ -153,8 +157,6 @@ namespace ServiceAcademy.Controllers
             return View();
         }
 
-
-        // Login View
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -169,6 +171,7 @@ namespace ServiceAcademy.Controllers
                         await _logUsageService.LogSystemUsageAsync(userId, "Login");
 
                         var roles = await _userManager.GetRolesAsync(user);
+
                         // Debug output to see assigned roles
                         Debug.WriteLine($"Roles for user {user.Email}: {string.Join(", ", roles)}");
 

@@ -3,16 +3,17 @@
 
 @{
     ViewData["Title"] = "Program Stream Page";
+    var approvedCount = @Model.Enrollment.Count(e => e.EnrollmentStatus == "Approved");
 }
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/TraineeScript/MyLearningScript.js"></script>
+    <script src="~/js/TraineeScript/MyLearningStreamScript.js"></script>
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/TraineeStyle/TraineeStreamStyle.css">
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
 }
 
 @if (TempData["MyLearningStreamSuccessMessage"] != null)
@@ -29,164 +30,160 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-<div class="breadcrumb">
-    <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
-    <span class="separator">></span>
-    <a href="javascript:void(0);" class="@(Html.IsActive("MyLearningStream", "Trainee") ? "active" : "")" onclick="location.reload();">Stream</a>
-</div>
-
-<!-- Full Width Class Banner Section -->
-<section class="class-banner">
-    <div class="banner-content">
-        <div class="banner-image">
-            <img src="@Url.Content(@Model.PhotoPath)" alt="@Model.Title">
-        </div>
-        <div class="banner-text">
-            <h2 class="class-title">@Model.Title</h2>
-            <p class="description" onclick="toggleDescription(this)">
-                @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
-            </p>
-
-
-            <!-- Enrollment and Evaluation Section MOVED HERE-->
-            @foreach (var enrollment in Model.Enrollment)
-            {
-                @if (enrollment.ProgramId == Model.ProgramId)
-                {
-                    // Check if the user has already evaluated the program using EnrollmentId
-                    bool hasEvaluated = Model.Evaluations.Any(e =>
-                    e.EvaluationQuestions != null &&
-                    e.EvaluationQuestions.ProgramId == Model.ProgramId &&
-                    e.EnrollmentId == enrollment.EnrollmentId
-                    );
-
-                    <div class="evaluation-section">
-                        @*Added a container for styling*@
-                        @if (!hasEvaluated)
-                        {
-                            <a asp-controller="Evaluation" asp-action="EvaluationForm" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary evaluate-program-button">
-                                @*Added evaluate-button class*@
-                                Evaluate Program
-                            </a>
-                        }
-                        else
-                        {
-                            <span>You have already submitted an evaluation for this program.</span>
-                        }
-                    </div>
-                }
-            }
-        </div>
+<div class="container">
+    <div class="breadcrumb">
+        <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
+        <span class="separator">&gt;</span>
+        <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")" onclick="location.reload();">Stream</a>
+        <span class="separator">&gt;</span>
+        <a href="@Url.Action("ProgramStreamManage", "ProjectLeader", new { programId = Model.ProgramId })">Manage</a>
     </div>
-</section>
-<!-- Main Content Section -->
-<main class="main-content">
+
+    <!-- Full Width Class Banner Section -->
+    <section class="class-banner">
+        <div class="banner-content">
+            <div class="banner-image">
+                <img src="@Url.Content(@Model.PhotoPath)" alt="@Model.Title">
+            </div>
+            <div class="banner-text">
+                <h2 class="class-title">@Model.Title</h2>
+                <div class="description-container">
+                    <p class="description" onclick="toggleDescription(this)">
+                        @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
+                    </p>
+                    <!-- Enrollment and Evaluation Section MOVED HERE-->
+                    @foreach (var enrollment in Model.Enrollment)
+                    {
+                        @if (enrollment.ProgramId == Model.ProgramId)
+                        {
+                            // Check if the user has already evaluated the program using EnrollmentId
+                            bool hasEvaluated = Model.Evaluations.Any(e =>
+                            e.EvaluationQuestions != null &&
+                            e.EvaluationQuestions.ProgramId == Model.ProgramId &&
+                            e.EnrollmentId == enrollment.EnrollmentId
+                            );
+
+                            <div class="evaluation-section">
+                                @*Added a container for styling*@
+                                @if (!hasEvaluated)
+                                {
+                                    <a asp-controller="Evaluation" asp-action="EvaluationForm" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary evaluate-program-button">
+                                        @*Added evaluate-button class*@
+                                        Evaluate Program
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>You have already submitted an evaluation for this program.</span>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Modules and Module Content Sections -->
     <section class="content-sections">
-        <aside class="modules">
-            <h3>Modules</h3>
-            <div class="module-list">
-                @if (Model.Modules != null)
-                {
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <button class="dropdown-btn">Modules</button>
+                <div class="dropdown-content">
                     @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                     {
-                        // Check if the module is marked as completed
                         var isCompleted = Model.TraineeModuleResults
                         .FirstOrDefault(tmr => tmr.ModuleId == module.ModuleId)?
                         .IsCompleted ?? false;
-
-                        <div class="module-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <!-- Button for loading module content -->
-                            <button class="module-title"
-                                    onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')"
-                                    style="flex-grow: 1; text-align: left; border: none; background: none; color: #007bff; cursor: pointer; font-size: 16px;">
-                                @module.Title
-                            </button>
-
-                            <!-- Form for marking as read -->
-                            <form action="@Url.Action("MarkAsRead", "Trainee", new { programId = Model.ProgramId, moduleId = module.ModuleId })"
-                                  method="post"
-                                  style="margin-left: 10px;">
-                                <button type="submit"
-                                        class="fa-button"
-                                        style="background: none; border: none; cursor: pointer; padding: 0;">
-                                    <i class="fa fa-check-circle"
-                                       style="color: @(isCompleted ? "green" : "grey"); font-size: 18px;"
-                                       aria-hidden="true"></i>
-                                </button>
-                            </form>
-                        </div>
+                        <button class="dropdown-item" onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')">
+                            <div class="button-content">
+                                <span class="module-title-text">@module.Title</span>
+                                <i class="fa fa-check-circle mark-as-read-btn" style="color: @(isCompleted ? "green" : "grey"); font-size: 18px;" onclick="markAsRead('@Url.Action("MarkAsRead", "Trainee", new { programId = Model.ProgramId, moduleId = module.ModuleId })', this); event.stopPropagation();"                                                             
+                                   title="Mark as Read"></i>
+                            </div>
+                        </button>
                     }
-                }
+                </div>
+            </div>
 
-                <h3>Quizzes</h3>
-                @if (Model.Quizzes != null)
-                {
+            <div class="sidebar-section">
+                <button class="dropdown-btn">Quizzes</button>
+                <div class="dropdown-content">
                     @foreach (var quiz in Model.Quizzes)
                     {
-                        // Check if there's a quiz result for the current quiz and user
                         var enrollmentId = Model.Enrollment.FirstOrDefault(e => e.ProgramId == Model.ProgramId)?.EnrollmentId;
                         var quizResult = Model.TraineeQuizResults
                         .FirstOrDefault(result => result.QuizId == quiz.QuizId && result.EnrollmentId == enrollmentId);
-
-                        <div class="quiz-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <!-- Button for opening the quiz or quiz result -->
-                            <button class="quiz-title"
-                                    onclick="location.href='@Url.Action("RedirectToQuizOrResult", "Trainee", new { quizId = quiz.QuizId })'"
-                                    style="flex-grow: 1; text-align: left; border: none; background: none; color: #007bff; cursor: pointer; font-size: 16px;">
-                                @quiz.QuizTitle
-                            </button>
-
-                            <!-- Check icon to show if the quiz result exists -->
-                            @if (quizResult != null)
-                            {
-                                <i class="fa fa-check-circle"
-                                   style="color: green; font-size: 18px; margin-left: 10px;"
-                                   aria-hidden="true"></i>
-                            }
-                            else
-                            {
-                                <i class="fa fa-check-circle"
-                                   style="color: grey; font-size: 18px; margin-left: 10px; visibility: hidden;"
-                                   aria-hidden="true"></i>
-                            }
-                        </div>
+                        <button class="dropdown-item quizzes" onclick="location.href='@Url.Action("RedirectToQuizOrResult", "Trainee", new { quizId = quiz.QuizId })'">
+                            @*Added dropdown-item and quizzes classes*@
+                            <div class="button-content">
+                                <span class="quizzes-title-text">@quiz.QuizTitle</span> @*Added quizzes-title-text span*@
+                                <!-- Check icon to show if the quiz result exists -->
+                                @if (quizResult != null)
+                                {
+                                    <i class="fa fa-check-circle"
+                                       style="color: green; font-size: 18px; margin-left: 10px;"
+                                       aria-hidden="true"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-check-circle"
+                                       style="color: grey; font-size: 18px; margin-left: 10px; visibility: hidden;"
+                                       aria-hidden="true"></i>
+                                }
+                            </div>
+                        </button>
                     }
-                }
-                <h3>Activities</h3>
-                @if (Model.Activities != null)
-                {
-                    foreach (var activity in Model.Activities)
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <button class="dropdown-btn">Activities</button>
+                <div class="dropdown-content">
+                    @foreach (var activity in Model.Activities)
                     {
-                        // Check if the activity is completed for the current user
                         var traineeActivity = activity.TraineeActivities
                         .FirstOrDefault(ta => ta.EnrollmentId == Model.Enrollment.FirstOrDefault(e => e.ProgramId == Model.ProgramId)?.EnrollmentId && ta.IsCompleted);
-
-                        <div class="activity-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <!-- Button for opening the submit activity modal -->
-                            <button class="activity-title"
-                                    onclick="openSubmitActivityModal(@activity.ActivitiesId, '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore')"
-                                    style="flex-grow: 1; text-align: left; border: none; background: none; color: #007bff; cursor: pointer; font-size: 16px;">
-                                @activity.ActivitiesTitle
-                            </button>
-
-                            <!-- Check icon to show activity completion status -->
-                            @if (traineeActivity != null)
-                            {
-                                <i class="fa fa-check-circle"
-                                   style="color: green; font-size: 18px; margin-left: 10px;"
-                                   aria-hidden="true"></i>
-                            }
-                            else
-                            {
-                                <i class="fa fa-check-circle"
-                                   style="color: grey; font-size: 18px; margin-left: 10px; visibility: hidden;"
-                                   aria-hidden="true"></i>
-                            }
-                        </div>
+                        <button class="dropdown-item activities" onclick="openSubmitActivityModal(@activity.ActivitiesId, '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore')">
+                            @*Added dropdown-item and activities classes*@
+                            <div class="button-content">
+                                <span class="activities-title-text">@activity.ActivitiesTitle</span> @*Added activities-title-text span*@
+                                @if (traineeActivity != null)
+                                {
+                                    <i class="fa fa-check-circle"
+                                       style="color: green; font-size: 18px; margin-left: 10px;"
+                                       aria-hidden="true"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-check-circle"
+                                       style="color: grey; font-size: 18px; margin-left: 10px; visibility: hidden;"
+                                       aria-hidden="true"></i>
+                                }
+                            </div>
+                        </button>
                     }
-                }
+                </div>
             </div>
         </aside>
+        <section class="module-viewer">
+            <div class="module-header">
+                <h3 id="moduleViewerTitle">Module Viewer</h3>
+                <a id="moduleVideoLink" href="#" target="_blank">
+                    <i id="videoIcon" class="fa-regular fa-file-video" title="No Link Available"></i>
+                </a>
+            </div>
+            <div class="viewer-content">
+                <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
+            </div>
+            <!-- Add the description section below the content -->
+            <div id="moduleDescription" class="module-description">
+                <!-- Module description will be updated here -->
+            </div>
+        </section>
+    </section>
         <!-- Submit Activity Modal -->
         <div class="modal fade" id="submitActivityModal" tabindex="-1" aria-labelledby="submitActivityModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -240,22 +237,4 @@
                 </div>
             </div>
         </div>
-        <section class="module-viewer">
-            <div class="module-header">
-                <h3 id="moduleViewerTitle">Module Viewer</h3>
-                <a id="moduleVideoLink" href="#" target="_blank">
-                    <i id="videoIcon" class="fa-regular fa-file-video" title="No Link Available"></i>
-                </a>
-            </div>
-            <div class="viewer-content">
-                <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
-            </div>
-            <!-- Add the description section below the content -->
-            <div id="moduleDescription" class="module-description">
-                <!-- Module description will be updated here -->
-            </div>
-        </section>
-    </section>
-</main>
-
-
+</div>

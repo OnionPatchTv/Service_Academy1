@@ -168,8 +168,7 @@ namespace ServiceAcademy.Controllers
 
             if (enrollment == null)
             {
-                TempData["MyLearningStreamErrorMessage"] = "Enrollment not found.";
-                return RedirectToAction("MyLearningStream", new { programId = programId });
+                return BadRequest("Enrollment not found."); // Return an error response
             }
 
             // Check if there's already an existing TraineeModuleResult record
@@ -197,8 +196,7 @@ namespace ServiceAcademy.Controllers
             // Save changes to the database
             _context.SaveChanges();
 
-            TempData["MyLearningStreamSuccessMessage"] = "Module marked as read!";
-            return RedirectToAction("MyLearningStream", new { programId = programId });
+            return Ok(); // Return a success response for AJAX
         }
 
         [HttpGet]

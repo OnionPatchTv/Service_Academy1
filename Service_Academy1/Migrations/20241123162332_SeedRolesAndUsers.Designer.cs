@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Service_Academy1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241123115824_SeedRolesAndUsers")]
+    [Migration("20241123162332_SeedRolesAndUsers")]
     partial class SeedRolesAndUsers
     {
         /// <inheritdoc />
@@ -266,7 +266,11 @@ namespace Service_Academy1.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AnnouncementId"));
 
-                    b.Property<string>("Announcement")
+                    b.Property<string>("AnnouncementTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -277,7 +281,7 @@ namespace Service_Academy1.Migrations
 
                     b.HasIndex("ProgramId");
 
-                    b.ToTable("Announcemnets");
+                    b.ToTable("Announcements");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.AnswerModel", b =>

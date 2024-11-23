@@ -256,3 +256,152 @@ body {
 .modal-content {
     border: 0;
 }
+.sidebar {
+    width: 300px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-right: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.sidebar-section {
+    position: relative; /* This is crucial for containing the dropdown */
+    margin-bottom: 20px; /* Remove default margin to avoid gaps */
+}
+
+.dropdown-btn {
+    display: block;
+    width: 100%;
+    background: var(--primary-color);
+    color: white;
+    text-align: left;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    position: relative; /* Required for absolute positioning of dropdown */
+    display: block; /* Important for correct positioning */
+    width: 100%; /* Important for correct positioning */
+}
+
+    .dropdown-btn:hover {
+        background: #1f1f44;
+    }
+
+.dropdown-content {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the left */
+    justify-content: flex-start;
+    position: static; /* Key change: static positioning */
+    width: 100%; /* Full width of the parent */
+    box-shadow: none; /* Remove the box-shadow */
+    border: none; /* Remove the border */
+    border-radius: 0; /* Remove border-radius */
+    margin-top: 0; /* Remove top margin*/
+    background-color: #fff; /* Dropdown background */
+    padding: 0px; /* Optional padding */
+}
+
+    .dropdown-content .dropdown-item, /* Module items */
+    .dropdown-content .dropdown-item.quizzes, /* Quizzes items */
+    .dropdown-content .dropdown-item.activities, /* Activities items */
+    .dropdown-content .add-item-btn { /* "Add" buttons */
+        display: flex;
+        align-items: center;
+        width: 100%;
+        overflow: hidden; /* Hide overflow */
+        padding: 10px 15px; /* Add padding */
+        border: none; /* Remove border */
+        background: transparent; /* Make transparent */
+        text-align: left; /* Align text left */
+        white-space: nowrap; /* Prevent text wrapping */
+        color: #333; /* Default text color */ /* Default color for consistency */
+        cursor: pointer; /* Make it look clickable */
+        margin-bottom: 5px; /*Space between buttons */
+        border-radius: 5px; /*Rounded border for button*/
+    }
+
+
+        .dropdown-content .dropdown-item:hover,
+        .dropdown-content .dropdown-item.quizzes:hover,
+        .dropdown-content .dropdown-item.activities:hover,
+        .dropdown-content .add-item-btn:hover {
+            background-color: #f0f0f0; /* Hover background color */
+        }
+
+
+        .dropdown-content .dropdown-item .button-content, /*For Module items*/
+        .dropdown-content .dropdown-item.quizzes .button-content, /*For quiz items*/
+        .dropdown-content .dropdown-item.activities .button-content { /*For activities items*/
+            display: flex;
+            align-items: center; /* Vertically center text and icons */
+            width: 100%; /* Full button width */
+        }
+
+        .dropdown-content .dropdown-item .module-title-text, /* For module titles */
+        .dropdown-content .dropdown-item.quizzes .quizzes-title-text, /* For quizzes titles*/
+        .dropdown-content .dropdown-item.activities .activities-title-text { /* For activity titles */
+            flex-grow: 1; /* Allow text to grow */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis */
+            white-space: nowrap; /* Prevent text wrap */
+            margin-right: 10px; /* Add space before icons */
+        }
+
+        .dropdown-content .dropdown-item i,
+        .dropdown-content .dropdown-item.quizzes i, /*For quiz icon*/
+        .dropdown-content .dropdown-item.activities i { /*For activities icon*/
+            flex-shrink: 0; /* Prevent icons from shrinking */
+            cursor: pointer; /* Show pointer cursor */
+            margin-left: 10px; /* Add space between icons */
+        }
+
+.module-viewer {
+    flex-grow: 1;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.viewer-content {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.description-container {
+    /* Remove or adjust max-height */
+    max-height: fit-content; /* Or a very large value if needed for initial layout */
+    overflow: hidden; /* Keep this for the initial truncation */
+    transition: max-height 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.description {
+    /* Original styles */
+    max-width: 100%;
+    line-height: 1.5em;
+    font-size: 1rem;
+    white-space: normal;
+    /* Initial truncated state (4 lines) */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden; /* Needed for initial truncation */
+    text-overflow: ellipsis;
+}
+
+    .description.expanded {
+        -webkit-line-clamp: initial; /* Remove line clamp */
+        max-height: none; /* Allow full expansion */
+        overflow: visible; /* Show all content */
+    }
+
+
+.modal-content {
+    border: 0;
+}

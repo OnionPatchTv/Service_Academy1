@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Reflection;
 using System;
 using Newtonsoft.Json;
+using System.Net.Mail;
+using System.Net;
 
 namespace ServiceAcademy.Controllers
 {
@@ -434,6 +436,75 @@ namespace ServiceAcademy.Controllers
 
             TempData["ProgramStreamManageSuccessMessage"] = "Successfully denied enrollment.";
             return RedirectToAction("ProgramStreamManage", new { programId = enrollment.ProgramId });
+        }
+        #endregion
+
+        #region Announcement
+        [HttpPost]
+        public async Task<IActionResult> CreateAnnouncement(AnnouncementModel announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                // 1. Save the announcement to the database (optional, but recommended for record-keeping)
+                _context.Announcements.Add(announcement);
+                await _context.SaveChangesAsync();
+
+                var programTitle = await _context.Programs
+                  .Where(p => p.ProgramId == announcement.ProgramId)
+                  .Select(p => p.Title)
+                  .FirstOrDefaultAsync();
+                // 2. Get trainee emails for the program
+                var traineeEmails = await _context.Enrollment
+                    .Where(e => e.ProgramId == announcement.ProgramId && e.EnrollmentStatus == "Approved") // Filter by approved enrollments
+                    .Include(e => e.CurrentTrainee)
+                    .Select(e => e.CurrentTrainee.Email)
+                    .ToListAsync();
+
+                // 3. Send email
+                if (traineeEmails.Any()) // Check if any trainees are enrolled
+                {
+                    using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
+                    {
+                        smtpClient.Credentials = new NetworkCredential("serviceacademyedu@gmail.com", "kbwj agpd ptyb qgzm"); // Gmail credentials
+                        smtpClient.EnableSsl = true;
+
+                        var mailMessage = new MailMessage
+                        {
+                            From = new MailAddress("your_gmail_email@gmail.com"), // Your Gmail email
+                            Subject = $"Announcement from {programTitle}: {announcement.AnnouncementTitle}",
+                            Body = announcement.Content,
+                            IsBodyHtml = true // If you're sending HTML content
+                        };
+
+                        foreach (var email in traineeEmails)
+                        {
+                            mailMessage.To.Add(email);
+                        }
+
+                        try
+                        {
+                            await smtpClient.SendMailAsync(mailMessage);
+                            TempData["ProgramStreamSuccessMessage"] = "Announcement sent successfully!"; // Success message
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error sending email");
+                            TempData["ProgramStreamErrorMessage"] = "Error sending announcement. Please try again later."; // Error message
+                        }
+                    }
+                }
+                else
+                {
+                    TempData["InfoMessage"] = "No trainees enrolled in this program."; // Informational message
+                }
+
+
+                return RedirectToAction("ProgramStream", new { programId = announcement.ProgramId }); // Redirect back to ProgramStream
+            }
+
+            // ... (Handle ModelState errors if needed)
+            TempData["ProgramStreamErrorMessage"] = "Error creating announcement. Please check the form and try again.";
+            return RedirectToAction("ProgramStream", new { programId = announcement.ProgramId });
         }
         #endregion
     }

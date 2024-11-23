@@ -289,19 +289,20 @@ namespace Service_Academy1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Announcemnets",
+                name: "Announcements",
                 columns: table => new
                 {
                     AnnouncementId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProgramId = table.Column<int>(type: "integer", nullable: false),
-                    Announcement = table.Column<string>(type: "text", nullable: false)
+                    AnnouncementTitle = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Announcemnets", x => x.AnnouncementId);
+                    table.PrimaryKey("PK_Announcements", x => x.AnnouncementId);
                     table.ForeignKey(
-                        name: "FK_Announcemnets_Programs_ProgramId",
+                        name: "FK_Announcements_Programs_ProgramId",
                         column: x => x.ProgramId,
                         principalTable: "Programs",
                         principalColumn: "ProgramId",
@@ -621,8 +622,8 @@ namespace Service_Academy1.Migrations
                 column: "ProgramId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Announcemnets_ProgramId",
-                table: "Announcemnets",
+                name: "IX_Announcements_ProgramId",
+                table: "Announcements",
                 column: "ProgramId");
 
             migrationBuilder.CreateIndex(
@@ -778,7 +779,7 @@ namespace Service_Academy1.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Announcemnets");
+                name: "Announcements");
 
             migrationBuilder.DropTable(
                 name: "Answers");
