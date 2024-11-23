@@ -16,16 +16,18 @@
     <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
 }
 
-@if (TempData["Message"] != null)
+@if (TempData["ProgramStreamSuccessMessage"] != null)
 {
-    <div class="alert alert-success">
-        @TempData["Message"]
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["ProgramStreamSuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-else if (TempData["Error"] != null)
+@if (TempData["ProgramStreamErrorMessage"] != null)
 {
-    <div class="alert alert-danger">
-        @TempData["Error"]
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ProgramStreamErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 

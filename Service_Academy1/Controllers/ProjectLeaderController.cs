@@ -41,7 +41,7 @@ namespace ServiceAcademy.Controllers
             // Check if any programs are being retrieved
             if (programs == null || !programs.Any())
             {
-                ViewData["Message"] = "No programs available.";
+                ViewData["ProjectLeaderErrorMessage"] = "No programs available.";
             }
 
             return View(programs);
@@ -73,7 +73,7 @@ namespace ServiceAcademy.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["Message"] = "Program activated successfully.";
+            TempData["ProjectLeaderSuccessMessage"] = "Program activated successfully.";
             return RedirectToAction("ProjectLeaderDashboard");
         }
 
@@ -86,11 +86,11 @@ namespace ServiceAcademy.Controllers
                 management.EndDate = DateTime.UtcNow;
                 management.IsActive = false;
                 await _context.SaveChangesAsync();
-                TempData["Message"] = "Program deactivated successfully.";
+                TempData["ProjectLeaderSuccessMessage"] = "Program deactivated successfully.";
             }
             else
             {
-                TempData["Error"] = "Program deactivation failed. Program not found.";
+                TempData["ProjectLeaderErrorMessage"] = "Program deactivation failed. Program not found.";
             }
 
             return RedirectToAction("ProjectLeaderDashboard");
@@ -104,7 +104,7 @@ namespace ServiceAcademy.Controllers
             {
                 management.IsArchived = true;
                 await _context.SaveChangesAsync();
-                TempData["Message"] = "Program archived successfully.";
+                TempData["ProjectLeaderSuccessMessage"] = "Program archived successfully.";
             }
             return RedirectToAction("ProjectLeaderDashboard");
         }
@@ -149,11 +149,11 @@ namespace ServiceAcademy.Controllers
                 _context.Programs.Remove(program);
                 await _context.SaveChangesAsync();
 
-                TempData["Message"] = "Program and its related data deleted successfully.";
+                TempData["ProjectLeaderSuccessMessage"] = "Program and its related data deleted successfully.";
             }
             else
             {
-                TempData["Error"] = "Program not found.";
+                TempData["ProjectLeaderErrorMessage"] = "Program not found.";
             }
 
             return RedirectToAction("ProjectLeaderDashboard");
@@ -180,7 +180,7 @@ namespace ServiceAcademy.Controllers
 
             if (program == null)
             {
-                TempData["Error"] = "Program not found.";
+                TempData["ProgramStreamErrorMessage"] = "Program not found.";
                 return RedirectToAction("ProjectLeaderDashboard");
             }
 
@@ -216,7 +216,7 @@ namespace ServiceAcademy.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                TempData["Error"] = "No file selected";
+                TempData["ProgramStreamErrorMessage"] = "No file selected";
                 return RedirectToAction("ProgramStream", new { programId });
             }
 
@@ -242,7 +242,7 @@ namespace ServiceAcademy.Controllers
 
             _context.Modules.Add(module);
             await _context.SaveChangesAsync();
-            TempData["Message"] = "Module uploaded successfully.";
+            TempData["ProgramStreamSuccessMessage"] = "Module uploaded successfully.";
             return RedirectToAction("ProgramStream", new { programId });
         }
 
@@ -252,7 +252,7 @@ namespace ServiceAcademy.Controllers
             var module = await _context.Modules.FindAsync(moduleId);
             if (module == null)
             {
-                TempData["Error"] = "Module not found.";
+                TempData["ProgramStreamErrorMessage"] = "Module not found.";
                 return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
             }
 
@@ -273,7 +273,7 @@ namespace ServiceAcademy.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["Message"] = "Module updated successfully.";
+            TempData["ProgramStreamSuccessMessage"] = "Module updated successfully.";
             return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
         }
 
@@ -283,7 +283,7 @@ namespace ServiceAcademy.Controllers
             var module = await _context.Modules.FindAsync(moduleId);
             if (module == null)
             {
-                TempData["Error"] = "Module not found.";
+                TempData["ProgramStreamErrorMessage"] = "Module not found.";
                 return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
             }
 
@@ -304,7 +304,7 @@ namespace ServiceAcademy.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Module deleted and renumbered successfully.";
+            TempData["ProgramStreamSuccessMessage"] = "Module deleted and renumbered successfully.";
             return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
         }
         #endregion
@@ -359,7 +359,7 @@ namespace ServiceAcademy.Controllers
 
                 // Save changes to the database
                 _context.SaveChanges();
-
+                TempData["ProgramStreamManageSuccessMessage"] = "Successfully approved completion.";
                 // Optionally, redirect or return a success response
                 return RedirectToAction("ProgramStream", new { programId = enrollment.ProgramId });
             }
@@ -418,6 +418,7 @@ namespace ServiceAcademy.Controllers
             enrollment.EnrollmentStatus = "Approved";
             await _context.SaveChangesAsync();
 
+            TempData["ProgramStreamManageSuccessMessage"] = "Successfully approved enrollment.";
             return RedirectToAction("ProgramStreamManage", new { programId = enrollment.ProgramId });
         }
 
@@ -431,6 +432,7 @@ namespace ServiceAcademy.Controllers
             enrollment.ReasonForDenial = reasonForDenial; // Store the denial reason
             await _context.SaveChangesAsync();
 
+            TempData["ProgramStreamManageSuccessMessage"] = "Successfully denied enrollment.";
             return RedirectToAction("ProgramStreamManage", new { programId = enrollment.ProgramId });
         }
         #endregion

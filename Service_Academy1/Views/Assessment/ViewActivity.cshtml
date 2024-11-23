@@ -52,7 +52,8 @@
                 <td>
                     <form method="post" action="@Url.Action("UpdateRawScore", "Assessment")">
                         <input type="hidden" name="traineeActivityId" value="@traineeActivity.TraineeActivityId" />
-                        <input type="number" name="rawScore" value="@traineeActivity.RawScore" class="form-control" style="width: 80px; display: inline;" />
+                        <input type="number" name="rawScore" value="@traineeActivity.RawScore" class="form-control" style="width: 80px; display: inline;"
+                               min="0" max="@Model.Activity.TotalScore" />
                         <button type="submit" class="btn btn-primary btn-sm">Update</button>
                     </form>
                 </td>

@@ -15,21 +15,20 @@
     <link rel="stylesheet" href="~/css/TraineeStyle/TraineeStreamStyle.css">
 }
 
-@if (ViewBag.SuccessMessage != null)
+@if (TempData["MyLearningStreamSuccessMessage"] != null)
 {
-    <div class="alert alert-success">
-        @ViewBag.SuccessMessage
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["MyLearningStreamSuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
-@if (ViewBag.ErrorMessage != null)
+@if (TempData["MyLearningStreamErrorMessage"] != null)
 {
-    <div class="alert alert-danger">
-        @ViewBag.ErrorMessage
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["MyLearningStreamErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
-
 <div class="breadcrumb">
     <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
     <span class="separator">></span>

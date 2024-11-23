@@ -14,17 +14,17 @@
 
 <div class="container">
     <div class="content">
-        @if (TempData["Message"] != null)
+        @if (TempData["ProgramCreationSuccessMessage"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                @TempData["Message"]
+                @TempData["ProgramCreationSuccessMessage"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
-        @if (TempData["Error"] != null)
+        @if (TempData["ProgramCreationErrorMessage"] != null)
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                @TempData["Error"]
+                @TempData["ProgramCreationERrorMessage"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }

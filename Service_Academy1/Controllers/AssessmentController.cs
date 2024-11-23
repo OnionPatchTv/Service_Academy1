@@ -75,7 +75,7 @@ namespace ServiceAcademy.Controllers
                 }
                 _context.SaveChanges(); // Save all answers at once
             }
-            TempData["SuccessMessage"] = "Quiz created successfully";
+            TempData["ProgramStreamSuccessMessage"] = "Quiz created successfully";
             // Redirect to ProgramStream or another appropriate location
             return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = quiz.ProgramId });
         }
@@ -122,7 +122,7 @@ namespace ServiceAcademy.Controllers
                 _context.Quizzes.Remove(quiz);
                 await _context.SaveChangesAsync();
 
-                TempData["Message"] = "Quiz and its related data deleted successfully.";
+                TempData["ProgramStreamSuccessMessage"] = "Quiz and its related data deleted successfully.";
 
                 // Store the ProgramId in TempData
                 TempData["ProgramId"] = programId;
@@ -132,7 +132,7 @@ namespace ServiceAcademy.Controllers
             }
             else
             {
-                TempData["Error"] = "Quiz not found.";
+                TempData["ProgramStreamErrorMessage"] = "Quiz not found.";
                 return RedirectToAction("ProgramStream", "ProjectLeader");
             }
         }
@@ -226,7 +226,7 @@ namespace ServiceAcademy.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            TempData["SuccessMessage"] = "Quiz and student results updated successfully!";
+            TempData["ProgramStreamSuccessMessage"] = "Quiz and student results updated successfully!";
             return RedirectToAction("ViewQuiz", new { quizId = updatedQuiz.QuizId });
         }
         #endregion
@@ -256,7 +256,7 @@ namespace ServiceAcademy.Controllers
             {
                 if (result.Remarks == "Pass")
                 {
-                    TempData["QuizErrorMessage"] = "You passed and cannot retake this quiz.";
+                    TempData["MyLearningStreamErrorMessage"] = "You passed and cannot retake this quiz.";
                     return RedirectToAction("QuizResult", new { resultId = result.TraineeQuizResultId });
                 }
                 else if (result.Retries >= 3)
@@ -265,7 +265,7 @@ namespace ServiceAcademy.Controllers
                     _context.Update(result);
                     await _context.SaveChangesAsync();
 
-                    TempData["QuizErrorMessage"] = "Retry limit reached. Final result recorded.";
+                    TempData["MyLearningStreamErrorMessage"] = "Retry limit reached. Final result recorded.";
                     return RedirectToAction("QuizResult", new { resultId = result.TraineeQuizResultId });
                 }
             }
@@ -360,6 +360,7 @@ namespace ServiceAcademy.Controllers
             await _context.SaveChangesAsync();
             await _logUsageService.LogSystemUsageAsync(enrollment.TraineeId, "QuizSubmission", quizId);
 
+            TempData["MyLearningStreamSuccessMessage"] = "Quiz finished and recorded.";
             return RedirectToAction("QuizResult", new { resultId = result.TraineeQuizResultId });
         }
 
@@ -414,7 +415,7 @@ namespace ServiceAcademy.Controllers
             _context.Activities.Add(activityModel);
             _context.SaveChanges();
 
-            TempData["Message"] = "Successfully created an Activity.";
+            TempData["ProgramStreamSuccessMessage"] = "Successfully created an Activity.";
             return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = ProgramId });
         }
 
@@ -447,7 +448,7 @@ namespace ServiceAcademy.Controllers
             var activity = await _context.Activities.FindAsync(activitiesId);
             if (activity == null)
             {
-                TempData["Error"] = "Activity not found.";
+                TempData["ProgramStreamErrorMessage"] = "Activity not found.";
                 return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
             }
 
@@ -458,7 +459,7 @@ namespace ServiceAcademy.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Activity updated successfully.";
+            TempData["ProgramStreamSuccessMessage"] = "Activity updated successfully.";
             return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
         }
         [HttpPost]
@@ -470,7 +471,7 @@ namespace ServiceAcademy.Controllers
 
             if (activity == null)
             {
-                TempData["Error"] = "Activity not found.";
+                TempData["ProgramStreamErrorMessage"] = "Activity not found.";
                 return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
             }
 
@@ -478,7 +479,7 @@ namespace ServiceAcademy.Controllers
             _context.Activities.Remove(activity);
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Activity and its corresponding data are deleted successfully.";
+            TempData["ProgramStreamSuccessMessage"] = "Activity and its corresponding data are deleted successfully.";
             return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
         }
 
@@ -569,7 +570,7 @@ namespace ServiceAcademy.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Successfully uploaded an activity.";
+            TempData["MyLearningStreamSuccessMessage"] = "Successfully uploaded an activity.";
             return RedirectToAction("MyLearningStream", "Trainee", new { programId = activity.ProgramId });
         }
 

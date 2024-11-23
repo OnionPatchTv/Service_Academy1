@@ -13,17 +13,17 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProjectLeaderDashboardStyle.css">
 }
-@if (TempData["Message"] != null)
+@if (TempData["ProjectLeaderSuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Message"]
+        @TempData["ProjectLeaderSuccessMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-@if (TempData["Error"] != null)
+@if (TempData["ProjectLeaderErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["Error"]
+        @TempData["ProjectLeaderErrorMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }

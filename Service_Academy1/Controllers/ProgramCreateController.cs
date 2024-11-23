@@ -114,13 +114,13 @@ namespace ServiceAcademy.Controllers
                 _context.ProgramManagement.Add(programManagement);
                 await _context.SaveChangesAsync();
 
-                TempData["Message"] = "Successfully added a Program";
+                TempData["ProgramCreationSuccessMessage"] = "Successfully added a Program";
                 return RedirectToAction("ProgramCreation", "ProgramCreate");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error saving program to the database.");
-                TempData["Error"] = "Failed to add a Program. Please try again.";
+                TempData["ProgramCreationErrorMessage"] = "Failed to add a Program. Please try again.";
                 return View(program);
             }
         }

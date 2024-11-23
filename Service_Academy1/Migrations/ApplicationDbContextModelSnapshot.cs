@@ -769,6 +769,52 @@ namespace Service_Academy1.Migrations
                     b.ToTable("TraineeQuizResults");
                 });
 
+            modelBuilder.Entity("UserDemographicsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateOfRegistration")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DevicePlatformUsed")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PreferredLearningStyle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Profession")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId")
+                        .IsUnique();
+
+                    b.ToTable("UserDemographics");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1048,9 +1094,23 @@ namespace Service_Academy1.Migrations
                     b.Navigation("Quiz");
                 });
 
+            modelBuilder.Entity("UserDemographicsModel", b =>
+                {
+                    b.HasOne("ApplicationUser", "ApplicationUser")
+                        .WithOne("UserDemographics")
+                        .HasForeignKey("UserDemographicsModel", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("ApplicationUser", b =>
                 {
                     b.Navigation("SystemUsageLogs");
+
+                    b.Navigation("UserDemographics")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.ActivitiesModel", b =>

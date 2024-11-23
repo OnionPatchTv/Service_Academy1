@@ -6,86 +6,153 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Service_Academy1.Services;
+using iText.Commons.Actions.Contexts;
+using Service_Academy1.Models;
 
 
 namespace ServiceAcademy.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<AccountController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly LogSystemUsageService _logUsageService;
+        private readonly EmailService _emailService;
 
-        public AccountController(UserManager<ApplicationUser> userManager,
-                          SignInManager<ApplicationUser> signInManager,
-                          ILogger<AccountController> logger, LogSystemUsageService logUsageService)
+        public AccountController(ILogger<AccountController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, LogSystemUsageService logUsageService, EmailService emailService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-            _logUsageService = logUsageService;
+            (_logger, _context, _userManager, _signInManager, _logUsageService, _emailService) = (logger, context, userManager, signInManager, logUsageService, emailService);
         }
 
         // Registration View
         public IActionResult Register() => View();
-
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FullName = model.FullName };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                return View(model);
+            }
 
-                if (result.Succeeded)
-                {
-                    // Wrap role assignment in a try-catch block 
-                    try
-                    {
-                        var roleAssignmentResult = await _userManager.AddToRoleAsync(user, "Student");
-                        if (!roleAssignmentResult.Succeeded)
-                        {
-                            // Log detailed errors from AddToRoleAsync
-                            foreach (var error in roleAssignmentResult.Errors)
-                            {
-                                _logger.LogError("Error assigning 'Student' role: Code={ErrorCode}, Description={ErrorDescription}", error.Code, error.Description);
-                            }
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "This email is already registered.");
+                return View(model);
+            }
 
-                            // Add an error to ModelState to signal an issue
-                            ModelState.AddModelError(string.Empty, "An error occurred while assigning the role. Please try again later.");
+            if (!model.Email.EndsWith("@gmail.com", StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError("Email", "Only Gmail addresses are allowed.");
+                return View(model);
+            }
 
-                            // Re-render the registration form with the error
-                            return View(model); // Or return a different error view if needed
-                        }
-                        else
-                        {
-                            // Role assignment succeeded, log the success
-                            _logger.LogInformation("Successfully assigned 'Student' role to user: {UserName}", user.UserName);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError("An exception occurred during role assignment: {ExceptionMessage}", ex.Message);
-                        ModelState.AddModelError(string.Empty, "An error occurred. Please try again later.");
-                        return View(model);
-                    }
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FullName = model.FullName,
+            };
 
-                    // Proceed with login and redirection if role assignment was successful
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    TempData["SuccessMessage"] = "Registration successful!";
-                    return RedirectToAction("MyLearning", "Trainee");
-                }
-
-                // Handle user creation errors (if result.Succeeded is false) 
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+                return View(model);
             }
-            // Redisplay the registration form with any errors
-            return View(model);
+
+            var roleResult = await _userManager.AddToRoleAsync(user, model.Role ?? "Trainee");
+            if (!roleResult.Succeeded)
+            {
+                foreach (var error in roleResult.Errors)
+                {
+                    _logger.LogError($"Role assignment error: {error.Description}");
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                await _userManager.DeleteAsync(user); // Rollback user creation
+                return View(model);
+            }
+
+            // Save demographics
+            var demographics = new UserDemographicsModel
+            {
+                ApplicationUserId = user.Id,
+                DateOfBirth = DateTime.UtcNow,
+                Address = model.Address,
+                PreferredLearningStyle = model.PreferredLearningStyle,
+                DevicePlatformUsed = model.DevicePlatformUsed,
+                Gender = model.Gender,
+                Profession = model.Profession,
+                DateOfRegistration = DateTime.UtcNow
+            };
+
+            _logger.LogInformation("Saving demographics for user: " + user.Id);
+            _context.UserDemographics.Add(demographics);
+            await _context.SaveChangesAsync();
+
+            var pin = new Random().Next(100000, 999999).ToString(); // Generates a 6-digit PIN
+            await _emailService.SendSystemEmailAsync(user.Email, "Your 2FA PIN", $"Your 2FA PIN is: {pin}");
+
+            // Store the PIN temporarily for later verification
+            TempData["Email"] = user.Email;
+            TempData["Pin"] = pin; // Store PIN temporarily to verify later
+            return RedirectToAction("VerifyTwoFactor", "Account");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return Json(new { exists = user != null });
+        }
+        public IActionResult VerifyTwoFactor()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyTwoFactor(string pin)
+        {
+            var email = TempData["Email"]?.ToString();
+            var storedPin = TempData["Pin"]?.ToString();  // Correctly retrieve the PIN
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(storedPin))
+            {
+                ModelState.AddModelError("", "Invalid token or session expired.");
+                return View();
+            }
+
+            // Verify the PIN entered by the user
+            if (pin == storedPin)
+            {
+                // Retrieve the user
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user != null)
+                {
+                    // Confirm the email and enable 2FA
+                    user.EmailConfirmed = true;
+                    user.TwoFactorEnabled = true;
+
+                    // Save changes to user
+                    await _userManager.UpdateAsync(user);
+
+                    // Sign the user in
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    TempData["SuccessMessage"] = "Registration successful!";
+                    return RedirectToAction("MyLearning", "Trainee");
+                }
+            }
+
+            ModelState.AddModelError("", "Invalid 2FA token.");
+            return View();
+        }
+
 
         // Login View
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -128,7 +195,7 @@ namespace ServiceAcademy.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                    ViewBag.LoginFailed = true;
                 }
             }
 
