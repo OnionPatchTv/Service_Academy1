@@ -71,7 +71,7 @@
     </ul>
     @if (Model.Remarks == "Fail" && Model.Retries < 3)
     {
-        <button onclick="location.href='@Url.Action("StudentQuizView", new { quizId = Model.QuizId })'">
+        <button id="retry-btn" class="retry-btn" onclick="location.href='@Url.Action("StudentQuizView", new { quizId = Model.QuizId })'">
             Retry Quiz
         </button>
     }

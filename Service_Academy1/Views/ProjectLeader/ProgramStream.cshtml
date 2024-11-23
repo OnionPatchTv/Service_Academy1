@@ -30,16 +30,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+
 <div class="container">
     <div class="breadcrumb">
         <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
-        <span class="separator">&gt;</span>
+        <span class="separator">></span>
         <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")" onclick="location.reload();">Stream</a>
-        <span class="separator">&gt;</span>
+        <span class="separator">></span>
         <a href="@Url.Action("ProgramStreamManage", "ProjectLeader", new { programId = Model.ProgramId })">Manage</a>
     </div>
 
-    <!-- Full Width Class Banner Section -->
     <section class="class-banner">
         <div class="banner-content">
             <div class="banner-image">
@@ -52,8 +52,8 @@
                         @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
                     </p>
                 </div>
-                <div class="trainees" style="padding-top: 15px;">
-                    <i class="fa-solid fa-graduation-cap" style="color: #ff782e"></i> @approvedCount Trainees
+                <div class="trainees">
+                    <i class="fa-solid fa-graduation-cap" style="color: darkorange;"></i> @approvedCount Trainees
                 </div>
             </div>
         </div>
@@ -110,82 +110,98 @@
             <a asp-controller="Evaluation" asp-action="EvaluationResults" asp-route-programId="@Model.ProgramId" class="btn btn-primary">View Program Evaluation</a>
         </div> -->
 
-        <!-- Modules and Module Content Sections -->
-        <section class="content-sections">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="sidebar-section">
-                    <button class="dropdown-btn">Modules</button>
-                    <div class="dropdown-content">
-                        @foreach (var module in Model.Modules.OrderBy(m => m.Title))
-                        {
-                        <button class="dropdown-item" onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')">
+    <section class="content-sections">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <button class="dropdown-btn">Modules</button>
+                <div class="dropdown-content">
+                    @foreach (var module in Model.Modules.OrderBy(m => m.Title))
+                    {
+                        <button class="dropdown-item" data-module-id="@module.ModuleId"
+                                data-module-title="@module.Title"
+                                data-module-description="@module.ModuleDescription"
+                                data-module-link="@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)"
+                                data-module-filepath="@module.FilePath">
+                            @* Add data attributes *@
                             <div class="button-content">
                                 <span class="module-title-text">@module.Title</span>
-                                <i class="fa fa-edit update-module-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title','@module.ModuleDescription' ,'@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)'); event.stopPropagation();" title="Update"></i>
-                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
+                                <i class="fa fa-edit update-module-btn" title="Update"></i> @* Remove onclick *@
+                                <i class="fa fa-trash delete-module-btn" title="Delete"></i> @* Remove onclick *@
                             </div>
                         </button>
-                        }
-                        <button class="add-item-btn" data-toggle="modal" data-target="#uploadModuleModal">Add Module</button>
-                    </div>
+                    }
+                    <button class="add-item-btn" data-toggle="modal" data-target="#uploadModuleModal">Add Module</button>
                 </div>
+            </div>
 
-                <div class="sidebar-section">
-                    <button class="dropdown-btn">Quizzes</button>
-                    <div class="dropdown-content">
-                        @foreach (var quiz in Model.Quizzes)
-                        {
-                            <button class="dropdown-item quizzes" onclick="location.href='@Url.Action("ViewQuiz", "Assessment", new { quizId = quiz.QuizId })'">
-                                @*Added dropdown-item and quizzes classes*@
-                                <div class="button-content">
-                                    <span class="quizzes-title-text">@quiz.QuizTitle</span> @*Added quizzes-title-text span*@
-                                </div>
-                            </button>
-                        }
-                        <button class="add-item-btn" data-toggle="modal" data-target="#createAssessmentModal">Add Quiz</button>
-                    </div>
+            <div class="sidebar-section">
+                <button class="dropdown-btn">Quizzes</button>
+                <div class="dropdown-content">
+                    @foreach (var quiz in Model.Quizzes)
+                    {
+                        <button class="dropdown-item quizzes" onclick="location.href='@Url.Action("ViewQuiz", "Assessment", new { quizId = quiz.QuizId })'">
+                            <div class="button-content">
+                                <span class="quizzes-title-text">@quiz.QuizTitle</span>
+                            </div>
+                        </button>
+                    }
+                    <button class="add-item-btn" data-toggle="modal" data-target="#createAssessmentModal">Add Quiz</button>
                 </div>
+            </div>
 
-                <div class="sidebar-section">
-                    <button class="dropdown-btn">Activities</button>
-                    <div class="dropdown-content">
-                        @foreach (var activity in Model.Activities)
-                        {
-                            <button class="dropdown-item activities" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
-                                @*Added dropdown-item and activities classes*@
-                                <div class="button-content">
-                                    <span class="activities-title-text">@activity.ActivitiesTitle</span> @*Added activities-title-text span*@
-                                    <i class="fa fa-edit" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
-                                    <i class="fa fa-trash" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
-                                </div>
-                            </button>
-                        }
-                        <button class="add-item-btn" data-toggle="modal" data-target="#createActivityModal">Add Activity</button>
-                    </div>
+            <div class="sidebar-section">
+                <button class="dropdown-btn">Activities</button>
+                <div class="dropdown-content">
+                    @foreach (var activity in Model.Activities)
+                    {
+                        <button class="dropdown-item activities" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
+                            <div class="button-content">
+                                <span class="activities-title-text">@activity.ActivitiesTitle</span>
+                                <i class="fa fa-edit" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
+                                <i class="fa fa-trash" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
+                            </div>
+                        </button>
+                    }
+                    <button class="add-item-btn" data-toggle="modal" data-target="#createActivityModal">Add Activity</button>
                 </div>
-                <div class="sidebar-section">
-                    <button class="dropdown-btn" onclick="location.href='@Url.Action("EvaluationResults", "Evaluation", new { programId = Model.ProgramId })'">
-                        Evaluation Result
-                    </button>
-                </div>
-            </aside>
-            <section class="module-viewer">
-                <div class="module-header">
-                    <h3 id="moduleViewerTitle">Module Viewer</h3>
-                    <a id="moduleVideoLink" href="#" target="_blank">
-                        <i id="videoIcon" class="fa-regular fa-file-video" title="No Link Available"></i>
-                    </a>
-                </div>
-                <div class="viewer-content">
-                    <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
-                </div>
-                <!-- Add the description section below the content -->
-                <div id="moduleDescription" class="module-description">
-                    <!-- Module description will be updated here -->
-                </div>
-            </section>
+            </div>
+            <div class="sidebar-section">
+                <button class="dropdown-btn" onclick="location.href='@Url.Action("EvaluationResults", "Evaluation", new { programId = Model.ProgramId })'">
+                    Evaluation Result
+                </button>
+            </div>
+        </aside>
+
+        <section class="module-viewer">
+            <div class="module-header">
+                <h3 id="moduleViewerTitle">Module Viewer</h3>
+                <a id="moduleVideoLink" href="#" target="_blank">
+                    <i id="videoIcon" class="fa-regular fa-file-video" title="No Link Available"></i>
+                </a>
+            </div>
+            <div class="viewer-content">
+                <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
+            </div>
+            <div class="module-controls">
+                <button id="showDescriptionModal" class="btn btn-info btn-sm float-right" type="button" data-toggle="modal" data-target="#moduleDescriptionModal">View Description</button>
+            </div>
         </section>
+        <!-- Modal -->
+        <div class="modal fade" id="moduleDescriptionModal" tabindex="-1" role="dialog" aria-labelledby="moduleDescriptionModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="moduleDescriptionModalLabel">Module Description</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border: none; background-color: transparent">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modalDescriptionContent">
+                        <!-- Description content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Upload Module Modal -->
         <div class="modal fade" id="uploadModuleModal" tabindex="-1" aria-labelledby="uploadModuleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -409,5 +425,5 @@
                 </div>
             </div>
         </div>
-
+    </section>
 </div>

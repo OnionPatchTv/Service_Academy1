@@ -37,7 +37,7 @@
                     <select id="filterRole" class="form-control w-25 ml-2" onchange="filterAccounts()">
                         <option value="">Filter by Role</option>
                         <option value="Admin">Admin</option>
-                        <option value="Instructor">Instructor</option>
+                        <option value="ProjectLeader">Project Leader</option>
                         <option value="Student">Student</option>
                     </select>
                 </div>
@@ -98,7 +98,7 @@
                 <h4>Account Roles</h4>
                 <ul class="list-group mb-4">
                     <li class="list-group-item"><strong>Administrator:</strong> Full permissions to manage LMS.</li>
-                    <li class="list-group-item"><strong>Instructor:</strong> Manage courses, enrollments, and grades.</li>
+                    <li class="list-group-item"><strong>Project Leader:</strong> Manage courses, enrollments, and grades.</li>
                     <li class="list-group-item"><strong>Student:</strong> Access courses, view grades, and track progress.</li>
                 </ul>
             </div>
@@ -134,13 +134,13 @@
                         <label for="editRole">Role</label>
                         <select id="editRole" class="form-control" name="Role" required>
                             <option value="Admin">Admin</option>
-                            <option value="Instructor">Instructor</option>
+                            <option value="ProjectLeader">Project Leader</option>
                             <option value="Student">Student</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border: none; background-color: transparent;">Close</button>
                     <button type="submit" class="btn btn-primary">Save changes</button>
                 </div>
             </form>
