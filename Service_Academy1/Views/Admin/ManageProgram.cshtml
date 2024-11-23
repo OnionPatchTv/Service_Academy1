@@ -13,151 +13,128 @@
 }
 
 <div class="container">
-        <section class="layout">
-            <!-- Sidebar & Main Content -->
-            <div class="container-fluid">
-                <div class="row">
-                    <!-- Sidebar -->
-                    <!-- Main Content -->
-                    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-                        <!-- Program Overview -->
-                        <div id="programOverview" class="content-section">
-                            <h2>Program Overview</h2>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" id="searchProgram" class="form-control" placeholder="Search by program name, code, or description..." onkeyup="filterPrograms()">
-                                </div>
-                            </div>
-                            <div class="program-list">
-                            @foreach (var program in Model)
-                            {
-                                var approvalStatus = program.ProgramManagement.FirstOrDefault()?.IsApproved ?? "Pending";
-                                <div class="program-item" data-title="@program.Title">
-                                    <h3>@program.Title</h3>
-                                    <p>Instructor: @program.ProjectLeader</p>
-                                    <p>Status: @(program.ProgramManagement.FirstOrDefault()?.IsApproved ?? "Pending")</p>
-
-                                    <div class="action-buttons">
-                                        <button class="btn btn-primary" data-toggle="modal" data-target="#viewDescriptionModal"
-                                                data-program-id="@program.ProgramId"
-                                                data-title="@program.Title"
-                                                data-description="@program.Description"
-                                                data-agenda="@program.Agenda"
-                                                data-sdg="@program.SDG">
-                                            View Description
-                                        </button>
-
-                                        <form asp-action="ApproveProgram" method="post" class="d-inline">
-                                            <input type="hidden" name="programId" value="@program.ProgramId" />
-                                            <button type="submit" class="btn btn-success"
-                                            @(approvalStatus == "Approved" || approvalStatus == "Denied" ? "disabled" : "")>
-                                                Approve
-                                            </button>
-                                        </form>
-
-                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#denyModal-@program.ProgramId"
-                                        @(approvalStatus == "Approved" || approvalStatus == "Denied" ? "disabled" : "")>
-                                            Deny
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Deny Program Modal -->
-                                <div class="modal fade" id="denyModal-@program.ProgramId" tabindex="-1" role="dialog" aria-labelledby="denyModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Deny Program: @program.Title</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form method="post" asp-action="DenyProgram">
-                                                    <input type="hidden" name="programId" value="@program.ProgramId" />
-                                                    <div class="form-group">
-                                                        <label for="reasonForDenial">Reason for Denial:</label>
-                                                        <input type="text" name="reasonForDenial" class="form-control" placeholder="Provide reason for denial" required />
-                                                    </div>
-                                                    <button type="submit" class="btn btn-danger">Submit</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        <!-- Modal for Viewing Program Description -->
-                        <div class="modal fade" id="viewDescriptionModal" tabindex="-1" role="dialog" aria-labelledby="viewDescriptionModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="viewDescriptionModalLabel">Program Description</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <h6>Agenda:</h6>
-                                        <p id="programAgenda"></p>
-                                        <h6>SDG #:</h6>
-                                        <p id="programSDG"></p>
-                                        <h6>Description:</h6>
-                                        <p id="programDescription"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                            </div>
-                        </div>
-
-                        <!-- Program Creation -->
-                        <div id="createProgram" class="content-section" style="display: none;">
-                            <h4 class="mt-5">Create New Program</h4>
-                            <div class="container program-form mt-3">
-                                <div class="photo-upload-container">
-                                    <div class="photo-upload">
-                                        <p>Add Photo</p>
-                                    </div>
-                                    <button class="btn btn-warning">Upload Photo</button>
-                                </div>
-                                <form id="createProgramForm" class="form-container" onsubmit="createProgram(event)">
-                                    <div class="form-group">
-                                        <label for="programName">Program Name</label>
-                                        <input type="text" id="programName" class="form-control" placeholder="Enter program name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="programCode">Program Code</label>
-                                        <input type="text" id="programCode" class="form-control" placeholder="Enter program code" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="programType">Program Type</label>
-                                        <select id="programType" class="form-control" required>
-                                            <option value="Degree">Degree</option>
-                                            <option value="Non-Degree">Non-Degree</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="programDescription">Program Description</label>
-                                        <textarea id="programDescription" class="form-control" placeholder="Enter program description" required></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="programFees">Program Fees</label>
-                                        <input type="number" id="programFees" class="form-control" placeholder="Enter program fees" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="programDuration">Program Duration (in months)</label>
-                                        <input type="number" id="programDuration" class="form-control" placeholder="Enter program duration" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">Create Program</button>
-                                </form>
-                            </div>
-                        </div>
-                    </main>
+    <main role="main" class="px-4">
+        <div id="programOverview" class="content-section mb-4">
+            <h2>Program Overview</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <input type="text" id="searchProgram" class="form-control" placeholder="Search by program name, code, or description..." onkeyup="filterPrograms()">
                 </div>
             </div>
-        </section>
-    </div>
-
+            <div class="program-list row">
+                <!-- program-list IS the row now -->
+                @foreach (var program in Model)
+                {
+                    var approvalStatus = program.ProgramManagement.FirstOrDefault()?.IsApproved ?? "Pending";
+                    <div class="col-md-4 mb-4 program-item" data-title="@program.Title">
+                        <h3>@program.Title</h3>
+                        <p>Project Leader: @program.ProjectLeader</p>
+                        <p>Status: @approvalStatus</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#viewDescriptionModal"
+                                    data-program-id="@program.ProgramId"
+                                    data-title="@program.Title"
+                                    data-description="@program.Description"
+                                    data-agenda="@program.Agenda"
+                                    data-sdg="@program.SDG">
+                                View Description
+                            </button>
+                            <form asp-action="ApproveProgram" method="post" class="d-inline">
+                                <input type="hidden" name="programId" value="@program.ProgramId" />
+                                <button type="submit" class="btn btn-success" @(approvalStatus == "Approved" || approvalStatus == "Denied" ? "disabled" : "")>
+                                    Approve
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#denyModal-@program.ProgramId" @(approvalStatus == "Approved" || approvalStatus == "Denied" ? "disabled" : "")>
+                                Deny
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="denyModal-@program.ProgramId" tabindex="-1" role="dialog" aria-labelledby="denyModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Deny Program: @program.Title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" asp-action="DenyProgram">
+                                        <input type="hidden" name="programId" value="@program.ProgramId" />
+                                        <div class="form-group">
+                                            <label for="reasonForDenial">Reason for Denial:</label>
+                                            <input type="text" name="reasonForDenial" class="form-control" placeholder="Provide reason for denial" required />
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="modal fade" id="viewDescriptionModal" tabindex="-1" role="dialog" aria-labelledby="viewDescriptionModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewDescriptionModalLabel">Program Description</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" style="background-color: transparent;">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>Agenda:</h6>
+                        <p id="programAgenda"></p>
+                        <h6>SDG #:</h6>
+                        <p id="programSDG"></p>
+                        <h6>Description:</h6>
+                        <p id="programDescription"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="createProgram" class="content-section" style="display: none;">
+            <h4 class="mt-5">Create New Program</h4>
+            <div class="container program-form mt-3">
+                <div class="photo-upload-container">
+                    <div class="photo-upload">
+                        <p>Add Photo</p>
+                    </div>
+                    <button class="btn btn-warning">Upload Photo</button>
+                </div>
+                <form id="createProgramForm" class="form-container" onsubmit="createProgram(event)">
+                    <div class="form-group">
+                        <label for="programName">Program Name</label>
+                        <input type="text" id="programName" class="form-control" placeholder="Enter program name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="programCode">Program Code</label>
+                        <input type="text" id="programCode" class="form-control" placeholder="Enter program code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="programType">Program Type</label>
+                        <select id="programType" class="form-control" required>
+                            <option value="Degree">Degree</option>
+                            <option value="Non-Degree">Non-Degree</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="programDescription">Program Description</label>
+                        <textarea id="programDescription" class="form-control" placeholder="Enter program description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="programFees">Program Fees</label>
+                        <input type="number" id="programFees" class="form-control" placeholder="Enter program fees" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="programDuration">Program Duration (in months)</label>
+                        <input type="number" id="programDuration" class="form-control" placeholder="Enter program duration" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Create Program</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
