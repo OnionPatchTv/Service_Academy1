@@ -146,13 +146,12 @@ namespace Service_Academy1.Controllers
 
         public async Task<IActionResult> EvaluationResults(int programId)
         {
-            // Ensure programId is passed via the URL
             if (programId == 0)
             {
                 return RedirectToAction("Error");
             }
 
-            // Fetch evaluation response data, grouped by category and rating
+            // Fetch evaluation response data grouped by category and rating
             var evaluationResults = await _context.EvaluationResponses
                 .Include(r => r.EvaluationQuestions)
                 .Where(r => r.EvaluationQuestions.ProgramId == programId)
@@ -165,22 +164,22 @@ namespace Service_Academy1.Controllers
                 })
                 .ToListAsync();
 
-            // Get the total number of approved trainees for the program
+            // Get total number of approved trainees
             var totalTrainees = await _context.Enrollment
                 .Where(e => e.ProgramId == programId && e.EnrollmentStatus == "Approved")
                 .CountAsync();
 
-            // Count how many distinct trainees have submitted evaluations (based on EnrollmentId)
+            // Count distinct trainees who submitted evaluations
             var evaluatedCount = await _context.EvaluationResponses
                 .Where(r => r.EvaluationQuestions.ProgramId == programId)
                 .Select(r => r.EnrollmentId)
                 .Distinct()
                 .CountAsync();
 
-            // The number of unevaluated trainees
+            // Calculate unevaluated trainee count
             var unevaluatedCount = totalTrainees - evaluatedCount;
 
-            // Calculate average ratings by category (corrected to avoid multiple counts)
+            // Calculate average ratings by category
             var averageRatings = evaluationResults
                 .GroupBy(r => r.Category)
                 .Select(g => new AverageRatingViewModel
@@ -202,48 +201,54 @@ namespace Service_Academy1.Controllers
                 EvaluationDetails = evaluationResults
             };
 
-            // If no evaluation results or no evaluated trainees, skip ArliAI analysis
+            // Analyze and create dynamic prompt if there are results
             if (evaluationResults.Any() && evaluatedCount > 0)
             {
-                // Prepare the first dynamic prompt for ArliAI
-                var analysisPrompt = $@"
-            Analyze the following dataset from a program's evaluation results, including evaluation responses categorized by rating, 
-            total trainees, evaluated and unevaluated counts, and average ratings across categories. Consider the distribution of 
-            evaluation responses, the proportion of evaluated versus unevaluated trainees, and the calculated average ratings for 
-            each category. Provide a 3-5 sentence of cohesive analysis of the program's evaluation engagement and performance, offering actionable 
-            insights to improve response rates, address gaps in trainee feedback, and enhance overall program effectiveness.
-            Avoid using lists or bullet points; write in a cohesive essay style.";
+                var topCategories = string.Join(", ", averageRatings
+                    .OrderByDescending(ar => ar.AverageRating)
+                    .Take(3)
+                    .Select(ar => $"{ar.Category}: {ar.AverageRating:F2}"));
 
-                // Call ArliAI service to generate the first analysis
+                var evaluationDistribution = string.Join(", ", evaluationResults
+                    .GroupBy(er => er.Category)
+                    .Select(g => $"{g.Key}: {g.Sum(er => er.Count)} responses"));
+
+                var analysisPrompt = $@"
+                    Analyze the following dataset from the program '{viewModel.ProgramTitle}', which includes evaluation responses categorized by rating, 
+                    a total of {totalTrainees} trainees ({evaluatedCount} evaluated, {unevaluatedCount} unevaluated), and average ratings across categories.
+                    The top categories based on average ratings are: {topCategories}.
+                    Evaluation distribution by category is as follows: {evaluationDistribution}.
+
+                    Consider this data and provide a 3-5 sentence cohesive analysis of the program's evaluation engagement and performance. Offer actionable insights 
+                    to improve response rates, address gaps in trainee feedback, and enhance overall program effectiveness. Avoid using lists or bullet points; 
+                    write in a cohesive essay style.";
+
+                // Generate the analysis using ArliAI
                 var evaluationAnalysis = await _arliAIService.GetAnalysis(analysisPrompt);
 
-                // Prepare the impact assessment prompt based on the first analysis
+                // Prepare impact assessment prompt
                 var impactPrompt = $@"
-            Based on the following analysis insights:
-            {evaluationAnalysis}
+                    Based on the following analysis insights:
+                    {evaluationAnalysis}
 
-            Assess the potential impact these recommendations could have on the program's overall quality, trainee satisfaction, and 
-            program engagement. Include a 3-5 sentence analysis of how these changes might influence future evaluations, retention rates, and 
-            stakeholder confidence. Provide a 3 sentence actionable next steps to ensure effective implementation of these recommendations.
-            Avoid using lists or bullet points; write in a cohesive essay style.";
+                    Assess the potential impact these recommendations could have on the program's quality, trainee satisfaction, and engagement. 
+                    Include a 3-5 sentence analysis of how these changes might influence future evaluations, retention rates, and stakeholder confidence. 
+                    Provide a 3-sentence actionable next steps for effective implementation. Avoid using lists or bullet points; write in a cohesive essay style.";
 
-                // Call ArliAI service to generate the impact assessment
+                // Generate impact assessment
                 var impactAssessment = await _arliAIService.GetImpact(impactPrompt);
 
-                // Store the evaluation analysis and impact assessment in ViewBag for the view
+                // Store the generated analysis and assessment in the ViewBag
                 ViewBag.Analysis = evaluationAnalysis;
                 ViewBag.ImpactAssessment = impactAssessment;
             }
             else
             {
-                // If no results or no evaluated trainees, provide a message
                 ViewBag.Analysis = "No evaluation data available to analyze.";
                 ViewBag.ImpactAssessment = "No impact assessment can be generated due to lack of evaluation responses.";
             }
 
-            // Return the view with the populated view model
             return View(viewModel);
         }
-
     }
 }

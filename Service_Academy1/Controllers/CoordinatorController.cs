@@ -264,59 +264,90 @@ namespace Service_Academy1.Controllers
                 .Where(p => p.DepartmentId == departmentId)
                 .ToListAsync();
 
+            var programTitlesById = programs.ToDictionary(p => p.ProgramId, p => p.Title);
+
             var programIds = programs.Select(p => p.ProgramId).ToList();
 
             if (!programIds.Any())
             {
                 // No programs found for the department
                 TempData["Recommendation"] = "No data available to generate a recommendation for this department.";
-                return RedirectToAction("CoordAnalytics");
+                return RedirectToAction("CoordAnalyticsDashboard");
             }
 
             // Collect analytics data
             var programEvaluationData = await _context.EvaluationResponses
                 .Include(r => r.EvaluationQuestions)
                 .Where(r => programIds.Contains(r.EvaluationQuestions.ProgramId))
+                .GroupBy(r => r.EvaluationQuestions.ProgramId)
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    AverageRating = g.Average(r => r.Rating)
+                })
                 .ToListAsync();
 
             var completionRates = await _context.Enrollment
                 .Where(e => programIds.Contains(e.ProgramId))
+                .GroupBy(e => e.ProgramId)
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    CompletionRate = g.Count(e => e.ProgramStatus == "Complete") * 100.0 / g.Count()
+                })
                 .ToListAsync();
 
             var quizPerformanceByProgram = await _context.TraineeQuizResults
                 .Include(r => r.Quiz)
                 .Where(r => programIds.Contains(r.Quiz.ProgramId))
+                .GroupBy(r => r.Quiz.ProgramId)
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    AverageScore = g.Average(r => r.ComputedScore),
+                    AverageRetries = g.Average(r => r.Retries)
+                })
                 .ToListAsync();
 
             var activityPerformanceByProgram = await _context.TraineeActivities
                 .Include(r => r.Activities)
                 .Where(r => programIds.Contains(r.Activities.ProgramId))
+                .GroupBy(r => r.Activities.ProgramId)
+                .Select(g => new
+                {
+                    ProgramId = g.Key,
+                    CompletionRate = g.Count(r => r.IsCompleted) * 100.0 / g.Count(),
+                    AverageScore = g.Average(r => r.ComputedScore)
+                })
                 .ToListAsync();
 
-            // Validate if there is sufficient data
+            // Ensure there is data to work with
             if (!programEvaluationData.Any() && !completionRates.Any() && !quizPerformanceByProgram.Any() && !activityPerformanceByProgram.Any())
             {
                 // Insufficient data for analysis
                 TempData["Recommendation"] = "Insufficient data to generate meaningful recommendations for this department.";
-                return RedirectToAction("CoordAnalytics");
+                return RedirectToAction("CoordAnalyticsDashboard");
             }
 
             // Build the prompt dynamically based on available data
             var prompt = $@"
             Analyze the following dataset which includes program evaluation data, completion rates, quiz and activity performance, and overall progress metrics.
-            Consider the average ratings for top programs, completion rates by program, quiz scores and retries, activity completion and scoring, and  holistic program progress blending module, quiz, and activity performance.
-           Provide a clear, concise 3-5 sentence of insight into the overall effectiveness and areas for improvement in program delivery and engagement, with actionable recommendations for optimizing trainee outcomes 
-            and enhancing program performance. Avoid using lists or bullet points; write in a cohesive essay style.";
+            The top programs based on average ratings are: {string.Join(", ", programEvaluationData.OrderByDescending(p => p.AverageRating).Take(5).Select(p => programTitlesById[p.ProgramId]))}.
+            Program completion rates by program are as follows: {string.Join(", ", completionRates.Select(c => $"{programTitlesById[c.ProgramId]}: {c.CompletionRate}%"))}.
+            Quiz performance (average score and retries) is as follows: {string.Join(", ", quizPerformanceByProgram.Select(q => $"{programTitlesById[q.ProgramId]}: Avg Score {q.AverageScore}, Avg Retries {q.AverageRetries}"))}.
+            Activity performance (completion rates and average score) is as follows: {string.Join(", ", activityPerformanceByProgram.Select(a => $"{programTitlesById[a.ProgramId]}: Completion {a.CompletionRate}%, Avg Score {a.AverageScore}"))}.
 
+            Consider this data and provide a clear, concise 3-8 sentence insight into the overall effectiveness and areas for improvement in program delivery and engagement, with actionable recommendations for optimizing trainee outcomes and enhancing program performance. Avoid using lists or bullet points; write in a cohesive essay style.";
             // Get the recommendation from ArliAI
             var recommendation = await _arliAIService.GetRecommendation(prompt);
 
             // Store the recommendation in TempData for the next request
             TempData["Recommendation"] = recommendation;
 
-            // Redirect back to the original CoordAnalytics view, keeping all data and the recommendation
+            // Redirect back to the analytics dashboard
             return RedirectToAction("CoordAnalyticsDashboard");
         }
+
 
         private static string GetAgendaFullName(string agendaCode)
         {

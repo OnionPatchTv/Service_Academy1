@@ -10,6 +10,6 @@ namespace Service_Academy1.Models
         [Key]
         public int DepartmentId { get; set; }
         public string Department { get; set; } = string.Empty;
-        public string DepartmentName { get; set; } = string.Empty;  
+        public string DepartmentName { get; set; } = string.Empty;
     }
 }

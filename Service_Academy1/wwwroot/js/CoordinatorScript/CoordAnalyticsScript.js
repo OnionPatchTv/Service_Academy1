@@ -251,7 +251,7 @@ async function generatePDFReport(startDate, endDate) {
     yPosition += 15;
 
     // Add Recommendations
-    const recommendation = document.querySelector('.chart-container p').innerText;
+    const recommendation = document.querySelector('.chart-container-ai p').innerText;
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'bold');
     pdf.text('Arli AI Recommendations:', margin, yPosition);

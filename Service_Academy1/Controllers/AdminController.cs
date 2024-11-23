@@ -299,10 +299,7 @@ namespace ServiceAcademy.Controllers
                     CompletionRate = _context.Enrollment
                         .Where(e => g.Select(p => p.ProgramId).Contains(e.ProgramId))
                         .GroupBy(e => e.ProgramId)
-                        .Select(gr => new
-                        {
-                            Rate = gr.Count(e => e.ProgramStatus == "Completed") * 100.0 / gr.Count()
-                        })
+                        .Select(gr => new { Rate = gr.Count(e => e.ProgramStatus == "Complete") * 100.0 / gr.Count() })
                         .Average(r => (double?)r.Rate) ?? 0,
                     OverallProgress = _context.TraineeModuleResults
                         .Where(m => g.Select(p => p.ProgramId).Contains(m.Module.ProgramId))
@@ -317,17 +314,16 @@ namespace ServiceAcademy.Controllers
                 return RedirectToAction("Analytics");
             }
 
-            // Prepare the prompt dynamically
-            var departmentComparisons = string.Join("\n", departmentData.Select(d =>
-                $"- {d.DepartmentName} has an average program rating of {d.AverageProgramRating:F2}, " +
-                $"a completion rate of {d.CompletionRate:F2}%, and an overall progress score of {d.OverallProgress:F2}."));
+            // Prepare the prompt dynamically with detailed department-level insights
+            var departmentInsights = string.Join("\n", departmentData.Select(d =>
+                $"- {d.DepartmentName}: Average Rating: {d.AverageProgramRating:F2}, " +
+                $"Completion Rate: {d.CompletionRate:F2}%, Overall Progress: {d.OverallProgress:F2}."
+            ));
 
-            var prompt = $@"
-            Analyze the following dataset which includes  {departmentComparisons}, program evaluation data, completion rates, quiz and activity performance, and overall progress metrics.
-            Consider the average ratings for top programs, completion rates by program, quiz scores and retries, activity completion and scoring, and  holistic program progress blending module, quiz, and activity performance.
-            Provide a clear, concise 3-5 sentence of insight into the overall effectiveness and areas for improvement in program delivery and engagement, with actionable recommendations for optimizing trainee outcomes 
-            and enhancing program performance. Avoid using lists or bullet points; write in a cohesive essay style.";
-                 
+            var prompt = $@"Analyze the following dataset which includes program evaluation data, completion rates, quiz and activity performance, and overall progress metrics. 
+                The departments are as follows: {departmentInsights}. 
+                Consider this data and provide a clear, concise 3-8 sentence insight into the overall effectiveness and areas for improvement in program delivery and engagement at the departmental level, with actionable recommendations for optimizing trainee outcomes and enhancing program performance. Avoid using lists or bullet points; write in a cohesive essay style.";
+
             // Get recommendation from ArliAI
             var recommendation = await _arliAIService.GetRecommendation(prompt);
 

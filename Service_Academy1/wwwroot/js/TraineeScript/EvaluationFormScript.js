@@ -30,8 +30,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     y: {
                         beginAtZero: true
                     }
+                },
+                plugins: {
+                    datalabels: {
+                        color: 'black', // Text color
+                        align: 'center', // Position of the text inside the bar
+                        anchor: 'center', // Align it in the middle of the bar
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        formatter: function (value) {
+                            return value.toFixed(2); // Format the label as needed
+                        }
+                    }
                 }
-            }
+            },
+            plugins: [ChartDataLabels] // Add the plugin to the chart
         });
     }
 });

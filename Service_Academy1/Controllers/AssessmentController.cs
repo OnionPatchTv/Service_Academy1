@@ -75,7 +75,7 @@ namespace ServiceAcademy.Controllers
                 }
                 _context.SaveChanges(); // Save all answers at once
             }
-
+            TempData["SuccessMessage"] = "Quiz created successfully";
             // Redirect to ProgramStream or another appropriate location
             return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = quiz.ProgramId });
         }
