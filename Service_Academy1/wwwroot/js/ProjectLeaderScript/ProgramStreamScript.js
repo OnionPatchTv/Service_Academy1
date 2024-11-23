@@ -1,4 +1,5 @@
-﻿//PROGRAMSTREAMSCRIPT
+﻿
+//PROGRAMSTREAMSCRIPT
 function toggleAnnouncementInput() {
     const inputField = document.getElementById('announcement-input');
     inputField.style.display = inputField.style.display === 'none' ? 'block' : 'none';
@@ -99,6 +100,72 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     });
+    // *** NEW CODE FOR MODULE BUTTONS ***
+    const moduleButtons = document.querySelectorAll('.dropdown-item[data-module-id]'); // Select only module buttons
+    moduleButtons.forEach(button => {
+
+        button.addEventListener('click', function (event) {
+            const filePath = this.dataset.moduleFilepath;
+            const title = this.dataset.moduleTitle;
+            const linkPath = this.dataset.moduleLink;
+            const description = this.dataset.moduleDescription;
+            loadModuleContent(filePath, title, linkPath, description);
+        });
+
+        const updateBtn = button.querySelector('.update-module-btn');
+        if (updateBtn) {  // Check if updateBtn exists (important!)
+            updateBtn.addEventListener('click', function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                const moduleId = button.dataset.moduleId; // From parent button
+                const title = button.dataset.moduleTitle; // From parent button
+                const description = button.dataset.moduleDescription; // From parent button
+                const linkPath = button.dataset.moduleLink; // From parent button
+                openUpdateModuleModal(moduleId, title, description, linkPath);
+            });
+        }
+
+        const deleteBtn = button.querySelector('.delete-module-btn');
+        if (deleteBtn) {  // Check if deleteBtn exists
+            deleteBtn.addEventListener('click', function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                const moduleId = button.dataset.moduleId; // From parent button
+                const title = button.dataset.moduleTitle; // From parent button
+                openDeleteModuleModal(moduleId, title);
+            });
+        }
+    });
+
+
+
+
+    // *** NEW CODE FOR ACTIVITY BUTTONS (Similar Structure) ***
+    const activityButtons = document.querySelectorAll('.dropdown-item.activities'); // Select activity buttons
+    activityButtons.forEach(button => {
+
+        button.addEventListener('click', function (event) {
+            // Handle activity click if needed.
+            // ... your activity click logic ...
+
+        });
+
+
+        const updateActivityBtn = button.querySelector('.fa-edit'); // Select update icon
+        if (updateActivityBtn) {
+            updateActivityBtn.addEventListener('click', function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                const activityId = button.dataset.activityId; //Get from parent's data attribute
+                const title = button.dataset.activityTitle;  //Get from parent's data attribute
+                // ... get other data attributes similarly...
+                openUpdateActivityModal(activityId, title, /* ... other parameters ... */);
+            });
+        }
+
+        // Similar event listener for delete activity button ...
+
+    });
 });
 function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
     // Update the iframe source
@@ -123,12 +190,12 @@ function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
         moduleVideoLink.style.pointerEvents = "none"; // Disable clicking
     }
 
-    // Display the module description
-    const moduleDescriptionElement = document.getElementById("moduleDescription");
+    // Populate the modal description
+    const modalDescriptionContent = $('#moduleDescriptionModal .modal-body');  // Select the modal body
     if (moduleDescription && moduleDescription !== "") {
-        moduleDescriptionElement.textContent = moduleDescription;
+        modalDescriptionContent.html(moduleDescription); // Use html() to preserve formatting
     } else {
-        moduleDescriptionElement.textContent = "No description available.";
+        modalDescriptionContent.html("No description available.");
     }
 }
 
