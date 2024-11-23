@@ -71,9 +71,10 @@ input[type="text"] {
 
 form {
     position: relative; /* Required for the absolute positioning of the button */
+    padding-bottom: 80px;
 }
 
-.modal-content{
+.modal-content {
     border: 0;
 }
 /* Button styles */
