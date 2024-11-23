@@ -36,23 +36,24 @@ namespace ServiceAcademy.Controllers
 
                     // Calculate progress
                     ModulesProgress = e.ProgramsModel.Modules.Any()
-                    ? Math.Round(e.ProgramsModel.Modules.Count(m => e.TraineeModuleResults.Any(tmr => tmr.ModuleId == m.ModuleId && tmr.IsCompleted)) * 15.0 / e.ProgramsModel.Modules.Count(), 2)
-                    : 0,
-                        ActivitiesProgress = e.ProgramsModel.Activities.Any()
-                    ? Math.Round(e.ProgramsModel.Activities.Count(a => e.TraineeActivities.Any(ta => ta.ActivitiesId == a.ActivitiesId && ta.IsCompleted)) * 40.0 / e.ProgramsModel.Activities.Count(), 2)
-                    : 0,
-                        QuizzesProgress = e.ProgramsModel.Quizzes.Any()
-                    ? Math.Round(e.ProgramsModel.Quizzes.Sum(q =>
-                        e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId && tqr.IsCompleted) ? 1.0 :
-                        e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId) ? 0.5 : 0) * 30.0 / e.ProgramsModel.Quizzes.Count(), 2)
-                    : 0,
-                        EvaluationProgress = e.ProgramsModel.EvaluationQuestions.Any()
-                    ? Math.Round(e.ProgramsModel.EvaluationQuestions.All(eq => e.EvaluationResponses.Any(er => er.EvaluationQuestionId == eq.EvaluationQuestionId)) ? 15.0 : 0, 2)
-                    : 0
+                        ? Math.Round(e.ProgramsModel.Modules.Count(m => e.TraineeModuleResults.Any(tmr => tmr.ModuleId == m.ModuleId && tmr.IsCompleted)) * 15.0 / (e.ProgramsModel.Modules.Count() > 0 ? e.ProgramsModel.Modules.Count() : 1), 2)  // Prevent division by zero
+                        : 0,
+                    ActivitiesProgress = e.ProgramsModel.Activities.Any()
+                        ? Math.Round(e.ProgramsModel.Activities.Count(a => e.TraineeActivities.Any(ta => ta.ActivitiesId == a.ActivitiesId && ta.IsCompleted)) * 40.0 / (e.ProgramsModel.Activities.Count() > 0 ? e.ProgramsModel.Activities.Count() : 1), 2)  // Prevent division by zero
+                        : 0,
+                    QuizzesProgress = e.ProgramsModel.Quizzes.Any()
+                        ? Math.Round(e.ProgramsModel.Quizzes.Sum(q =>
+                            e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId && tqr.IsCompleted) ? 1.0 :
+                            e.TraineeQuizResults.Any(tqr => tqr.QuizId == q.QuizId) ? 0.5 : 0) * 30.0 / (e.ProgramsModel.Quizzes.Count() > 0 ? e.ProgramsModel.Quizzes.Count() : 1), 2)  // Prevent division by zero
+                        : 0,
+                    EvaluationProgress = e.ProgramsModel.EvaluationQuestions.Any()
+                        ? Math.Round(e.ProgramsModel.EvaluationQuestions.All(eq => e.EvaluationResponses.Any(er => er.EvaluationQuestionId == eq.EvaluationQuestionId)) ? 15.0 : 0, 2)
+                        : 0
                 }).ToList();
 
             return View(enrollments);
         }
+
 
         [HttpPost]
         public IActionResult DeleteProgram(int programId)
@@ -74,18 +75,18 @@ namespace ServiceAcademy.Controllers
                     // Allow deletion if status is Denied or the program is archived
                     _context.Enrollment.Remove(enrollment);
                     _context.SaveChanges();
-                    TempData["SuccessMessage"] = isArchived
+                    TempData["MyLearningSuccessMessage"] = isArchived
                         ? "Enrollment deleted successfully as the program is archived."
                         : "Enrollment deleted successfully.";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Cannot delete enrollment. It can only be deleted if denied or archived.";
+                    TempData["MyLearningErrorMessage"] = "Cannot delete enrollment. It can only be deleted if denied or archived.";
                 }
             }
             else
             {
-                TempData["ErrorMessage"] = "Enrollment not found or invalid program ID.";
+                TempData["MyLearningErrorMessage"] = "Enrollment not found or invalid program ID.";
             }
 
             return RedirectToAction("MyLearning");
@@ -95,7 +96,7 @@ namespace ServiceAcademy.Controllers
         {
             if (programId <= 0)
             {
-                TempData["Error"] = "Invalid Program ID";
+                TempData["MyLearningStreamErrorMessage"] = "Invalid Program ID";
                 return RedirectToAction("MyLearning");
             }
 
@@ -112,7 +113,7 @@ namespace ServiceAcademy.Controllers
 
             if (program == null)
             {
-                TempData["ErrorMessage"] = "Program not found.";
+                TempData["MyLearningStreamErrorMessage"] = "Program not found.";
                 return RedirectToAction("MyLearning");
             }
 
@@ -167,7 +168,7 @@ namespace ServiceAcademy.Controllers
 
             if (enrollment == null)
             {
-                TempData["ErrorMessage"] = "Enrollment not found.";
+                TempData["MyLearningStreamErrorMessage"] = "Enrollment not found.";
                 return RedirectToAction("MyLearningStream", new { programId = programId });
             }
 
@@ -196,7 +197,7 @@ namespace ServiceAcademy.Controllers
             // Save changes to the database
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Module marked as read!";
+            TempData["MyLearningStreamSuccessMessage"] = "Module marked as read!";
             return RedirectToAction("MyLearningStream", new { programId = programId });
         }
 
@@ -212,7 +213,7 @@ namespace ServiceAcademy.Controllers
 
             if (enrollment == null)
             {
-                TempData["ErrorMessage"] = "Enrollment not found for this quiz.";
+                TempData["MyLearningStreamErrorMessage"] = "Enrollment not found for this quiz.";
                 return RedirectToAction("MyLearningStream");
             }
 

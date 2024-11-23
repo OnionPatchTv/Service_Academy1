@@ -105,7 +105,7 @@ namespace Service_Academy1.Controllers
             var programExists = _context.Programs.Any(p => p.ProgramId == programId);
             if (!programExists)
             {
-                TempData["ErrorMessage"] = "Program not found.";
+                TempData["MyLearningSuccessMessage"] = "Program not found.";
                 return RedirectToAction("ProgramList");
             }
 
@@ -124,11 +124,11 @@ namespace Service_Academy1.Controllers
 
                     _context.Enrollment.Update(existingEnrollment);
                     _context.SaveChanges();
-                    TempData["SuccessMessage"] = "You have re-enrolled in the program!";
+                    TempData["MyLearningSuccessMessage"] = "You have re-enrolled in the program!";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "You are already enrolled in this program.";
+                    TempData["MyLearningErrorMessage"] = "You are already enrolled in this program.";
                 }
                 return RedirectToAction("MyLearning", "Trainee");
             }
@@ -148,13 +148,13 @@ namespace Service_Academy1.Controllers
             {
                 _context.Enrollment.Add(enrollment);
                 _context.SaveChanges();
-                TempData["SuccessMessage"] = "Enrollment successful!";
+                TempData["MyLearningSuccessMessage"] = "Enrollment successful!";
 
                 _logUsageService.LogSystemUsageAsync(userId, "ProgramEnrollment", programId);
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Enrollment failed: " + ex.Message;
+                TempData["MyLearningErrorMessage"] = "Enrollment failed: " + ex.Message;
             }
 
             return RedirectToAction("MyLearning", "Trainee");

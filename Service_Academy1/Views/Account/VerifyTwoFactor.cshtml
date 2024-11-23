@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Verify Two-Factor Authentication";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>Please enter the verification code sent to your device:</p>
+
+<form asp-action="VerifyTwoFactor" method="post">
+    <input type="text" id="pin" name="pin" placeholder="Enter the pin" required />
+    <button type="submit" class="btn btn-primary">Verify</button>
+</form>

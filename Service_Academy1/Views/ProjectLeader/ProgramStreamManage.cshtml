@@ -15,7 +15,20 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamManageStyle.css">
 }
-
+@if (TempData["ProgramStreamManageSuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["ProgramStreamManageSuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ProgramStreamManageErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ProgramStreamManageErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="breadcrumb">
     <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
     <span class="separator">&gt;</span>

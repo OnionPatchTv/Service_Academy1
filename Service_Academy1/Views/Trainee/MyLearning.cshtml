@@ -14,36 +14,23 @@
     <script src="~/js/TraineeScript/MyLearningScript.js"></script>
 }
 
-@if (ViewBag.SuccessMessage != null)
+@if (TempData["MyLearningSuccessMessage"] != null)
 {
-    <div class="alert alert-success">
-        @ViewBag.SuccessMessage
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["MyLearningSuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
-@if (ViewBag.ErrorMessage != null)
+@if (TempData["MyLearningErrorMessage"] != null)
 {
-    <div class="alert alert-danger">
-        @ViewBag.ErrorMessage
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["MyLearningErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
 
 <main class="container-fluid">
-    @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Message"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
     <div class="my-learning-container">
         <img src="../Images/MyLearning.png" alt="My Learning" class="MyLearning">
         <span class="myLearning">My Learning</span>
@@ -86,8 +73,8 @@
                                 {
                                     <div class="program-card" data-title="@enrollment.Title" data-agenda="@enrollment.Agenda">
                                         <div class="program-image">
-                                            <!-- Check both EnrollmentStatus and IsArchived -->
-                                            @if (enrollment.EnrollmentStatus == "Approved" && !enrollment.IsArchived)
+                                            <!-- Check EnrollmentStatus, ProgramStatus, and IsArchived -->
+                                            @if (enrollment.EnrollmentStatus == "Approved" && enrollment.ProgramStatus != "Deactivated" && !enrollment.IsArchived)
                                             {
                                                 <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.ProgramId })">
                                                     <img src="@Url.Content(enrollment.PhotoPath)" alt="@enrollment.Title">
@@ -100,7 +87,8 @@
                                         </div>
                                         <div class="program-content">
                                             <h3>
-                                                @if (enrollment.EnrollmentStatus == "Approved" && !enrollment.IsArchived)
+                                                <!-- Include ProgramStatus in the check -->
+                                                @if (enrollment.EnrollmentStatus == "Approved" && enrollment.ProgramStatus != "Deactivated" && !enrollment.IsArchived)
                                                 {
                                                     <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = enrollment.ProgramId })" title="@enrollment.Title">
                                                         @enrollment.Title
@@ -118,6 +106,7 @@
                                                 <span>Status: @enrollment.EnrollmentStatus</span>
                                                 <span>Status: @enrollment.ProgramStatus</span>
                                             </div>
+
                                             <div class="progress-bar-container">
                                                 <div class="progress">
                                                     <div class="progress-bar bg-success" role="progressbar" style="width: @enrollment.TotalProgress%"
@@ -126,6 +115,13 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <!-- Display a message if the program is deactivated -->
+                                            @if (enrollment.ProgramStatus == "Deactivated")
+                                            {
+                                                <span class="text-warning">This program is currently deactivated. Access is restricted.</span>
+                                            }
+
                                             <!-- Display archive message if program is archived -->
                                             @if (enrollment.IsArchived)
                                             {
@@ -145,7 +141,7 @@
                                                     <i class="fas fa-trash" style="color: var(--primary-color); cursor: pointer; font-size: 1.5rem;"></i>
                                                 </button>
                                             }
-
+ 
                                             <!-- Delete Program Modal -->
                                             <div class="modal fade" id="deleteModal-@enrollment.ProgramId" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">

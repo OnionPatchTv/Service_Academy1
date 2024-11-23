@@ -4,7 +4,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const submitActivityForm = document.getElementById('submitActivityForm');
     submitActivityForm.addEventListener('submit', function (event) {
         const submissionLinkInput = document.getElementById('submissionLink');
-        const submissionLink = submissionLinkInput.value.trim();
+        let submissionLink = submissionLinkInput.value.trim();
+
+        // Check if the link field is empty or contains the default prompt ("No Link Pasted")
+        if (!submissionLink || submissionLink === "No Link Pasted") {
+            submissionLink = "No Link Pasted";  // Set the value to the default prompt if no link is provided
+        }
 
         // Define regex patterns for allowed links
         const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com|sheets\.google\.com|slides\.google\.com)/;
@@ -12,14 +17,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const canvaPattern = /^https:\/\/(www\.canva\.com)/;
 
         // If a link is provided and doesn't match any of the valid patterns, show an alert and prevent form submission
-        if (submissionLink && !googleDrivePattern.test(submissionLink) &&
+        if (submissionLink !== "No Link Pasted" && !googleDrivePattern.test(submissionLink) &&
             !youtubePattern.test(submissionLink) && !canvaPattern.test(submissionLink)) {
             alert("Please enter a valid link. Only Google Drive, YouTube, Google Docs, Sheets, Slides, or Canva links are allowed.");
             event.preventDefault(); // Prevent form submission
             return false;
         }
+
+        // If everything is valid, the form can be submitted
+        // You can set the submissionLink value to "No Link Pasted" before submitting if necessary
+        submissionLinkInput.value = submissionLink;
     });
 });
+
 
 function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
     // Update the iframe source

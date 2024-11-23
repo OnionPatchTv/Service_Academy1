@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Service_Academy1.Models;
 using System;
+using System.Reflection.Emit;
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext>
@@ -28,11 +29,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<EvaluationQuestionModel> EvaluationQuestions { get; set; }
     public DbSet<EvaluationResponseModel> EvaluationResponses { get; set; }
     public DbSet<SystemUsageLogModel> SystemUsageLogs { get; set; }
+    public DbSet<UserDemographicsModel> UserDemographics { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         // Remove any HasData or other seed data logic from here!
         // Define your model structure, relationships, indexes, etc.
+        builder.Entity<UserDemographicsModel>()
+       .HasOne(d => d.ApplicationUser)
+       .WithOne(u => u.UserDemographics)
+       .HasForeignKey<UserDemographicsModel>(d => d.ApplicationUserId)
+       .IsRequired();
     }
 }

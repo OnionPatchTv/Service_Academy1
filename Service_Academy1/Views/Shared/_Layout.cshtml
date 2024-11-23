@@ -31,9 +31,7 @@
                 // Display specific links based on the user role
                 if (User.IsInRole("Student"))
                 {
-                    <a href="@Url.Action("Home", "Home")" class="@(Html.IsActive("Home", "Home") ? "active" : "")">Home</a>
                     <a href="@Url.Action("ProgramCatalog", "Home")" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "ProgramCatalog" || (ViewContext.RouteData.Values["action"]?.ToString() == "ProgramList" && ViewContext.RouteData.Values["controller"]?.ToString() == "ProgramList") ? "active" : "")">Programs</a>
-                    <a href="@Url.Action("Contact", "Home")" class="@(Html.IsActive("Contact", "Home") ? "active" : "")">Contact Us</a>
                     <a href="@Url.Action("Faqs", "Home")" class="@(Html.IsActive("Faqs", "Home") ? "active" : "")">FAQs</a>
                 }
                 else if (User.IsInRole("ProjectLeader"))
