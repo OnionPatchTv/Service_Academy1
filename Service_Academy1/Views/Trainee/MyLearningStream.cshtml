@@ -44,7 +44,9 @@
         </div>
         <div class="banner-text">
             <h2 class="class-title">@Model.Title</h2>
-            <p class="description">@Model.Description</p>
+            <p class="description" onclick="toggleDescription(this)">
+                @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
+            </p>
 
 
             <!-- Enrollment and Evaluation Section MOVED HERE-->
