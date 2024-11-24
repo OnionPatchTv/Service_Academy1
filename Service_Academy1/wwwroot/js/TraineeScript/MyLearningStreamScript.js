@@ -143,9 +143,10 @@ function openSubmitActivityModal(activityId, title, description, totalScore) {
     $('#submitActivityModal').modal('show');
 }
 function toggleDescription(element) {
-    const container = element.closest('.description-container'); // Get the parent container
+    const container = element.closest('.description-container');
     element.classList.toggle('expanded');
 
-    // Adjust container height after transition (important for smooth collapse)
-    container.style.maxHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 'calc(1.5em * 4)';
+    setTimeout(() => {
+        container.style.maxHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 'calc(2.7em * 4)';
+    }, 300);
 }
