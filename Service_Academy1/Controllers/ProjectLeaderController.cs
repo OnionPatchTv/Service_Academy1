@@ -18,6 +18,9 @@ using iText.Kernel.Font;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf;
 using Service_Academy1.Services;
+using Org.BouncyCastle.Ocsp;
+using iText.IO.Font;
+using Org.BouncyCastle.Tls;
 
 namespace ServiceAcademy.Controllers
 {
@@ -437,22 +440,43 @@ namespace ServiceAcademy.Controllers
                     var page = pdfDoc.GetFirstPage();
                     var canvas = new PdfCanvas(page);
 
-                    // Add text to the certificate (adjust coordinates based on your template)
+                    // Load Poppins fonts
+                    PdfFont poppinsBold = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Bold.ttf", PdfEncodings.IDENTITY_H);
+                    PdfFont poppinsRegular = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Regular.ttf", PdfEncodings.IDENTITY_H);
+
+
                     canvas.BeginText()
-                        .SetFontAndSize(PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD), 14)
-                        .MoveText(100, 500)  // Adjust position for trainee name
-                        .ShowText($"Trainee: {traineeName}")
-                        .MoveText(0, -30)
-                        .ShowText($"Program: {programName}")
-                        .MoveText(0, -30)
-                        .ShowText($"Project Leader: {projectLeaderName}")
-                        .MoveText(0, -30)
-                        .ShowText($"Date: {generatedDate:MMMM dd, yyyy}")
+
+                        // Trainee Name (Poppins Bold)
+                        .SetFontAndSize(poppinsBold, 28) // Use Poppins-Bold font with a larger size
+                        .SetTextMatrix((float)347.5, (float)339.3)
+                        .ShowText($"{traineeName}")
+
+                        // Program Name (Poppins Regular)
+                        .SetFontAndSize(poppinsRegular, 22) // Use Poppins-Regular font with a smaller size
+                        .SetTextMatrix((float)347.5, (float)263.0)
+                        .ShowText($"{programName}")
+
+                        // Project Leader Name (Poppins Regular)
+                        .SetFontAndSize(poppinsRegular, 20) // Use Poppins-Regular font
+                        .SetTextMatrix((float)526.0, (float)126.0)
+                        .ShowText($"{projectLeaderName}")
+
+                        // Date (Poppins Regular)
+                        .SetFontAndSize(poppinsRegular, 16) // Use Poppins-Regular font
+                        .SetTextMatrix((float)347.5, (float)232.5)
+                        .ShowText($"{generatedDate:MMMM dd, yyyy}")
+
+                        // Certificate ID (Poppins Regular)  ((float)126.0, (float)39.0)   (- = up , - = left)
+                        .SetFontAndSize(poppinsRegular, 12) // Use Poppins-Regular font
+                    .SetTextMatrix((float)126.0, (float)39.0)
+                        .ShowText($"{projectLeaderName}")
+
                         .EndText();
                 }
 
-                // Create a new CertificateModel to store in the database
-                var certificate = new CertificateModel
+                    // Create a new CertificateModel to store in the database
+                    var certificate = new CertificateModel
                 {
                     EnrollmentId = enrollment.EnrollmentId,
                     CertificatePath = outputPath, // Store the path where the certificate was saved
