@@ -23,28 +23,45 @@ $('#approveCompletionForm').submit(function (event) {
             // Close the modal
             $('#approveCompletionModal').modal('hide');
 
-            // Optionally, update the UI (mark as complete)
+            // Update the trainee's status in the UI
             $(`.trainee-item[data-enrollment-id='${enrollmentId}'] .status`)
                 .text("Complete")
                 .removeClass("incomplete")
                 .addClass("complete");
 
-            // Check if a certificate path is returned
-            if (data && data.certificatePath) {
-                window.location.href = data.certificatePath;
-            } else {
-                alert('Certificate generation failed or not available.');
-            }
+            // Check if certificate paths are returned
+            if (data && data.certificateWebPath && data.certificateFilePath) {
+                // Send an email with the certificate attached
+                $.ajax({
+                    url: '/ProjectLeader/SendCertificateEmail',
+                    type: 'POST',
+                    data: {
+                        enrollmentId: enrollmentId,
+                        certificatePath: data.certificateFilePath // Pass the absolute file path
+                    },
+                    success: function (emailData) {
+                        if (emailData.success) {
+                            // Set the message dynamically if needed
+                            $('#successModalMessage').text("Email sent successfully!");
 
+                            // Show the modal
+                            $('#successModal').modal('show');
+                        } else {
+                            // Optionally handle failure
+                            alert("Failed to send email: " + emailData.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Error sending the email. Please try again.");
+                    }
+                });
+            }
         },
-        error: function (xhr, status, error) {
-            // Display the error message
-            alert(`An error occurred: ${xhr.statusText} - ${xhr.responseText}`);
-            console.error(`AJAX Error: ${xhr.status} ${xhr.statusText} - ${xhr.responseText}`);
+        error: function () {
+            alert("Error approving completion. Please try again.");
         }
     });
 });
-
 
 $(document).ready(function () {
     $('#viewGradeModal').on('show.bs.modal', function (event) {
