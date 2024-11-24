@@ -18,6 +18,7 @@ using iText.Kernel.Font;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf;
 using Service_Academy1.Services;
+using iText.IO.Font;
 
 namespace ServiceAcademy.Controllers
 {
@@ -459,21 +460,41 @@ namespace ServiceAcademy.Controllers
                     var page = pdfDoc.GetFirstPage();
                     var canvas = new PdfCanvas(page);
 
-                    // Add text to the certificate (adjust coordinates based on your template)
+                    // Load Poppins fonts
+                    PdfFont poppinsBold = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Bold.ttf", PdfEncodings.IDENTITY_H);
+                    PdfFont poppinsRegular = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Regular.ttf", PdfEncodings.IDENTITY_H);
+                    string projectLeaderNameUpper = projectLeaderName.ToUpper();
+
                     canvas.BeginText()
-                        .SetFontAndSize(PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD), 14)
-                        .MoveText(500, 494)  // Adjust position for trainee name
-                        .ShowText($"Trainee: {traineeName}")
-                        .MoveText(500, 735)
-                        .ShowText($"Program: {programName}")
-                        .MoveText(0, -30)
-                        .ShowText($"Project Leader: {projectLeaderName}")
-                        .MoveText(800, -876)
-                        .ShowText($"Date: {generatedDate:MMMM dd, yyyy}")
-                        .MoveText(300, 1272)
-                        .ShowText($"Certificate Hash: {certificateIdHash}")  // Add the hash to the certificate
+
+                        // Trainee Name (Poppins Bold)
+                        .SetFontAndSize(poppinsBold, 32) // Use Poppins-Bold font with a larger size
+                        .SetTextMatrix((float)280.5, (float)339.3)
+                        .ShowText($"{traineeName}")
+
+                        // Program Name (Poppins Regular)
+                        .SetFontAndSize(poppinsRegular, 24) // Use Poppins-Regular font with a smaller size
+                        .SetTextMatrix((float)290.5, (float)263.0)
+                        .ShowText($"{programName}")
+
+                        // Project Leader Name (Poppins Regular)
+                        .SetFontAndSize(poppinsRegular, 20) // Use Poppins-Regular font
+                        .SetTextMatrix((float)480.0, (float)126.0)
+                        .ShowText($"{projectLeaderNameUpper}")
+
+                        // Date (Poppins Regular)  //DONE as IS
+                        .SetFontAndSize(poppinsRegular, 18) // Use Poppins-Regular font
+                        .SetTextMatrix((float)345.5, (float)232.5)
+                        .ShowText($"{generatedDate:MMMM dd, yyyy}")
+
+                        // Certificate ID (DONE as IS)  ((float)126.0, (float)39.0)   (- = left , - = down)
+                        .SetFontAndSize(poppinsRegular, 12) // Use Poppins-Regular font
+                        .SetTextMatrix((float)125.0, (float)40.0)
+                        .ShowText($"{certificateIdHash}")
+
                         .EndText();
                 }
+
 
                 return outputPath;
             }
@@ -482,8 +503,6 @@ namespace ServiceAcademy.Controllers
                 throw new Exception($"Error generating certificate: {ex.Message}");
             }
         }
-
-
         public static string GenerateHash(int certificateId)
         {
             using (SHA256 sha256Hash = SHA256.Create())
@@ -497,9 +516,12 @@ namespace ServiceAcademy.Controllers
                 {
                     builder.Append(t.ToString("x2"));
                 }
-                return builder.ToString();
+
+                // Return the first 8 characters of the hash.
+                return builder.ToString().Substring(0, 8);
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> SendCertificateEmail(int enrollmentId, string certificatePath)
         {

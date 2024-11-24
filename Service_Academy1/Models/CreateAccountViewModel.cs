@@ -5,7 +5,6 @@ namespace Service_Academy1.Models
 {
     public class CreateAccountViewModel
 {
-    [Required]
     [Display(Name = "Username")]
     public string Username { get; set; } = string.Empty;
 
@@ -13,6 +12,11 @@ namespace Service_Academy1.Models
     [EmailAddress]
     [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
+
+    
+    [Required]
+    [Display(Name = "FullName")]
+    public string FullName { get; set; } = string.Empty;
 
     [Required]
     [DataType(DataType.Password)]

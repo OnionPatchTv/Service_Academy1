@@ -109,6 +109,10 @@ namespace ServiceAcademy.Controllers
         {
             return View();
         }
+        public IActionResult VerifyCertificate()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -116,9 +120,35 @@ namespace ServiceAcademy.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult VerifyCertificate()
+        [HttpGet]
+        public async Task<IActionResult> VerifyCertificates(string certificateId)
         {
-            return View();
+            try
+            {
+                var certificate = await _context.Certificates
+                    .FirstOrDefaultAsync(c => c.CertificateHash == certificateId);
+
+                if (certificate == null)
+                {
+                    return Json(new { isValid = false, message = "Certificate not found or invalid." });
+                }
+
+                return Json(new { isValid = true, message = "Certificate is authentic." });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and return a generic error
+                Console.Error.WriteLine(ex.Message);
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
         }
+
+    }
+
+    public class CertificateVerificationRequest
+    {
+        public string CertificateId { get; set; }
     }
 }
+
+
