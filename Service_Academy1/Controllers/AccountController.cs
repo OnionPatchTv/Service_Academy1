@@ -20,6 +20,8 @@ namespace ServiceAcademy.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly LogSystemUsageService _logUsageService;
         private readonly EmailService _emailService;
+        private const int MaxFailedAttempts = 3;  // Maximum number of allowed failed attempts
+        private readonly string FailedAttemptsSessionKey = "FailedAttempts";  // Session key for tracking failed attempts
 
         public AccountController(ILogger<AccountController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, LogSystemUsageService logUsageService, EmailService emailService)
         {
@@ -127,7 +129,10 @@ namespace ServiceAcademy.Controllers
                 return View();
             }
 
-            // Verify the PIN entered by the user
+            // Track the failed attempts using session
+            int failedAttempts = HttpContext.Session.GetInt32(FailedAttemptsSessionKey) ?? 0;
+
+            // If PIN is correct, proceed with registration
             if (pin == storedPin)
             {
                 // Retrieve the user
@@ -149,13 +154,36 @@ namespace ServiceAcademy.Controllers
                     await _userManager.UpdateAsync(user); // Disable 2FA after successful registration
 
                     TempData["SuccessMessage"] = "Registration successful!";
+                    HttpContext.Session.SetInt32(FailedAttemptsSessionKey, 0);  // Reset failed attempts on success
                     return RedirectToAction("MyLearning", "Trainee");
                 }
+            }
+
+            // If token is incorrect, increase the failed attempts counter
+            failedAttempts++;
+            HttpContext.Session.SetInt32(FailedAttemptsSessionKey, failedAttempts);
+
+            // If the user has failed 3 times, delete the account
+            if (failedAttempts >= MaxFailedAttempts)
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user != null)
+                {
+                    // Delete the user account
+                    await _userManager.DeleteAsync(user);
+                    TempData["ErrorMessage"] = "Account deleted due to multiple failed attempts. Please register again.";
+                }
+
+                // Reset failed attempts
+                HttpContext.Session.SetInt32(FailedAttemptsSessionKey, 0);
+
+                return RedirectToAction("Register");
             }
 
             ModelState.AddModelError("", "Invalid 2FA token.");
             return View();
         }
+
 
         public async Task<IActionResult> Login(LoginViewModel model)
         {
