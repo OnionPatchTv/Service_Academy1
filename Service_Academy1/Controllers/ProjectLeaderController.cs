@@ -509,6 +509,7 @@ namespace ServiceAcademy.Controllers
                         .EndText();
                 }
 
+
                 return outputPath;
             }
             catch (Exception ex)
@@ -516,8 +517,6 @@ namespace ServiceAcademy.Controllers
                 throw new Exception($"Error generating certificate: {ex.Message}");
             }
         }
-
-
         public static string GenerateHash(int certificateId)
         {
             using (SHA256 sha256Hash = SHA256.Create())
@@ -531,9 +530,12 @@ namespace ServiceAcademy.Controllers
                 {
                     builder.Append(t.ToString("x2"));
                 }
-                return builder.ToString();
+
+                // Return the first 8 characters of the hash.
+                return builder.ToString().Substring(0, 8);
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> SendCertificateEmail(int enrollmentId, string certificatePath)
         {

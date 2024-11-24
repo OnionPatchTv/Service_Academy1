@@ -349,24 +349,45 @@ namespace ServiceAcademy.Controllers
             return View(model);
         }
 
-        // CreateAccount action: Handles the creation of new users
         [HttpPost]
         public async Task<IActionResult> CreateAccount(CreateAccountViewModel model)
         {
             if (ModelState.IsValid)
             {
+                // Ensure Username is set to Email
+                model.Username = model.Email;
+
+                // Map department to DepartmentId
+                int departmentId = int.Parse(model.Department ?? "0");
+
+                // Create new ApplicationUser instance
                 var user = new ApplicationUser
                 {
-                    UserName = model.Username,
+                    UserName = model.Username,  // Automatically set Username from Email
                     Email = model.Email,
-                    FullName = model.Username // Assuming FullName is the same as Username
+                    FullName = model.FullName,
+                    DepartmentId = departmentId,
+                    EmailConfirmed = true,
+                    LockoutEnabled = false
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, model.Role);
+                    var roleResult = await _userManager.AddToRoleAsync(user, model.Role);
+
+                    if (!roleResult.Succeeded)
+                    {
+                        foreach (var error in roleResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+
+                        await _userManager.DeleteAsync(user);
+                        return View(model);
+                    }
+
                     TempData["SuccessMessage"] = "Account created successfully!";
                     return RedirectToAction("ManageAccount");
                 }
@@ -379,18 +400,16 @@ namespace ServiceAcademy.Controllers
                 }
             }
 
-            // Fetch the list of users to be passed into the view, along with the CreateAccount form data
             var manageAccountViewModel = new ManageAccountViewModel
             {
                 Users = await _userManager.Users.ToListAsync(),
-                CreateAccountForm = model // Include the form data so it can be displayed again
+                CreateAccountForm = model
             };
 
-            // Return the ManageAccount view with both the user list and the form data
             return View("ManageAccount", manageAccountViewModel);
         }
 
-        // EditAccount action: Handles editing of existing users
+
         [HttpPost]
         public async Task<IActionResult> EditAccount(EditAccountViewModel model)
         {
@@ -400,9 +419,14 @@ namespace ServiceAcademy.Controllers
 
                 if (user != null)
                 {
+                    // Set the Username to the updated Email
+                    user.UserName = model.Email;  // Make sure Username matches Email
+
+                    // Update other fields
                     user.Email = model.Email;
                     user.FullName = model.FullName;
 
+                    // Proceed with updating the user
                     var result = await _userManager.UpdateAsync(user);
 
                     if (result.Succeeded)
