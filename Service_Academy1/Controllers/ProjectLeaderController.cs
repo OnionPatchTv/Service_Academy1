@@ -447,7 +447,6 @@ namespace ServiceAcademy.Controllers
 
             try
             {
-                // Ensure the template file exists
                 string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Templates", "certificate_template.pdf");
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -464,35 +463,48 @@ namespace ServiceAcademy.Controllers
                     // Load Poppins fonts
                     PdfFont poppinsBold = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Bold.ttf", PdfEncodings.IDENTITY_H);
                     PdfFont poppinsRegular = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Regular.ttf", PdfEncodings.IDENTITY_H);
-                    string projectLeaderNameUpper = projectLeaderName.ToUpper();
+
+                    float traineeFontSize = 32f; // Initial font size
+                    float programFontSize = 30f;
+                    float leaderFontSize = 20f;
+
+                    // Function to center text and adjust font size (see below)
+                    void centerText(string text, float x, float y, float maxWidth, PdfFont font, ref float fontSize)
+                    {
+                        float textWidth = font.GetWidth(text, fontSize);
+
+                        while (textWidth > maxWidth)
+                        {
+                            fontSize--;
+                            textWidth = font.GetWidth(text, fontSize);
+                            if (fontSize <= 6) break;
+                        }
+                        canvas.BeginText()
+                             .SetFontAndSize(font, fontSize)
+                             .SetTextMatrix(x - textWidth / 2, y)
+                             .ShowText(text)
+                             .EndText();
+                    }
+                    //Set Max Widths for each field. Adjust to your template
+                    float traineeMaxWidth = 600f;
+                    float programMaxWidth = 600f;
+                    float leaderMaxWidth = 400f;
+
+
+                    //Centering and Font Size Adjustment
+
+                    centerText(traineeName, 420.5f, 339.3f, traineeMaxWidth, poppinsBold, ref traineeFontSize);
+                    centerText(programName, 414.5f, 263.0f, programMaxWidth, poppinsRegular, ref programFontSize);
+                    centerText(projectLeaderName.ToUpper(), 585.0f, 126.0f, leaderMaxWidth, poppinsRegular, ref leaderFontSize);
 
                     canvas.BeginText()
-
-                        // Trainee Name (Poppins Bold)
-                        .SetFontAndSize(poppinsBold, 32) // Use Poppins-Bold font with a larger size
-                        .SetTextMatrix((float)280.5, (float)339.3)
-                        .ShowText($"{traineeName}")
-
-                        // Program Name (Poppins Regular)
-                        .SetFontAndSize(poppinsRegular, 24) // Use Poppins-Regular font with a smaller size
-                        .SetTextMatrix((float)290.5, (float)263.0)
-                        .ShowText($"{programName}")
-
-                        // Project Leader Name (Poppins Regular)
-                        .SetFontAndSize(poppinsRegular, 20) // Use Poppins-Regular font
-                        .SetTextMatrix((float)480.0, (float)126.0)
-                        .ShowText($"{projectLeaderNameUpper}")
-
-                        // Date (Poppins Regular)  //DONE as IS
-                        .SetFontAndSize(poppinsRegular, 18) // Use Poppins-Regular font
-                        .SetTextMatrix((float)345.5, (float)232.5)
+                        .SetFontAndSize(poppinsRegular, 18)
+                        .SetTextMatrix(345.5f, 232.5f)
                         .ShowText($"{generatedDate:MMMM dd, yyyy}")
 
-                        // Certificate ID (DONE as IS)  ((float)126.0, (float)39.0)   (- = left , - = down)
-                        .SetFontAndSize(poppinsRegular, 12) // Use Poppins-Regular font
-                        .SetTextMatrix((float)125.0, (float)40.0)
+                        .SetFontAndSize(poppinsRegular, 12)
+                        .SetTextMatrix(125.0f, 40.0f)
                         .ShowText($"{certificateIdHash}")
-
                         .EndText();
                 }
 
