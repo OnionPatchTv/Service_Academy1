@@ -14,16 +14,12 @@
     <link rel="stylesheet" href="~/css/TraineeStyle/StudentQuizViewStyle.css">
 }
 
-<div class="breadcrumb">
-    <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = Model.ProgramId })">@ViewBag.ProgramTitle</a>
-    <span class="separator">&gt;</span>
-    <span>@Model.QuizTitle Assessment</span>
-</div>
-
-
-<h2>@Model.QuizTitle</h2>
-<p>@Model.QuizDirection</p>
-
+<div class="quiz-container">
+    <div class="breadcrumb">
+        <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = Model.ProgramId })">@ViewBag.ProgramTitle</a>
+        <span class="separator" style="border: none;">></span>
+        <span>@Model.QuizTitle Assessment</span>
+    </div>
 
 <form id="quizForm" method="post" action="@Url.Action("SubmitQuiz", "Assessment")">
     <input type="hidden" name="QuizId" value="@Model.QuizId" />
@@ -36,27 +32,11 @@
         </div>
     }
 
-    <!-- Trigger Modal Button -->
-    <button type="button" id="submitQuizButton">Submit</button>
-</form>
-
-<!-- Submit Confirmation Modal -->
-<div class="modal fade" id="submitQuizModal" tabindex="-1" role="dialog" aria-labelledby="submitQuizModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div id="modalForm" class="modal-form">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="submitQuizModalLabel">Confirm Quiz Submission</h5>
-                    <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to submit your quiz? Once submitted, you cannot retake it.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="confirmSubmitButton" class="btnYes btn btn-primary">Yes, Submit</button>
-                    <button type="button" class="btnNo btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
+        <div class="action-buttons">
+            <button type="button" id="submitQuizButton">Submit</button>
         </div>
-    </div>
+    </form>
+</div>
+
+<div class="modal fade" id="submitQuizModal" tabindex="-1" role="dialog" aria-labelledby="submitQuizModalLabel" aria-hidden="true">
 </div>

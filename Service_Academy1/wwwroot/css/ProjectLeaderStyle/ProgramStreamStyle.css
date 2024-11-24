@@ -121,7 +121,7 @@
 }
 
 .cancel-btn,
-.post-btn {
+.send-btn {
     padding: 5px 10px;
     margin-left: 10px;
     border: none;
@@ -135,11 +135,11 @@
         background-color: #c82333; /* Darker red on hover */
     }
 
-.post-btn {
+.send-btn {
     background-color: #28a745; /* Bootstrap success color */
 }
 
-    .post-btn:hover {
+    .send-btn:hover {
         background-color: #218838; /* Darker green on hover */
     }
 
