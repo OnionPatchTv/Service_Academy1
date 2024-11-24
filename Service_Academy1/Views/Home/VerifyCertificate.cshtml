@@ -9,14 +9,14 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/AccountStyle/Register.css">
+    <link rel="stylesheet" href="~/css/AccountStyle/Verify.css">
 }
 
 <div id="overlay">
     <div class="container-two">
         <div class="form-container">
             <h2 class="text-center">@ViewData["Title"]</h2>
-            <p class="text-center">Please enter your Certificate ID (already hashed):</p>
+            <p class="text-center">Please enter your Certificate ID</p>
             <form id="verifyForm">
                 <input type="text" id="certificateId" name="certificateId" placeholder="Enter Certificate ID" required autofocus />
                 <button type="submit" class="btn btn-primary">Verify Certificate</button>
@@ -26,10 +26,63 @@
 </div>
 
 <!-- Modal for the verification result -->
-<div id="verificationResultModal" style="display: none;">
-    <div class="modal-content">
-        <p id="verificationMessage"></p>
-        <button onclick="closeModal()">Close</button>
+<div id="verificationResultModal" class="modal fade" tabindex="-1" role="dialog">
+    <!-- Added "fade" class for a smoother transition -->
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Verification Result</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="verificationMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
+<!--Failed Modal-->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" style="margin-top: 100px;" ">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Login Failed</h5>
+                <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <img src="/Images/failed.png" alt="Login Failed" class="error-image">  <!-- Added image -->
+                <p>Invalid email or password. Please try again!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" id="success">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img src="/Images/success.png" alt="Success" class="sucsess-image">  <!-- Added image -->
+                <p id="successModalMessage">Email sent successfully!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--hindi maimplement yung sa modal nilagay ko nalang mga modal dito di lang nagrereflect sa button.-->

@@ -1,34 +1,22 @@
-﻿document.getElementById("verifyForm").addEventListener("submit", function (event) {
-    event.preventDefault();
+﻿$(document).ready(function () {
+    $('#verifyForm').submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
 
-    var certificateId = document.getElementById("certificateId").value;
+        var certificateId = $('#certificateId').val();
 
-    fetch('/Home/VerifyCertificates?certificateId=' + certificateId, {
-        method: 'GET'
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
+        // Your existing fetch code here...
+        fetch('/Home/VerifyCertificates?certificateId=' + certificateId, {
+            method: 'GET'
         })
-        .then(data => {
-            if (data.isValid) {
-                document.getElementById("verificationMessage").textContent = data.message;
-            } else {
-                document.getElementById("verificationMessage").textContent = data.message;
-            }
-            document.getElementById("verificationResultModal").style.display = "block";
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById("verificationMessage").textContent = "An error occurred. Please try again later.";
-            document.getElementById("verificationResultModal").style.display = "block";
-        });
-
+            .then(response => response.json())
+            .then(data => {
+                $('#verificationMessage').text(data.message);
+                $('#verificationResultModal').modal('show');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                $('#verificationMessage').text("An error occurred. Please try again later.");
+                $('#verificationResultModal').modal('show');
+            });
+    });
 });
-
-// Close the modal
-function closeModal() {
-    document.getElementById("verificationResultModal").style.display = "none";
-}
