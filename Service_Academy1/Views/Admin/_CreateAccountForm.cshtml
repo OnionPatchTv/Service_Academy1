@@ -20,14 +20,32 @@
     <!-- Password Field -->
     <div class="form-group">
         <label asp-for="Password" class="control-label"></label>
-        <input asp-for="Password" type="password" class="form-control" />
+        <div class="input-group">
+            <!-- Added input-group for better styling -->
+            <input asp-for="Password" type="password" class="form-control" id="password" />
+            <div class="input-group-append">
+                <!-- Added input-group-append -->
+                <span class="input-group-text" onclick="togglePasswordVisibility('password')">
+                    <i class="fas fa-eye" id="eyeIcon"></i>  <!-- Eye icon -->
+                </span>
+            </div>
+        </div>
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
     <!-- Confirm Password Field -->
     <div class="form-group">
         <label asp-for="ConfirmPassword" class="control-label"></label>
-        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+        <div class="input-group">
+            <!-- Added input-group for better styling -->
+            <input asp-for="ConfirmPassword" type="password" class="form-control" id="confirmPassword" />
+            <div class="input-group-append">
+                <!-- Added input-group-append -->
+                <span class="input-group-text" onclick="togglePasswordVisibility('confirmPassword')">
+                    <i class="fas fa-eye" id="eyeIcon2"></i>  <!-- Eye icon -->
+                </span>
+            </div>
+        </div>
         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
 
@@ -56,3 +74,22 @@
     <!-- Submit Button -->
     <button type="submit" class="btn btn-success">Create Account</button>
 </form>
+
+@section Scripts {
+    <script>
+        function togglePasswordVisibility(passwordId) {
+            var passwordField = document.getElementById(passwordId);
+            var eyeIcon = document.getElementById(passwordId === 'password' ? 'eyeIcon' : 'eyeIcon2'); //Get the correct eye icon
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
+}

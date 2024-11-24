@@ -8,6 +8,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/AdminStyle/ManageAccountStyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 }
 
 <div class="container">
@@ -69,6 +70,7 @@
                                                 ;
                                             }
                                         </td>
+                                        <td>@user.DepartmentId</td> 
                                         <td>
                                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editAccountModal" data-userid="@user.Id" data-username="@user.UserName" data-email="@user.Email" data-fullname="@user.FullName" data-role="@string.Join(", ", await _userManager.GetRolesAsync(user))">
                                                 Edit
@@ -113,8 +115,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border: none; background-color: transparent;">
+                    <span aria-hidden="true" style="border: none; background-color: transparent;">&times;</span>
                 </button>
             </div>
             <form asp-action="EditAccount" method="post">
@@ -150,6 +152,9 @@
 </div>
 
 @section Scripts {
+       
+    <script src="~/js/AdminScript/passwordtoggle.js"></script>
+
     <script>
         // Search/filter accounts
         function filterAccounts() {

@@ -40,3 +40,8 @@
 .faq-question:hover {
     background-color: #e65c1e;
 }
+
+.verify-certificate-link {
+    color: #ff782d; /* Blue, for instance */
+    text-decoration: none;
+}

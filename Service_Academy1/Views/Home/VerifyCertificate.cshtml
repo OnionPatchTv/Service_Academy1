@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Verify Certificate";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/AccountStyle/Register.css">
+}
+
+<div id="overlay">
+    <div class="container-two">
+        <div class="form-container">
+            <h2 class="text-center">@ViewData["Title"]</h2>
+            <p class="text-center">Please enter your Certificate ID:</p>
+            <form asp-action="VerifyCertificate" method="post">
+                <!-- Changed action -->
+                <input type="text" id="certificateId" name="certificateId" placeholder="Enter Certificate ID" required autofocus />
+                <button type="submit" class="btn btn-primary">Verify Certificate</button> 
+            </form>
+        </div>
+    </div>
+</div>
