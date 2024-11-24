@@ -448,7 +448,6 @@ namespace ServiceAcademy.Controllers
 
             try
             {
-                // Ensure the template file exists
                 string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Templates", "certificate_template.pdf");
                 if (!System.IO.File.Exists(templatePath))
                 {
@@ -466,19 +465,47 @@ namespace ServiceAcademy.Controllers
                     PdfFont poppinsBold = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Bold.ttf", PdfEncodings.IDENTITY_H);
                     PdfFont poppinsRegular = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Regular.ttf", PdfEncodings.IDENTITY_H);
 
+                    float traineeFontSize = 32f; // Initial font size
+                    float programFontSize = 30f;
+                    float leaderFontSize = 20f;
+
+                    // Function to center text and adjust font size (see below)
+                    void centerText(string text, float x, float y, float maxWidth, PdfFont font, ref float fontSize)
+                    {
+                        float textWidth = font.GetWidth(text, fontSize);
+
+                        while (textWidth > maxWidth)
+                        {
+                            fontSize--;
+                            textWidth = font.GetWidth(text, fontSize);
+                            if (fontSize <= 6) break;
+                        }
+                        canvas.BeginText()
+                             .SetFontAndSize(font, fontSize)
+                             .SetTextMatrix(x - textWidth / 2, y)
+                             .ShowText(text)
+                             .EndText();
+                    }
+                    //Set Max Widths for each field. Adjust to your template
+                    float traineeMaxWidth = 600f;
+                    float programMaxWidth = 600f;
+                    float leaderMaxWidth = 400f;
+
+
+                    //Centering and Font Size Adjustment
+
+                    centerText(traineeName, 420.5f, 339.3f, traineeMaxWidth, poppinsBold, ref traineeFontSize);
+                    centerText(programName, 414.5f, 263.0f, programMaxWidth, poppinsRegular, ref programFontSize);
+                    centerText(projectLeaderName.ToUpper(), 585.0f, 126.0f, leaderMaxWidth, poppinsRegular, ref leaderFontSize);
 
                     canvas.BeginText()
-                        .SetFontAndSize(PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD), 14)
-                        .MoveText(500, 494)  // Adjust position for trainee name
-                        .ShowText($"Trainee: {traineeName}")
-                        .MoveText(500, 735)
-                        .ShowText($"Program: {programName}")
-                        .MoveText(0, -30)
-                        .ShowText($"Project Leader: {projectLeaderName}")
-                        .MoveText(800, -876)
-                        .ShowText($"Date: {generatedDate:MMMM dd, yyyy}")
-                        .MoveText(300, 1272)
-                        .ShowText($"Certificate Hash: {certificateIdHash}")  // Add the hash to the certificate
+                        .SetFontAndSize(poppinsRegular, 18)
+                        .SetTextMatrix(345.5f, 232.5f)
+                        .ShowText($"{generatedDate:MMMM dd, yyyy}")
+
+                        .SetFontAndSize(poppinsRegular, 12)
+                        .SetTextMatrix(125.0f, 40.0f)
+                        .ShowText($"{certificateIdHash}")
                         .EndText();
                 }
 
