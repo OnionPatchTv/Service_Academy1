@@ -30,14 +30,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-<div class="container">
-    <div class="breadcrumb">
-        <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
-        <span class="separator">&gt;</span>
-        <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")" onclick="location.reload();">Stream</a>
-        <span class="separator">&gt;</span>
-        <a href="@Url.Action("ProgramStreamManage", "ProjectLeader", new { programId = Model.ProgramId })">Manage</a>
-    </div>
+<div class="breadcrumb">
+    <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
+    <span class="separator">></span>
+    <a href="javascript:void(0);" class="@(Html.IsActive("MyLearningStream", "Trainee") ? "active" : "")" onclick="location.reload();">Stream</a>
+</div>
+
 
     <!-- Full Width Class Banner Section -->
     <section class="class-banner">

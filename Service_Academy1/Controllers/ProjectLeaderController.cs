@@ -436,6 +436,7 @@ namespace ServiceAcademy.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
         private async Task<string> GenerateCertificateAsync(EnrollmentModel enrollment, string certificateIdHash)
         {
             string traineeName = enrollment.CurrentTrainee?.FullName ?? "N/A";
@@ -508,7 +509,6 @@ namespace ServiceAcademy.Controllers
                         .EndText();
                 }
 
-
                 return outputPath;
             }
             catch (Exception ex)
@@ -530,8 +530,8 @@ namespace ServiceAcademy.Controllers
                     builder.Append(t.ToString("x2"));
                 }
 
-                // Return the first 8 characters of the hash.
-                return builder.ToString().Substring(0, 8);
+                // Return the first 8 characters of the hash (if you need it to be exactly 8 digits)
+                return builder.ToString().Substring(0, 8); // Only take the first 8 characters
             }
         }
 
@@ -718,5 +718,3 @@ namespace ServiceAcademy.Controllers
         #endregion
     }
 }
-
-
