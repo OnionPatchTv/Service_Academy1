@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Service_Academy1.Services;
 using iText.Commons.Actions.Contexts;
 using Service_Academy1.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 namespace ServiceAcademy.Controllers
@@ -237,9 +238,85 @@ namespace ServiceAcademy.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+        // GET: Forgot Password
         public IActionResult ForgotPassword()
         {
             return View();
+        }
+
+        // POST: Forgot Password
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    TempData["ErrorMessage"] = "No account found with this email.";
+                    return RedirectToAction("ForgotPassword");
+                }
+
+                // Generate password reset token
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                // Generate a password reset URL
+                var resetLink = Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { token = token, email = user.Email },
+                    protocol: HttpContext.Request.Scheme);
+
+                // Send email (using your email sender service)
+                await _emailService.SendSystemEmailAsync(user.Email, "Password Reset", $"Click <a href='{resetLink}'>here</a> to reset your password.");
+
+                TempData["SuccessMessage"] = "Password reset link sent to your email.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // In case of validation error
+            return View(model);
+        }
+        public IActionResult ResetPassword(string token, string email)
+        {
+            var model = new ResetPasswordViewModel
+            {
+                Token = token,
+                Email = email
+            };
+            return View(model);
+        }
+
+        // POST: Reset Password
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    TempData["ErrorMessage"] = "No account found with this email.";
+                    return RedirectToAction("ForgotPassword");
+                }
+
+                var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+                if (result.Succeeded)
+                {
+                    TempData["SuccessMessage"] = "Password reset successfully.";
+                    return RedirectToAction("Login", "Account");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Error resetting password.";
+                    return RedirectToAction("ResetPassword", new { token = model.Token, email = model.Email });
+                }
+            }
+
+            return View(model);
         }
     }
 }
