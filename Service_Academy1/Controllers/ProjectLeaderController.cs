@@ -436,7 +436,6 @@ namespace ServiceAcademy.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
-
         private async Task<string> GenerateCertificateAsync(EnrollmentModel enrollment, string certificateIdHash)
         {
             string traineeName = enrollment.CurrentTrainee?.FullName ?? "N/A";
@@ -465,7 +464,7 @@ namespace ServiceAcademy.Controllers
                     // Load Poppins fonts
                     PdfFont poppinsBold = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Bold.ttf", PdfEncodings.IDENTITY_H);
                     PdfFont poppinsRegular = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Regular.ttf", PdfEncodings.IDENTITY_H);
-
+                    string projectLeaderNameUpper = projectLeaderName.ToUpper();
 
                     canvas.BeginText()
 

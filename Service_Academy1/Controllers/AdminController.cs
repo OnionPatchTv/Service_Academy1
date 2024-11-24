@@ -340,15 +340,16 @@ namespace ServiceAcademy.Controllers
         {
             ViewData["ActivePage"] = "ManageAccount";
 
-            // Fetch the list of users
-            var model = new ManageAccountViewModel
-            {
-                Users = await _userManager.Users.ToListAsync()
-            };
+            // Fetch ALL users first (asynchronously)
+            var allUsers = await _userManager.Users.ToListAsync();
 
+            // Now filter synchronously using LINQ
+            var filteredUsers = allUsers.Where(u => !_userManager.IsInRoleAsync(u, "Student").Result).ToList();
+
+
+            var model = new ManageAccountViewModel { Users = filteredUsers };
             return View(model);
         }
-
         [HttpPost]
         public async Task<IActionResult> CreateAccount(CreateAccountViewModel model)
         {

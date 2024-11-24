@@ -214,80 +214,116 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
 document.getElementById('generate-report-form').addEventListener('submit', async function (e) {
     e.preventDefault(); // Prevent form submission
-
-    // Get user input
+    console.log("Form submission prevented.");
+    console.log("Form submission prevented.");
     const reportType = document.getElementById('report-type').value;
-    const startDate = document.getElementById('start-date').value;
-    const endDate = document.getElementById('end-date').value;
-
+    const reportDate = document.getElementById('report-date').value || 'N/A';
+    console.log(`Report Type: ${reportType}, Report Date: ${reportDate}`);
     if (reportType === 'pdf') {
-        await generatePDFReport(startDate, endDate);
+        try {
+            await generatePDFReport(reportDate);
+            console.log("PDF report generation complete.");
+        } catch (err) {
+            console.error("Error during PDF generation:", err);
+        }
     } else {
         alert('Spreadsheet export is under construction.');
     }
 });
+document.getElementById('generate-report-form').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevent the default form submission
+    console.log("Form submission prevented.");
 
-async function generatePDFReport(startDate, endDate) {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: 'a4' });
+    const reportType = document.getElementById('report-type').value;
+    const reportDate = document.getElementById('report-date').value || 'N/A';
+    console.log(`Report Type: ${reportType}, Report Date: ${reportDate}`);
 
-    let margin = 40; // Margin for spacing
-    let yPosition = margin; // Start position for content
-
-    // Add Title and Filters
-    pdf.setFontSize(18);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Analytics Report', margin, yPosition);
-    yPosition += 30;
-
-    pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`Start Date: ${startDate || 'N/A'}`, margin, yPosition);
-    yPosition += 15;
-    pdf.text(`End Date: ${endDate || 'N/A'}`, margin, yPosition);
-    yPosition += 15;
-
-    // Add Recommendations
-    const recommendation = document.querySelector('.chart-container-ai p').innerText;
-    pdf.setFontSize(14);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Arli AI Recommendations:', margin, yPosition);
-    yPosition += 20;
-
-    pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'normal');
-    const lines = pdf.splitTextToSize(recommendation, 720); // Wrap text to fit width
-    pdf.text(lines, margin, yPosition);
-    yPosition += lines.length * 15 + 20;
-
-    // Capture and Add Charts
-    const chartIds = [
-        'activity-performance-program-chart',
-        'quiz-performance-program-chart',
-        'completion-rate-chart',
-        'program-performance-chart',
-        'overall-program-progress-chart',
-        'system-usage-chart',
-    ];
-
-    for (const chartId of chartIds) {
-        const canvas = document.getElementById(chartId);
-        if (canvas) {
-            const chartImage = await html2canvas(canvas).then((canvas) => canvas.toDataURL('image/png'));
-            pdf.addImage(chartImage, 'PNG', margin, yPosition, 340, 150); // Scale and position
-            yPosition += 320; // Add spacing for the next chart
-
-            if (yPosition > 550) { // Start a new page if content overflows
-                pdf.addPage();
-                yPosition = margin;
-            }
+    if (reportType === 'pdf') {
+        try {
+            await generatePDFReport(reportDate);
+            console.log("PDF report generation complete.");
+        } catch (err) {
+            console.error("Error during PDF generation:", err);
         }
+    } else {
+        alert('Spreadsheet export is under construction.');
     }
 
-    // Save the PDF
-    pdf.save('Analytics_Report.pdf');
-}
+    return false; // Prevent any further form action
+});
 
+async function generatePDFReport(reportDate) {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: 'a4' });
+        const margin = 40;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        // Title and Date (First Page)
+        let yPosition = margin;
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Analytics Report', pageWidth / 2, yPosition, { align: 'center' });
+        yPosition += 30;
+        doc.setFontSize(12);
+        doc.text(`Report Date: ${reportDate}`, margin, yPosition);
+        yPosition += 20;
+
+        // Recommendations
+        const recommendationElement = document.querySelector('.chart-container-ai p');
+        if (recommendationElement) {
+            const recommendation = recommendationElement.innerText;
+            doc.setFontSize(14);
+            doc.text('Arli AI Recommendations:', margin, yPosition);
+            yPosition += 20;
+            const lines = doc.splitTextToSize(recommendation, pageWidth - 2 * margin);
+            doc.text(lines, margin, yPosition);
+        } else {
+            console.warn("Recommendation text not found.");
+        }
+
+        // Add Charts on Separate Pages
+        const chartIds = [
+            'activity-performance-program-chart',
+            'quiz-performance-program-chart',
+            'completion-rate-chart',
+            'program-performance-chart',
+            'overall-program-progress-chart',
+            'system-usage-chart'
+        ];
+
+        for (const chartId of chartIds) {
+            doc.addPage(); // Start a new page for each chart
+            yPosition = margin; // Reset yPosition for the new page
+            const canvas = document.getElementById(chartId);
+            if (canvas) {
+                try {
+                    const imgData = await html2canvas(canvas).then(canvas => canvas.toDataURL('image/png'));
+                    const imgProps = doc.getImageProperties(imgData);
+                    const imgWidth = pageWidth - 2 * margin;
+                    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+                    const xPosition = margin;
+                    const centeredYPosition = (pageHeight - imgHeight) / 2;
+                    doc.addImage(imgData, 'PNG', xPosition, centeredYPosition, imgWidth, imgHeight);
+                } catch (error) {
+                    console.error(`Error capturing chart ${chartId}:`, error);
+                    doc.setFontSize(10);
+                    doc.setTextColor(255, 0, 0);
+                    doc.text(`Error capturing chart ${chartId}`, margin, yPosition);
+                    yPosition += 15;
+                    doc.setTextColor(0, 0, 0);
+                }
+            } else {
+                console.warn(`Chart with ID ${chartId} not found.`);
+            }
+        }
+
+        doc.save('Analytics_Report.pdf');
+    } catch (err) {
+        console.error("Error in generatePDFReport:", err);
+    }
+}
