@@ -18,5 +18,6 @@ namespace Service_Academy1.Models
         public string CertificatePath { get; set; } //Make it non-nullable
 
         public DateTime GeneratedDate { get; set; } = DateTime.UtcNow; // Automatically sets the generation date
+        public string CertificateHash { get; set; } = string.Empty;
     }
 }

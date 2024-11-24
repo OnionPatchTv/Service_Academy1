@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Service_Academy1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241124055311_SeedRolesAndUsers")]
-    partial class SeedRolesAndUsers
+    [Migration("20241124104041_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -313,6 +313,10 @@ namespace Service_Academy1.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CertificateId"));
+
+                    b.Property<string>("CertificateHash")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("CertificatePath")
                         .IsRequired()

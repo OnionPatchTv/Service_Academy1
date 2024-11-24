@@ -311,6 +311,10 @@ namespace Service_Academy1.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CertificateId"));
 
+                    b.Property<string>("CertificateHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("CertificatePath")
                         .IsRequired()
                         .HasColumnType("text");
