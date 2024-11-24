@@ -18,7 +18,9 @@ using iText.Kernel.Font;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf;
 using Service_Academy1.Services;
+using Org.BouncyCastle.Ocsp;
 using iText.IO.Font;
+using Org.BouncyCastle.Tls;
 
 namespace ServiceAcademy.Controllers
 {
@@ -463,7 +465,7 @@ namespace ServiceAcademy.Controllers
                     // Load Poppins fonts
                     PdfFont poppinsBold = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Bold.ttf", PdfEncodings.IDENTITY_H);
                     PdfFont poppinsRegular = PdfFontFactory.CreateFont("wwwroot/Resources/Fonts/Poppins-Regular.ttf", PdfEncodings.IDENTITY_H);
-                    string projectLeaderNameUpper = projectLeaderName.ToUpper();
+
 
                     canvas.BeginText()
 
