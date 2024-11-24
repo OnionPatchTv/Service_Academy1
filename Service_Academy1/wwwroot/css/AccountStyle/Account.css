@@ -32,6 +32,19 @@ body {
     z-index: 2; /* Higher z-index for login form */
     position: relative; /* Added to make the close button position relative to the form */
 }
+
+#forgotPassword {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    width: 100%;
+    max-width: 400px;
+    z-index: 2;
+    position: relative;
+    margin: 0 auto; /*Center the form*/
+}
+
 .title {
     text-align: center;
     font-size: 24px;

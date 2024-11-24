@@ -1,12 +1,20 @@
 ﻿@{
     ViewData["Title"] = "Verify Two-Factor Authentication";
 }
+@section Styles {
+    <link rel="stylesheet" href="~/css/AccountStyle/Register.css">
+}
 
-<h2>@ViewData["Title"]</h2>
-
-<p>Please enter the verification code sent to your device:</p>
-
-<form asp-action="VerifyTwoFactor" method="post">
-    <input type="text" id="pin" name="pin" placeholder="Enter the pin" required />
-    <button type="submit" class="btn btn-primary">Verify</button>
-</form>
+<div id="overlay">
+    <!-- Moved container-two inside overlay -->
+    <div class="container-two">
+        <div class="form-container">
+            <h2 class="text-center">@ViewData["Title"]</h2>
+            <p class="text-center">Please enter the verification code sent to your device:</p>
+            <form asp-action="VerifyTwoFactor" method="post">
+                <input type="text" id="pin" name="pin" placeholder="Enter the pin" required autofocus />
+                <button type="submit" class="btn btn-primary">Verify</button>
+            </form>
+        </div>
+    </div>
+</div>

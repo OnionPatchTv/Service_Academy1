@@ -209,5 +209,9 @@ namespace ServiceAcademy.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
     }
 }
