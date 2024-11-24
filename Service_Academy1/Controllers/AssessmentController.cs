@@ -22,6 +22,14 @@ namespace ServiceAcademy.Controllers
         [HttpPost]
         public IActionResult CreateQuiz(QuizModel quizModel, int NumberOfQuestions, int ProgramId)
         {
+            if (quizModel.QuizTitle.Length > 50)
+            {
+                ModelState.AddModelError("quizTitle", "Quiz title is too long (maximum 50 characters).");
+            }
+            if (quizModel.QuizDirection.Length > 500)
+            {
+                ModelState.AddModelError("quizDescription", "Quiz description is too long (maximum 500 characters).");
+            }
             // Check if ProgramId exists
             var programExists = _context.Programs.Any(p => p.ProgramId == ProgramId);
             if (!programExists)
@@ -397,6 +405,14 @@ namespace ServiceAcademy.Controllers
         [HttpPost]
         public IActionResult CreateActivity(ActivitiesModel activityModel, int ProgramId)
         {
+            if (activityModel.ActivitiesTitle.Length > 50)
+            {
+                ModelState.AddModelError("activityTitle", "Activity title is too long (maximum 50 characters).");
+            }
+            if (activityModel.ActivityDirection.Length > 500)
+            {
+                ModelState.AddModelError("activityDirection", "Activity direction is too long (maximum 500 characters).");
+            }
             // Check if ProgramId exists
             var programExists = _context.Programs.Any(p => p.ProgramId == ProgramId);
             if (!programExists)

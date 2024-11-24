@@ -228,7 +228,14 @@ namespace ServiceAcademy.Controllers
                 TempData["ProgramStreamErrorMessage"] = "No file selected";
                 return RedirectToAction("ProgramStream", new { programId });
             }
-
+            if (title.Length > 255)
+            {
+                ModelState.AddModelError("title", "Module title is too long (maximum 255 characters).");
+            }
+            if (moduleDescription.Length > 1000)
+            {
+                ModelState.AddModelError("moduleDescription", "Module description is too long (maximum 1000 characters).");
+            }
             var moduleCount = _context.Modules.Count(m => m.ProgramId == programId);
             var moduleNumber = moduleCount + 1;
             var moduleTitle = $"Module {moduleNumber}: {title}";
@@ -258,6 +265,14 @@ namespace ServiceAcademy.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateModule(int moduleId, string moduleTitle, IFormFile file, string moduleDescription, string linkPath)
         {
+            if (moduleTitle.Length > 50)
+            {
+                ModelState.AddModelError("title", "Module title is too long (maximum 255 characters).");
+            }
+            if (moduleDescription.Length > 500)
+            {
+                ModelState.AddModelError("moduleDescription", "Module description is too long (maximum 500 characters).");
+            }
             var module = await _context.Modules.FindAsync(moduleId);
             if (module == null)
             {

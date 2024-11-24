@@ -291,9 +291,9 @@ document.addEventListener("keydown", function (event) {
 });
 
 function toggleDescription(element) {
-    const container = element.closest('.description-container'); // Get the parent container
+    const container = element.closest('.description-container');
     element.classList.toggle('expanded');
 
-    // Adjust container height after transition (important for smooth collapse)
-    container.style.maxHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 'calc(1.5em * 4)';
+    const newHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 0;
+    container.style.maxHeight = newHeight;
 }

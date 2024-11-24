@@ -410,6 +410,10 @@
     }
 
 .dropdown-content {
+    max-height: 200px; /* Adjust this value as needed */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
     display: none;
     flex-direction: column;
     align-items: flex-start; /* Align items to the left */
@@ -423,6 +427,9 @@
     background-color: #fff; /* Dropdown background */
     padding: 0px; /* Optional padding */
 }
+    .dropdown-content::-webkit-scrollbar {
+        width: 8px; /* Customize scrollbar width */
+    }
 
     .dropdown-content .dropdown-item, /* Module items */
     .dropdown-content .dropdown-item.quizzes, /* Quizzes items */
@@ -468,15 +475,20 @@
             text-overflow: ellipsis; /* Add ellipsis */
             white-space: nowrap; /* Prevent text wrap */
             margin-right: 10px; /* Add space before icons */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%; 
         }
 
         .dropdown-content .dropdown-item i,
         .dropdown-content .dropdown-item.quizzes i, /*For quiz icon*/
-        .dropdown-content .dropdown-item.activities i { /*For activities icon*/
+            .dropdown-content .dropdown-item.activities i { /*For activities icon*/
             flex-shrink: 0; /* Prevent icons from shrinking */
             cursor: pointer; /* Show pointer cursor */
             margin-left: 10px; /* Add space between icons */
         }
+
 
 .module-viewer {
     flex-grow: 1;
@@ -512,12 +524,15 @@
     -webkit-box-orient: vertical;
     overflow: hidden; /* Needed for initial truncation */
     text-overflow: ellipsis;
+    transition: max-height 0.3s ease; /* Smooth animation */
+    overflow: hidden; /* Hide overflowing description */
 }
 
     .description.expanded {
         -webkit-line-clamp: initial; /* Remove line clamp */
         max-height: none; /* Allow full expansion */
-        overflow: visible; /* Show all content */
+        overflow: visible;
+        text-overflow: initial; /* Show all content */
     }
 
 

@@ -184,7 +184,7 @@ namespace ServiceAcademy.Controllers
             ModelState.AddModelError("", "Invalid 2FA token.");
             return View();
         }
-
+        
 
         public async Task<IActionResult> Login(LoginViewModel model)
         {

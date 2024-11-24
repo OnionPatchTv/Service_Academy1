@@ -146,7 +146,6 @@ function toggleDescription(element) {
     const container = element.closest('.description-container');
     element.classList.toggle('expanded');
 
-    setTimeout(() => {
-        container.style.maxHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 'calc(2.7em * 4)';
-    }, 300);
+    const newHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 0;
+    container.style.maxHeight = newHeight;
 }
