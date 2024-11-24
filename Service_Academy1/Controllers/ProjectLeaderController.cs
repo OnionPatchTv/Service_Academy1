@@ -13,6 +13,10 @@ using System;
 using Newtonsoft.Json;
 using System.Net.Mail;
 using System.Net;
+using iText.IO.Font.Constants;
+using iText.Kernel.Font;
+using iText.Kernel.Pdf.Canvas;
+using iText.Kernel.Pdf;
 
 namespace ServiceAcademy.Controllers
 {
@@ -324,7 +328,7 @@ namespace ServiceAcademy.Controllers
                 .Select(e => new EnrolleeViewModel
                 {
                     EnrollmentId = e.EnrollmentId,
-                    TraineeName = e.CurrentTrainee != null ? e.CurrentTrainee.UserName : "Unknown",
+                    TraineeName = e.CurrentTrainee != null ? e.CurrentTrainee.FullName : "Unknown",
                     EnrollmentStatus = e.EnrollmentStatus,
                     ProgramStatus = e.ProgramStatus
                 })
@@ -345,32 +349,106 @@ namespace ServiceAcademy.Controllers
             return View(enrolledTrainees);
         }
         [HttpPost]
-        public IActionResult ApproveCompletion(int enrollmentId)
+        public async Task<IActionResult> ApproveCompletion(int enrollmentId)
         {
             try
             {
-                var enrollment = _context.Enrollment.FirstOrDefault(e => e.EnrollmentId == enrollmentId);
+                var enrollment = await _context.Enrollment
+                    .Include(e => e.CurrentTrainee)
+                    .Include(e => e.ProgramsModel)
+                    .ThenInclude(p => p.CurrentProjectLeader)
+                    .FirstOrDefaultAsync(e => e.EnrollmentId == enrollmentId);
+
                 if (enrollment == null)
                 {
                     return NotFound();
                 }
 
-                // Update ProgramStatus and StatusDate
                 enrollment.ProgramStatus = "Complete";
                 enrollment.StatusDate = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
 
-                // Save changes to the database
-                _context.SaveChanges();
-                TempData["ProgramStreamManageSuccessMessage"] = "Successfully approved completion.";
-                // Optionally, redirect or return a success response
-                return RedirectToAction("ProgramStream", new { programId = enrollment.ProgramId });
+                string certificatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{enrollment.EnrollmentId}.pdf");
+
+                if (System.IO.File.Exists(certificatePath))
+                {
+                    // Return the certificate path to the client
+                    return Json(new { certificatePath = $"/certificates/{enrollment.EnrollmentId}.pdf" });
+                }
+
+                // Generate the certificate if it doesn't exist
+                try
+                {
+                    string newCertificatePath = await GenerateCertificateAsync(enrollment);
+
+                    if (string.IsNullOrEmpty(newCertificatePath))
+                    {
+                        throw new Exception("Certificate generation failed.");
+                    }
+
+                    return Json(new { certificatePath = $"/certificates/{enrollment.EnrollmentId}.pdf" });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { certificatePath = string.Empty });
+                }
             }
             catch (Exception ex)
             {
-                // Log the error and handle as needed
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
+
+
+        private async Task<string> GenerateCertificateAsync(EnrollmentModel enrollment)
+        {
+            string traineeName = enrollment.CurrentTrainee?.FullName ?? "N/A";
+            string programName = enrollment.ProgramsModel?.Title ?? "N/A";
+            string projectLeaderName = enrollment.ProgramsModel?.CurrentProjectLeader?.FullName ?? "N/A";
+            DateTime generatedDate = DateTime.UtcNow;
+            string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{enrollment.EnrollmentId}.pdf");
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+
+            try
+            {
+                // Ensure the template file exists
+                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Templates", "certificate_template.pdf");
+                if (!System.IO.File.Exists(templatePath))
+                {
+                    throw new FileNotFoundException("Certificate template not found.");
+                }
+
+                using (var reader = new PdfReader(templatePath))
+                using (var writer = new PdfWriter(outputPath))
+                using (var pdfDoc = new PdfDocument(reader, writer))
+                {
+                    var page = pdfDoc.GetFirstPage();
+                    var canvas = new PdfCanvas(page);
+
+                    // Add text to the certificate (adjust coordinates based on your template)
+                    canvas.BeginText()
+                        .SetFontAndSize(PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD), 14)
+                        .MoveText(100, 500)  // Adjust position for trainee name
+                        .ShowText($"Trainee: {traineeName}")
+                        .MoveText(0, -30)
+                        .ShowText($"Program: {programName}")
+                        .MoveText(0, -30)
+                        .ShowText($"Project Leader: {projectLeaderName}")
+                        .MoveText(0, -30)
+                        .ShowText($"Date: {generatedDate:MMMM dd, yyyy}")
+                        .EndText();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and rethrow or handle accordingly
+                throw new Exception($"Error generating certificate: {ex.Message}");
+            }
+
+            return outputPath;
+        }
+
 
         [HttpGet]
         public IActionResult GetTraineeActivities(int enrollmentId, int programId)

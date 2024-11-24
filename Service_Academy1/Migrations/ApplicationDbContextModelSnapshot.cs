@@ -303,6 +303,31 @@ namespace Service_Academy1.Migrations
                     b.ToTable("Answers");
                 });
 
+            modelBuilder.Entity("Service_Academy1.Models.CertificateModel", b =>
+                {
+                    b.Property<int>("CertificateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CertificateId"));
+
+                    b.Property<string>("CertificatePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("GeneratedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("CertificateId");
+
+                    b.HasIndex("EnrollmentId");
+
+                    b.ToTable("Certificates");
+                });
+
             modelBuilder.Entity("Service_Academy1.Models.DepartmentsModel", b =>
                 {
                     b.Property<int>("DepartmentId")
@@ -781,6 +806,9 @@ namespace Service_Academy1.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("About")
+                        .HasColumnType("text");
+
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
@@ -809,6 +837,9 @@ namespace Service_Academy1.Migrations
 
                     b.Property<string>("Profession")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProfilePath")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -901,6 +932,17 @@ namespace Service_Academy1.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Service_Academy1.Models.CertificateModel", b =>
+                {
+                    b.HasOne("Service_Academy1.Models.EnrollmentModel", "Enrollment")
+                        .WithMany()
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enrollment");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.EnrollmentModel", b =>

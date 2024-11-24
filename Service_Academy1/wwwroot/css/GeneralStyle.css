@@ -205,11 +205,13 @@ a.active {
         font-weight: 300;
     }
 
+.profile-img,
 .icon {
     width: 32px;
     height: auto;
     vertical-align: middle;
     margin-right: 8px;
+    border-radius: 100px;
 }
 
 .menu a {

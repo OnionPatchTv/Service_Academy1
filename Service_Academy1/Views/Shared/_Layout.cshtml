@@ -88,7 +88,16 @@
                 }
                 <div class="dropdown">
                     <a class="dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user-circle"></i> @User.Identity.Name
+                        @if (ViewData["ProfilePath"] != null && !string.IsNullOrEmpty(ViewData["ProfilePath"].ToString()))
+                        {
+                            <img src="@(Url.Content(ViewData["ProfilePath"].ToString()))" alt="Profile" class="profile-img" />
+                        }
+                        else
+                        {
+                            <i class="fas fa-user-circle"></i> <!-- Default icon if no profile image exists -->
+                        }
+
+                        @User.Identity.Name
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                         <li>

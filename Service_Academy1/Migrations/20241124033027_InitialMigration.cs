@@ -221,7 +221,9 @@ namespace Service_Academy1.Migrations
                     PreferredLearningStyle = table.Column<string>(type: "text", nullable: false),
                     DevicePlatformUsed = table.Column<string>(type: "text", nullable: false),
                     Gender = table.Column<string>(type: "text", nullable: false),
-                    Profession = table.Column<string>(type: "text", nullable: false)
+                    Profession = table.Column<string>(type: "text", nullable: false),
+                    ProfilePath = table.Column<string>(type: "text", nullable: true),
+                    About = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -426,6 +428,27 @@ namespace Service_Academy1.Migrations
                         column: x => x.ProgramId,
                         principalTable: "Programs",
                         principalColumn: "ProgramId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificates",
+                columns: table => new
+                {
+                    CertificateId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EnrollmentId = table.Column<int>(type: "integer", nullable: false),
+                    CertificatePath = table.Column<string>(type: "text", nullable: false),
+                    GeneratedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificates", x => x.CertificateId);
+                    table.ForeignKey(
+                        name: "FK_Certificates_Enrollment_EnrollmentId",
+                        column: x => x.EnrollmentId,
+                        principalTable: "Enrollment",
+                        principalColumn: "EnrollmentId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -669,6 +692,11 @@ namespace Service_Academy1.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Certificates_EnrollmentId",
+                table: "Certificates",
+                column: "EnrollmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Enrollment_ProgramId",
                 table: "Enrollment",
                 column: "ProgramId");
@@ -798,6 +826,9 @@ namespace Service_Academy1.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Certificates");
 
             migrationBuilder.DropTable(
                 name: "EvaluationCriteria");

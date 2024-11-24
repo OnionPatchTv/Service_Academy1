@@ -14,14 +14,16 @@
     <link rel="stylesheet" href="~/css/TraineeStyle/StudentQuizViewStyle.css">
 }
 
-<h2>@Model.QuizTitle</h2>
-<p>@Model.QuizDirection</p>
-
 <div class="breadcrumb">
     <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = Model.ProgramId })">@ViewBag.ProgramTitle</a>
     <span class="separator">&gt;</span>
     <span>@Model.QuizTitle Assessment</span>
 </div>
+
+
+<h2>@Model.QuizTitle</h2>
+<p>@Model.QuizDirection</p>
+
 
 <form id="quizForm" method="post" action="@Url.Action("SubmitQuiz", "Assessment")">
     <input type="hidden" name="QuizId" value="@Model.QuizId" />

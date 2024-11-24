@@ -19,8 +19,19 @@ builder.Services.AddSingleton<ArliAIService>(); // Register the custom service
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<LogSystemUsageService>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ProfileImageActionFilter>();
 
+});
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

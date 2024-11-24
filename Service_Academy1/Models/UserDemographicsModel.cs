@@ -17,6 +17,8 @@ public class UserDemographicsModel
     public string DevicePlatformUsed { get; set; } = string.Empty;
     public string Gender { get; set; } = string.Empty;
     public string Profession { get; set; } = string.Empty;
+    public string? ProfilePath { get; set; }
+    public string? About {  get; set; } = "No Description";
 
     // Navigation property
     public virtual ApplicationUser? ApplicationUser { get; set; }

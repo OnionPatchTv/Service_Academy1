@@ -10,25 +10,42 @@ function openApproveCompletionModal(enrollmentId) {
     // Show the modal
     $('#approveCompletionModal').modal('show');
 }
+
 $('#approveCompletionForm').submit(function (event) {
     event.preventDefault(); // Prevent form default submission
     var enrollmentId = $('#approveCompletionEnrollmentId').val();
 
     $.ajax({
-        url: '/ProjectLeader/ApproveCompletion',
+        url: '/ProjectLeader/ApproveCompletion', // The correct controller action
         type: 'POST',
         data: { enrollmentId: enrollmentId },
-        success: function () {
+        success: function (data) {
             // Close the modal
             $('#approveCompletionModal').modal('hide');
+
             // Optionally, update the UI (mark as complete)
-            $(`.trainee-item[data-enrollment-id='${enrollmentId}'] .status`).text("Complete").removeClass("incomplete").addClass("complete");
+            $(`.trainee-item[data-enrollment-id='${enrollmentId}'] .status`)
+                .text("Complete")
+                .removeClass("incomplete")
+                .addClass("complete");
+
+            // Check if a certificate path is returned
+            if (data && data.certificatePath) {
+                window.location.href = data.certificatePath;
+            } else {
+                alert('Certificate generation failed or not available.');
+            }
+
         },
-        error: function () {
-            alert('An error occurred while updating completion.');
+        error: function (xhr, status, error) {
+            // Display the error message
+            alert(`An error occurred: ${xhr.statusText} - ${xhr.responseText}`);
+            console.error(`AJAX Error: ${xhr.status} ${xhr.statusText} - ${xhr.responseText}`);
         }
     });
 });
+
+
 $(document).ready(function () {
     $('#viewGradeModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal

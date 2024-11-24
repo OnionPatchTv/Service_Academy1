@@ -30,6 +30,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<EvaluationResponseModel> EvaluationResponses { get; set; }
     public DbSet<SystemUsageLogModel> SystemUsageLogs { get; set; }
     public DbSet<UserDemographicsModel> UserDemographics { get; set; }
+    public DbSet<CertificateModel> Certificates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
