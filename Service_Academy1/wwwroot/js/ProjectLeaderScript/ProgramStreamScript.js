@@ -1,43 +1,45 @@
-﻿
-//PROGRAMSTREAMSCRIPT
+﻿// Toggle the display of the announcement input field
 function toggleAnnouncementInput() {
     const inputField = document.getElementById('announcement-input');
-    inputField.style.display = inputField.style.display === 'none' ? 'block' : 'none';
-    if (inputField.style.display === 'block') {
-        document.getElementById('announcement-textarea').focus(); // Focus on the textarea
+    const isHidden = inputField.style.display === 'none';
+    inputField.style.display = isHidden ? 'block' : 'none';
+
+    if (isHidden) {
+        document.getElementById('announcement-textarea').focus();
     }
 }
 
-// Function to post announcement
+// Post a new announcement
 function postAnnouncement() {
-    const announcementText = document.getElementById('announcement-textarea').innerHTML; // Get HTML content
-    if (announcementText) {
-        const postsContainer = document.getElementById('posts');
-        const newPost = document.createElement('div');
-        newPost.className = 'post';
-        newPost.innerHTML = `
-                    <div class="post-header">
-                        <div class="post-user">
-                            <img src="/images/profile.png" alt="User Profile Picture" class="post-user-img">
-                            <span class="post-user-name">Leigh Smith</span>
-                        </div>
-                        <span class="post-timestamp">Just now</span>
-                    </div>
-                    <p class="post-content">${announcementText}</p>
-                `;
-        postsContainer.prepend(newPost); // Add new post to the top
-        document.getElementById('announcement-textarea').innerHTML = ''; // Clear the textarea
-        toggleAnnouncementInput(); // Hide the input field
-    }
+    const announcementText = document.getElementById('announcement-textarea').innerText.trim();
+    if (!announcementText) return;
+
+    const postsContainer = document.getElementById('posts');
+    const newPost = document.createElement('div');
+    newPost.className = 'post';
+    newPost.innerHTML = `
+        <div class="post-header">
+            <div class="post-user">
+                <img src="/images/profile.png" alt="User Profile Picture" class="post-user-img">
+                <span class="post-user-name">Leigh Smith</span>
+            </div>
+            <span class="post-timestamp">Just now</span>
+        </div>
+        <p class="post-content">${announcementText}</p>
+    `;
+    postsContainer.prepend(newPost);
+
+    document.getElementById('announcement-textarea').innerText = '';
+    toggleAnnouncementInput();
 }
 
-// Function to cancel announcement
+// Cancel the announcement post
 function cancelPost() {
-    document.getElementById('announcement-textarea').innerHTML = ''; // Clear the textarea
-    toggleAnnouncementInput(); // Hide the input field
+    document.getElementById('announcement-textarea').innerText = '';
+    toggleAnnouncementInput();
 }
 
-// Apply formatting to the selected text only
+// Apply formatting to the selected text
 function applyFormat(formatType) {
     const textarea = document.getElementById('announcement-textarea');
     const selection = window.getSelection();
@@ -46,7 +48,6 @@ function applyFormat(formatType) {
         const range = selection.getRangeAt(0);
         const selectedText = range.toString();
 
-        // Check if there is selected text before applying formatting
         if (selectedText.length > 0) {
             const span = document.createElement('span');
             span.style.fontWeight = formatType === 'bold' ? 'bold' : 'normal';
@@ -54,140 +55,64 @@ function applyFormat(formatType) {
             span.style.textDecoration = formatType === 'underline' ? 'underline' : 'none';
             span.textContent = selectedText;
 
-            // Replace the selected text with the formatted span
             range.deleteContents();
             range.insertNode(span);
 
-            // Collapse the selection to the end of the inserted node to continue typing normally
             selection.removeAllRanges();
             selection.addRange(range);
         }
     }
-
-    // Refocus on the textarea after formatting
     textarea.focus();
 }
-function postAnnouncement() {
-    alert("This program is archived and read-only.");
-}
-document.addEventListener("DOMContentLoaded", function () {
-    const dropdownButtons = document.querySelectorAll(".dropdown-btn");
+
+// Handle dropdown toggling
+function setupDropdowns() {
+    const dropdownButtons = document.querySelectorAll('.dropdown-btn');
 
     dropdownButtons.forEach((button) => {
-        button.addEventListener("click", function (event) {
-            event.stopPropagation(); // Prevent bubbling
-
-            this.classList.toggle("active"); // Still toggle the active class for styling
+        button.addEventListener('click', function (event) {
+            event.stopPropagation();
+            this.classList.toggle('active');
 
             const content = this.nextElementSibling;
-            content.style.display = content.style.display === "block" ? "none" : "block";
-        }); // Removed the code to close other dropdowns
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        });
     });
 
-    // Close dropdowns only if clicking OUTSIDE the sidebar
-    document.addEventListener('click', function (event) {
-
+    document.addEventListener('click', (event) => {
         const sidebar = document.querySelector('.sidebar');
         if (!sidebar.contains(event.target)) {
-            dropdownButtons.forEach(button => {
+            dropdownButtons.forEach((button) => {
                 if (button.classList.contains('active')) {
                     button.classList.remove('active');
-                    button.nextElementSibling.style.display = "none";
+                    button.nextElementSibling.style.display = 'none';
                 }
             });
-
-        }
-
-
-    });
-    // *** NEW CODE FOR MODULE BUTTONS ***
-    const moduleButtons = document.querySelectorAll('.dropdown-item[data-module-id]'); // Select only module buttons
-    moduleButtons.forEach(button => {
-
-        button.addEventListener('click', function (event) {
-            const filePath = this.dataset.moduleFilepath;
-            const title = this.dataset.moduleTitle;
-            const linkPath = this.dataset.moduleLink;
-            const description = this.dataset.moduleDescription;
-            loadModuleContent(filePath, title, linkPath, description);
-        });
-
-        const updateBtn = button.querySelector('.update-module-btn');
-        if (updateBtn) {  // Check if updateBtn exists (important!)
-            updateBtn.addEventListener('click', function (event) {
-                event.stopPropagation();
-                event.preventDefault();
-                const moduleId = button.dataset.moduleId; // From parent button
-                const title = button.dataset.moduleTitle; // From parent button
-                const description = button.dataset.moduleDescription; // From parent button
-                const linkPath = button.dataset.moduleLink; // From parent button
-                openUpdateModuleModal(moduleId, title, description, linkPath);
-            });
-        }
-
-        const deleteBtn = button.querySelector('.delete-module-btn');
-        if (deleteBtn) {  // Check if deleteBtn exists
-            deleteBtn.addEventListener('click', function (event) {
-                event.stopPropagation();
-                event.preventDefault();
-                const moduleId = button.dataset.moduleId; // From parent button
-                const title = button.dataset.moduleTitle; // From parent button
-                openDeleteModuleModal(moduleId, title);
-            });
         }
     });
+}
 
-
-
-
-    // *** NEW CODE FOR ACTIVITY BUTTONS (Similar Structure) ***
-    const activityButtons = document.querySelectorAll('.dropdown-item.activities'); // Select activity buttons
-    activityButtons.forEach(button => {
-
-        button.addEventListener('click', function (event) {
-            // Handle activity click if needed.
-            // ... your activity click logic ...
-
-        });
-
-
-        const updateActivityBtn = button.querySelector('.fa-edit'); // Select update icon
-        if (updateActivityBtn) {
-            updateActivityBtn.addEventListener('click', function (event) {
-                event.stopPropagation();
-                event.preventDefault();
-                const activityId = button.dataset.activityId; //Get from parent's data attribute
-                const title = button.dataset.activityTitle;  //Get from parent's data attribute
-                // ... get other data attributes similarly...
-                openUpdateActivityModal(activityId, title, /* ... other parameters ... */);
-            });
-        }
-
-        // Similar event listener for delete activity button ...
-
-    });
-});
+// Load module content into the viewer
 function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
-    // Update the iframe source
-    document.getElementById("moduleContentFrame").src = filePath;
+    const iframe = document.getElementById('moduleContentFrame');
+    const titleElement = document.getElementById('moduleViewerTitle');
+    const videoIcon = document.getElementById('videoIcon');
+    const moduleVideoLink = document.getElementById('moduleVideoLink');
+    const descriptionElement = document.getElementById('moduleDescription');
 
-    // Update the Module Viewer title
-    document.getElementById("moduleViewerTitle").textContent = moduleTitle || "Module Viewer";
+    iframe.src = filePath;
+    titleElement.textContent = moduleTitle || 'Module Viewer';
 
-    // Update the video icon state
-    const videoIcon = document.getElementById("videoIcon");
-    const moduleVideoLink = document.getElementById("moduleVideoLink");
-
-    if (linkPath && linkPath !== "No Link Available") {
-        videoIcon.style.color = "orange"; // Highlight the icon
-        videoIcon.title = "View Module Video";
-        moduleVideoLink.href = linkPath; // Set the link
-        moduleVideoLink.style.pointerEvents = "auto"; // Enable clicking
+    if (linkPath && linkPath !== 'No Link Available') {
+        videoIcon.style.color = 'orange';
+        videoIcon.title = 'View Module Video';
+        moduleVideoLink.href = linkPath;
+        moduleVideoLink.style.pointerEvents = 'auto';
     } else {
-        videoIcon.style.color = "grey"; // Grey out the icon
-        videoIcon.title = "No Link Available";
-        moduleVideoLink.href = "#"; // Remove the link
-        moduleVideoLink.style.pointerEvents = "none"; // Disable clicking
+        videoIcon.style.color = 'grey';
+        videoIcon.title = 'No Link Available';
+        moduleVideoLink.href = '#';
+        moduleVideoLink.style.pointerEvents = 'none';
     }
 
     // Populate the modal description
@@ -199,24 +124,27 @@ function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const uploadModuleForm = document.querySelector('#uploadModuleModal form');
-    const updateModuleForm = document.querySelector('#updateModuleModal form');
+// Validate Google Drive or YouTube links
+function validateLink(input) {
+    const value = input.value.trim();
+    const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com)/;
+    const youtubePattern = /^https:\/\/(www\.youtube\.com|youtu\.be)/;
 
-    const validateLink = (input) => {
-        const value = input.value.trim();
-        const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com)/;
-        const youtubePattern = /^https:\/\/(www\.youtube\.com|youtu\.be)/;
+    if (value && !googleDrivePattern.test(value) && !youtubePattern.test(value)) {
+        alert('Please enter a valid Google Drive or YouTube link.');
+        return false;
+    }
+    return true;
+}
 
-        if (value && !googleDrivePattern.test(value) && !youtubePattern.test(value)) {
-            alert('Please enter a valid Google Drive or YouTube link.');
-            return false;
-        }
-        return true;
-    };
+// Set up module forms with link validation
+function setupModuleForms() {
+    const forms = [
+        document.querySelector('#uploadModuleModal form'),
+        document.querySelector('#updateModuleModal form')
+    ];
 
-    // Add event listeners for both forms
-    [uploadModuleForm, updateModuleForm].forEach((form) => {
+    forms.forEach((form) => {
         if (form) {
             form.addEventListener('submit', (event) => {
                 const linkInput = form.querySelector('#linkPath');
@@ -226,40 +154,73 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+    setupDropdowns();
+    setupModuleForms();
+
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
+    }, 5000);
+
+    document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && (event.key === 'p' || event.key === 's')) {
+            event.preventDefault();
+            alert('Printing and saving are disabled for this content.');
+        }
+    });
 });
-// Function to insert bullet list
-function openUpdateModuleModal(moduleId, moduleTitle, currentLinkPath) {
-    const prefix = moduleTitle.split(': ')[0]; // Extract "Module X"
-    const titleWithoutPrefix = moduleTitle.split(': ')[1]; // Extract title without "Module X"
 
-    // Set the module number in the modal header and the title in the input
-    document.getElementById('updateModuleModalLabel').textContent = prefix;
-    document.getElementById('moduleIdInput').value = moduleId;
-    document.getElementById('moduleTitleInput').value = titleWithoutPrefix;
+// Toggle the description view
+function toggleDescription(element) {
+    const container = element.closest('.description-container');
+    const isExpanded = element.classList.toggle('expanded');
+    container.style.maxHeight = isExpanded ? `${element.scrollHeight}px` : 0;
+}
 
-    // Set the current link path if available or an empty string if not
-    document.getElementById('linkPath').value = currentLinkPath || "";
-    document.getElementById("moduleDescriptionInput").value = moduleDescription || "";
+// Open the Update Module modal and populate its fields
+function openUpdateModuleModal(moduleId, moduleTitle, currentLinkPath, moduleDescription, currentFilePath) {
+    console.log("Module ID:", moduleId);
+    console.log("Module Title:", moduleTitle);
+    console.log("Link Path:", currentLinkPath);
+    console.log("Module Description:", moduleDescription);
+    console.log("Current File Path:", currentFilePath);
 
-    // Show the modal
-    $('#updateModuleModal').modal('show');
+    // Splitting title
+    const [prefix, titleWithoutPrefix] = moduleTitle.split(': ');
+
+    // Set modal fields
+    $('#updateModuleModalLabel').text(prefix);
+    $('#moduleIdInput').val(moduleId);
+    $('#moduleTitleInput').val(titleWithoutPrefix);
+    $('#moduleDescriptionInput').val(moduleDescription || '');
+    $('#linkPath').val(currentLinkPath || '');
+
+    // Set current file name text
+    if (currentFilePath) {
+        $('#currentFileName').text(`Current file: ${currentFilePath}`);
+    } else {
+        $('#currentFileName').text('No file uploaded');
+    }
+
+    // Reinitialize modal and show it (Bootstrap's modal requires manual triggering in some cases)
+    $('#updateModuleModal').modal('dispose');  // Dispose of any old modal instances
+    $('#updateModuleModal').modal('show');     // Show the modal
 }
 
 
+
+// Open the Delete Module modal and set its values
 function openDeleteModuleModal(moduleId, moduleTitle) {
-    // Set the values in the modal before showing it
     $('#deleteModuleModal').find('input[name="moduleId"]').val(moduleId);
     $('#deleteModuleModal').find('.modal-title').text('Delete Module: ' + moduleTitle);
     $('#deleteModuleModal').modal('show');
 }
-$('.close-btn').on('click', function () {
-    $('#uploadModuleModal').modal('hide');
-    $('#createAssessmentModal').modal('hide');
-    $('#updateModuleModal').modal('hide');
-    $('#deleteModuleModal').modal('hide');
-});
+
+// Open the Update Activity modal and populate its fields
 function openUpdateActivityModal(activityId, activityTitle, activityDescription, activityScore) {
-    // Populate the update modal fields
     $('#activitiesIdInput').val(activityId);
     $('#activityTitleInput').val(activityTitle);
     $('#activityDescriptionInput').val(activityDescription); // Description textarea
@@ -268,36 +229,19 @@ function openUpdateActivityModal(activityId, activityTitle, activityDescription,
     $('#updateActivityModal').modal('show');
 }
 
+// Open the Delete Activity modal and set its values
 function openDeleteActivityModal(activityId, activityTitle) {
-    // Set the activity ID for deletion
     $('input[name="activitiesId"]').val(activityId);
     $('#deleteActivityModalLabel').text('Delete Activity: ' + activityTitle);
     $('#deleteActivityModal').modal('show');
 }
 
-$(document).ready(function () {
-    // Optional: If you'd like to keep auto-hiding the alert after a few seconds while still allowing manual close
-    setTimeout(function () {
-        $(".alert").fadeOut("slow");
-    }, 5000);
-});
-
-document.addEventListener("keydown", function (event) {
-    // Block Ctrl+P (print) and Ctrl+S (save as)
-    if ((event.ctrlKey || event.metaKey) && (event.key === 'p' || event.key === 's')) {
-        event.preventDefault();
-        alert("Printing and saving are disabled for this content.");
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.body.addEventListener('click', function (event) {
-        // Check if the click was on the description or its container
-        if (event.target.classList.contains('description') || event.target.closest('.description-container')) {
-            const description = event.target.closest('.description-container').querySelector('.description');
-            if (description) {
-                description.classList.toggle('expanded');
-            }
-        }
-    });
+// Close modals when close button is clicked
+$('.close-btn').on('click', function () {
+    $('#uploadModuleModal').modal('hide');
+    $('#createAssessmentModal').modal('hide');
+    $('#updateModuleModal').modal('hide');
+    $('#deleteModuleModal').modal('hide');
+    $('#updateActivityModal').modal('hide');
+    $('#deleteActivityModal').modal('hide');
 });

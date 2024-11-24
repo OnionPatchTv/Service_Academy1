@@ -119,16 +119,14 @@
                 <div class="dropdown-content">
                     @foreach (var module in Model.Modules.OrderBy(m => m.Title))
                     {
-                        <button class="dropdown-item" data-module-id="@module.ModuleId"
-                                data-module-title="@module.Title"
-                                data-module-description="@module.ModuleDescription"
-                                data-module-link="@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)"
-                                data-module-filepath="@module.FilePath">
-                            @* Add data attributes *@
+                        <button class="dropdown-item" onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')">
                             <div class="button-content">
                                 <span class="module-title-text">@module.Title</span>
-                                <i class="fa fa-edit update-module-btn" title="Update"></i> @* Remove onclick *@
-                                <i class="fa fa-trash delete-module-btn" title="Delete"></i> @* Remove onclick *@
+                                <i class="fa fa-edit update-module-btn"
+                                   onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)', '@module.ModuleDescription', '@module.FilePath'); event.stopPropagation();"
+                                   title="Update">
+                                </i>
+                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
                             </div>
                         </button>
                     }
@@ -252,7 +250,7 @@
                                 <input type="hidden" id="moduleIdInput" name="moduleId" />
                                 <div class="form-group">
                                     <label for="moduleTitleInput">Module Title</label>
-                                    <input type="text" id="moduleTitleInput" class="form-control" name="moduleTitle" required />
+                                    <input type="text" id="moduleTitleInput" class="form-control" name="moduleTitle" />
                                 </div>
                                 <div class="form-group">
                                     <label for="moduleDescriptionInput">Module Description</label>
@@ -261,6 +259,8 @@
                                 <div class="form-group">
                                     <label for="fileInput">Upload New File (Optional)</label>
                                     <input type="file" id="fileInput" class="form-control" name="file" accept=".pdf,.pptx" />
+                                    <!-- Display current file name (if any) -->
+                                    <small id="currentFileName" class="form-text text-muted"></small>
                                 </div>
                                 <div class="form-group">
                                     <label for="linkPath">Video Link (Optional)</label>
@@ -276,6 +276,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Delete Module Modal -->
         <div class="modal fade" id="deleteModuleModal" tabindex="-1" aria-labelledby="deleteModuleModalLabel" aria-hidden="true">
             <div class="modal-dialog">

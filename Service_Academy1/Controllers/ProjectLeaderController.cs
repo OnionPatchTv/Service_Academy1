@@ -8,8 +8,8 @@ using Service_Academy1.Models;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using System.Reflection;
-using System;
+using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json;
 using System.Net.Mail;
 using System.Net;
@@ -270,12 +270,13 @@ namespace ServiceAcademy.Controllers
         {
             if (moduleTitle.Length > 50)
             {
-                ModelState.AddModelError("title", "Module title is too long (maximum 255 characters).");
+                ModelState.AddModelError("title", "Module title is too long (maximum 50 characters).");
             }
             if (moduleDescription.Length > 500)
             {
                 ModelState.AddModelError("moduleDescription", "Module description is too long (maximum 500 characters).");
             }
+
             var module = await _context.Modules.FindAsync(moduleId);
             if (module == null)
             {
@@ -285,7 +286,13 @@ namespace ServiceAcademy.Controllers
 
             var moduleNumberPrefix = module.Title.Split(':')[0];
             module.Title = $"{moduleNumberPrefix}: {moduleTitle}";
-            module.LinkPath = string.IsNullOrWhiteSpace(linkPath) ? "No Link Available" : linkPath;
+
+            // Update linkPath only if a new value is provided, otherwise retain the old value.
+            if (!string.IsNullOrWhiteSpace(linkPath))
+            {
+                module.LinkPath = linkPath;
+            }
+
             module.ModuleDescription = moduleDescription;
 
             if (file != null && file.Length > 0)
@@ -389,13 +396,16 @@ namespace ServiceAcademy.Controllers
                 enrollment.StatusDate = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
-                string certificateFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{enrollment.EnrollmentId}.pdf");
+                // Generate a hash of the CertificateId (this will be saved and shown in the certificate)
+                string certificateIdHash = GenerateHash(enrollment.EnrollmentId);
+
+                string certificateFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{certificateIdHash}.pdf");
 
                 // Check if the certificate file exists
                 if (!System.IO.File.Exists(certificateFilePath))
                 {
                     // Generate the certificate if it doesn't exist
-                    string newCertificatePath = await GenerateCertificateAsync(enrollment);
+                    string newCertificatePath = await GenerateCertificateAsync(enrollment, certificateIdHash);
 
                     if (string.IsNullOrEmpty(newCertificatePath))
                     {
@@ -405,8 +415,20 @@ namespace ServiceAcademy.Controllers
                     certificateFilePath = newCertificatePath;
                 }
 
+                // Add the certificate hash to the database
+                var certificate = new CertificateModel
+                {
+                    EnrollmentId = enrollmentId,
+                    CertificatePath = certificateFilePath,
+                    GeneratedDate = DateTime.UtcNow,
+                    CertificateHash = certificateIdHash
+                };
+
+                _context.Certificates.Add(certificate);
+                await _context.SaveChangesAsync();
+
                 // Return both the relative web path and absolute file path
-                string certificateWebPath = $"/certificates/{enrollment.EnrollmentId}.pdf";
+                string certificateWebPath = $"/certificates/{certificateIdHash}.pdf";
                 return Json(new { certificateWebPath, certificateFilePath });
             }
             catch (Exception ex)
@@ -415,13 +437,13 @@ namespace ServiceAcademy.Controllers
             }
         }
 
-        private async Task<string> GenerateCertificateAsync(EnrollmentModel enrollment)
+        private async Task<string> GenerateCertificateAsync(EnrollmentModel enrollment, string certificateIdHash)
         {
             string traineeName = enrollment.CurrentTrainee?.FullName ?? "N/A";
             string programName = enrollment.ProgramsModel?.Title ?? "N/A";
             string projectLeaderName = enrollment.ProgramsModel?.CurrentProjectLeader?.FullName ?? "N/A";
             DateTime generatedDate = DateTime.UtcNow;
-            string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{enrollment.EnrollmentId}.pdf");
+            string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{certificateIdHash}.pdf");
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 
             try
@@ -446,55 +468,44 @@ namespace ServiceAcademy.Controllers
 
 
                     canvas.BeginText()
-
-                        // Trainee Name (Poppins Bold)
-                        .SetFontAndSize(poppinsBold, 28) // Use Poppins-Bold font with a larger size
-                        .SetTextMatrix((float)347.5, (float)339.3)
-                        .ShowText($"{traineeName}")
-
-                        // Program Name (Poppins Regular)
-                        .SetFontAndSize(poppinsRegular, 22) // Use Poppins-Regular font with a smaller size
-                        .SetTextMatrix((float)347.5, (float)263.0)
-                        .ShowText($"{programName}")
-
-                        // Project Leader Name (Poppins Regular)
-                        .SetFontAndSize(poppinsRegular, 20) // Use Poppins-Regular font
-                        .SetTextMatrix((float)526.0, (float)126.0)
-                        .ShowText($"{projectLeaderName}")
-
-                        // Date (Poppins Regular)
-                        .SetFontAndSize(poppinsRegular, 16) // Use Poppins-Regular font
-                        .SetTextMatrix((float)347.5, (float)232.5)
-                        .ShowText($"{generatedDate:MMMM dd, yyyy}")
-
-                        // Certificate ID (Poppins Regular)  ((float)126.0, (float)39.0)   (- = up , - = left)
-                        .SetFontAndSize(poppinsRegular, 12) // Use Poppins-Regular font
-                    .SetTextMatrix((float)126.0, (float)39.0)
-                        .ShowText($"{projectLeaderName}")
-
+                        .SetFontAndSize(PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD), 14)
+                        .MoveText(500, 494)  // Adjust position for trainee name
+                        .ShowText($"Trainee: {traineeName}")
+                        .MoveText(500, 735)
+                        .ShowText($"Program: {programName}")
+                        .MoveText(0, -30)
+                        .ShowText($"Project Leader: {projectLeaderName}")
+                        .MoveText(800, -876)
+                        .ShowText($"Date: {generatedDate:MMMM dd, yyyy}")
+                        .MoveText(300, 1272)
+                        .ShowText($"Certificate Hash: {certificateIdHash}")  // Add the hash to the certificate
                         .EndText();
                 }
 
-                    // Create a new CertificateModel to store in the database
-                    var certificate = new CertificateModel
-                {
-                    EnrollmentId = enrollment.EnrollmentId,
-                    CertificatePath = outputPath, // Store the path where the certificate was saved
-                    GeneratedDate = generatedDate // Store the date when it was generated
-                };
-
-                // Save the certificate to the database
-                _context.Certificates.Add(certificate);
-                await _context.SaveChangesAsync();
-
+                return outputPath;
             }
             catch (Exception ex)
             {
-                // Log the exception and rethrow or handle accordingly
                 throw new Exception($"Error generating certificate: {ex.Message}");
             }
+        }
 
-            return outputPath;
+
+        public static string GenerateHash(int certificateId)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // Convert the certificate ID to a byte array and compute the hash.
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(certificateId.ToString()));
+
+                // Convert the byte array to a hexadecimal string.
+                StringBuilder builder = new StringBuilder();
+                foreach (byte t in bytes)
+                {
+                    builder.Append(t.ToString("x2"));
+                }
+                return builder.ToString();
+            }
         }
         [HttpPost]
         public async Task<IActionResult> SendCertificateEmail(int enrollmentId, string certificatePath)

@@ -439,7 +439,8 @@ namespace Service_Academy1.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     EnrollmentId = table.Column<int>(type: "integer", nullable: false),
                     CertificatePath = table.Column<string>(type: "text", nullable: false),
-                    GeneratedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    GeneratedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CertificateHash = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
