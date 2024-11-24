@@ -290,10 +290,14 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
-function toggleDescription(element) {
-    const container = element.closest('.description-container');
-    element.classList.toggle('expanded');
-
-    const newHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 0;
-    container.style.maxHeight = newHeight;
-}
+document.addEventListener('DOMContentLoaded', function () {
+    document.body.addEventListener('click', function (event) {
+        // Check if the click was on the description or its container
+        if (event.target.classList.contains('description') || event.target.closest('.description-container')) {
+            const description = event.target.closest('.description-container').querySelector('.description');
+            if (description) {
+                description.classList.toggle('expanded');
+            }
+        }
+    });
+});

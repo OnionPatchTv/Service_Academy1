@@ -503,36 +503,25 @@
     border: 1px solid #ddd;
     border-radius: 5px;
 }
-
+    
 .description-container {
-    /* Remove or adjust max-height */
-    max-height: fit-content; /* Or a very large value if needed for initial layout */
-    overflow: hidden; /* Keep this for the initial truncation */
-    transition: max-height 0.3s ease-in-out;
+    overflow: hidden;
     cursor: pointer;
+    transition: max-height 0.3s ease; /* Smooth transition */
 }
 
 .description {
-    /* Original styles */
-    max-width: 100%;
-    line-height: 1.5em;
-    font-size: 1rem;
-    white-space: normal;
-    /* Initial truncated state (3lines) */
     display: -webkit-box;
-    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    overflow: hidden; /* Needed for initial truncation */
+    -webkit-line-clamp: 3;
+    overflow: hidden;
     text-overflow: ellipsis;
-    transition: max-height 0.3s ease; /* Smooth animation */
-    overflow: hidden; /* Hide overflowing description */
+    transition: max-height 0.3s ease;
 }
 
     .description.expanded {
-        -webkit-line-clamp: initial; /* Remove line clamp */
-        max-height: max-content; /* Allow full expansion */
+        -webkit-line-clamp: initial;
         overflow: visible;
-        text-overflow: initial; /* Show all content */
     }
 
 
@@ -555,7 +544,7 @@
 .evaluate-program-button {
     float: right; /* Floats the button to the right */
     margin-top: 10px; /* Adds some top margin for spacing (adjust as needed) */
-    /Other styles/ background-color: #2b2b5f; /* Example: Blue background */
+    background-color: #2b2b5f; /* Example: Blue background */
     color: white; /* Example: White text */
     padding: 10px 20px; /* Example: Padding */
     border: none; /* Example: No border */
@@ -567,4 +556,35 @@
     /* Hover effect */
     .evaluate-program-button:hover {
         background-color: #202047; /* Slightly darker blue on hover */
+    }
+
+#footer-submit {
+    background-color: #5cd03d;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+    #footer-submit:hover {
+        opacity: 0.9;
+        background-color: #24af00;
+    }
+
+#footer-cancel {
+    background-color: #d03d3d;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+    #footer-cancel:hover {
+        opacity: 0.9;
+        background-color: #b60000;
     }

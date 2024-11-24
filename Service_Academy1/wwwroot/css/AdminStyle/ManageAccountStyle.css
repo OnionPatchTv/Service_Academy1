@@ -27,3 +27,21 @@ h2, h4 {
 .form-group {
     margin-bottom: 15px;
 }
+
+
+.input-group-append {
+    /* Set the height to match the input field */
+    height: calc(1.5em + 1rem + 2px); /* Adjust as needed based on your input height */
+    /* Vertically align the icon */
+    align-items: center;
+    display: flex; /* Makes sure the icon is vertically centered */
+}
+
+.input-group-text {
+    /* Add some padding to the icon container */
+    padding: 0.5rem 0.75rem; /* Adjust padding as needed */
+}
+
+    .input-group-text i { /* Targets the Font Awesome icon */
+        font-size: 1.2em; /* Adjust font size as needed */
+    }

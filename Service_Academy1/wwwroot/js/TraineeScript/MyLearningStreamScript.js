@@ -1,5 +1,27 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
     const dropdownButtons = document.querySelectorAll(".dropdown-btn");
+    const descriptionContainer = document.getElementById('programDescriptionContainer'); // Get description container
+    const showDescriptionModalButton = document.getElementById('showDescriptionModal'); // Get show button
+    const modalDescriptionContent = document.getElementById('modalDescriptionContent');  // Get modal content area
+
+    showDescriptionModalButton.addEventListener('click', () => {
+        const modalBody = document.getElementById('modalDescriptionContent');
+        modalBody.innerHTML = currentModuleDescription || "No description available."; //Safeguard against null
+        $('#moduleDescriptionModal').modal('show');
+    });
+
+    const descriptionContainers = document.querySelectorAll('.description-container');
+    descriptionContainers.forEach(container => {
+        container.addEventListener('click', function (event) {
+            const description = this.querySelector('.description');
+            if (description) {
+                description.classList.toggle('expanded');
+                const collapsedHeight = description.scrollHeight; // Get the actual height of the description in its expanded state
+                this.style.maxHeight = description.classList.contains('expanded') ? 'max-content' : collapsedHeight + 'px';
+            }
+        });
+    });
+
 
     dropdownButtons.forEach((button) => {
         button.addEventListener("click", function (event) {
@@ -56,6 +78,15 @@
         // You can set the submissionLink value to "No Link Pasted" before submitting if necessary
         submissionLinkInput.value = submissionLink;
     });
+    const moduleDescriptionButtons = document.querySelectorAll('[data-bs-target="#moduleDescriptionModal"]'); // Select buttons targeting the modal
+    moduleDescriptionButtons.forEach(button => {
+        button.addEventListener('click', function (event) {
+            const description = this.dataset.description; // Get description from data attribute
+            $('#moduleDescriptionModal').on('show.bs.modal', function (event) {
+                $('#modalDescriptionContent').html(description); // Populate modal on show
+            });
+        });
+    });
 });
 function markAsRead(url, element) {
     fetch(url, { method: 'POST' })
@@ -70,6 +101,8 @@ function markAsRead(url, element) {
         })
         .catch(error => console.error('Network error:', error));
 }
+
+let currentModuleDescription = ""; // Store the description
 
 function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
     // Update the iframe source
@@ -93,6 +126,7 @@ function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
         moduleVideoLink.href = "#"; // Remove the link
         moduleVideoLink.style.pointerEvents = "none"; // Disable clicking
     }
+    currentModuleDescription = moduleDescription; // Store the description
 
     // Display the module description
     const moduleDescriptionElement = document.getElementById("moduleDescription");
@@ -142,10 +176,17 @@ function openSubmitActivityModal(activityId, title, description, totalScore) {
 
     $('#submitActivityModal').modal('show');
 }
-function toggleDescription(element) {
-    const container = element.closest('.description-container');
-    element.classList.toggle('expanded');
 
-    const newHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 0;
-    container.style.maxHeight = newHeight;
-}
+const modalBackdrop = document.querySelector('.modal-backdrop'); // Get the backdrop element
+
+$('#moduleDescriptionModal').on('show.bs.modal', function () {
+    if (modalBackdrop) {
+        modalBackdrop.classList.add('show'); // Add the "show" class
+    }
+});
+
+$('#moduleDescriptionModal').on('hidden.bs.modal', function () {
+    if (modalBackdrop) {
+        modalBackdrop.classList.remove('show'); // Remove the "show" class
+    }
+});

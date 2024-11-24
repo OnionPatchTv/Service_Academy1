@@ -52,7 +52,7 @@ input[type="text"] {
 
 #submitQuizButton {
     padding: 10px 20px;
-    background-color: #007BFF; /* Primary blue color */
+    background-color: #2b2b5f; /* Primary blue color */
     color: white;
     border: none;
     border-radius: 5px;
@@ -66,7 +66,7 @@ input[type="text"] {
 }
 
     #submitQuizButton:hover {
-        background-color: #0056b3; /* Darker blue on hover */
+        background-color: #202064; /* Darker blue on hover */
     }
 
 form {
@@ -204,7 +204,7 @@ form {
     }
 
 .update-button button {
-    background-color: #4CAF50; /* Adjust color as needed */
+    background-color: #2b2b5f; /* Adjust color as needed */
     color: white;
     border: none;
     padding-left: 10px;
@@ -223,7 +223,7 @@ form {
     float: right;
     margin-top: 10px;
     padding: 10px 20px;
-    background-color: #007BFF; /* Primary blue color */
+    background-color: #2b2b5f; /* Primary blue color */
     color: white;
     border: none;
     border-radius: 5px;
@@ -236,7 +236,7 @@ form {
 }
 
     #retry-btn:hover {
-        background-color: #0056b3; /* Darker blue on hover */
+        background-color: #1e1e71; /* Darker blue on hover */
     }
 
 
