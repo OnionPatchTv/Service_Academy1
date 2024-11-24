@@ -156,3 +156,11 @@ select {
     background-position: right 10px center;
     padding-right: 30px;
 }
+.error-image {
+    display: block; /* Makes the image a block element for better centering */
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%; /* Prevents image from overflowing container */
+    max-height: 150px; /* Sets a maximum height for the image */
+    margin-bottom: 1rem; /* Adds some space below the image */
+}

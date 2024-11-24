@@ -123,7 +123,7 @@
     </div>
     <!-- Approve Completion Modal -->
     <div class="modal fade" id="approveCompletionModal" tabindex="-1" aria-labelledby="approveCompletionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog" id="approveCompletionDialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="approveCompletionModalLabel">Approve Completion</h5>
@@ -144,13 +144,14 @@
     </div>
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog" id="success">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="successModalLabel">Success</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <img src="/Images/success.png" alt="Success" class="sucsess-image">  <!-- Added image -->
                     <p id="successModalMessage">Email sent successfully!</p>
                 </div>
                 <div class="modal-footer">
@@ -159,7 +160,6 @@
             </div>
         </div>
     </div>
-
 </div>
 <!-- Enrollee Requests Section -->
 <div class="enrollee-requests">

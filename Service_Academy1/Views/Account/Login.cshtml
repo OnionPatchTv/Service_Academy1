@@ -41,14 +41,15 @@
             </div>
         </form>
     </div>
-    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" style="margin-top: 100px;"">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="errorModalLabel">Login Failed</h5>
-                    <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                    <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">×</button>
                 </div>
                 <div class="modal-body">
+                    <img src="/Images/failed.png" alt="Login Failed" class="error-image">  <!-- Added image -->
                     <p>Invalid email or password. Please try again!</p>
                 </div>
                 <div class="modal-footer">

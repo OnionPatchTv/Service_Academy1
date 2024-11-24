@@ -183,6 +183,9 @@ a.active {
     margin-top: 10px;
 }
 
+#approveCompletionDialog {
+    width: 400px;
+}
 
 .modal-dialog {
     max-width: 1150px; /* Set a maximum width for the modal */
@@ -211,4 +214,21 @@ a.active {
         display: block; /* Makes the table scrollable on smaller screens */
         overflow-x: auto; /* Allows horizontal scrolling if needed */
     }
+}
+
+#success {
+    width: 400px;
+}
+
+.sucsess-image { /* Corrected typo in class name */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 150px; /* Adjust as needed */
+    max-height: 150px; /* Adjust as needed */
+    margin-bottom: 1rem;
+}
+
+#successModalMessage {
+    text-align: center; /* Center the message text */
 }
