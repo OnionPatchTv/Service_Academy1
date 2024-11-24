@@ -1,0 +1,261 @@
+﻿@model MyLearningStreamViewModel
+@using Service_Academy1.Utilities
+
+@{
+    ViewData["Title"] = "Program Stream Page";
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/TraineeScript/MyLearningScript.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/TraineeStyle/TraineeStreamStyle.css">
+}
+
+@if (TempData["MyLearningStreamSuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["MyLearningStreamSuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["MyLearningStreamErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["MyLearningStreamErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<div class="breadcrumb">
+    <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
+    <span class="separator">></span>
+    <a href="javascript:void(0);" class="@(Html.IsActive("MyLearningStream", "Trainee") ? "active" : "")" onclick="location.reload();">Stream</a>
+</div>
+
+<!-- Full Width Class Banner Section -->
+<section class="class-banner">
+    <div class="banner-content">
+        <div class="banner-image">
+            <img src="@Url.Content(@Model.PhotoPath)" alt="@Model.Title">
+        </div>
+        <div class="banner-text">
+            <h2 class="class-title">@Model.Title</h2>
+            <p class="description" onclick="toggleDescription(this)">
+                @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
+            </p>
+
+
+            <!-- Enrollment and Evaluation Section MOVED HERE-->
+            @foreach (var enrollment in Model.Enrollment)
+            {
+                @if (enrollment.ProgramId == Model.ProgramId)
+                {
+                    // Check if the user has already evaluated the program using EnrollmentId
+                    bool hasEvaluated = Model.Evaluations.Any(e =>
+                    e.EvaluationQuestions != null &&
+                    e.EvaluationQuestions.ProgramId == Model.ProgramId &&
+                    e.EnrollmentId == enrollment.EnrollmentId
+                    );
+
+                    <div class="evaluation-section">
+                        @*Added a container for styling*@
+                        @if (!hasEvaluated)
+                        {
+                            <a asp-controller="Evaluation" asp-action="EvaluationForm" asp-route-programId="@enrollment.ProgramId" class="btn btn-primary evaluate-program-button">
+                                @*Added evaluate-button class*@
+                                Evaluate Program
+                            </a>
+                        }
+                        else
+                        {
+                            <span>You have already submitted an evaluation for this program.</span>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+<!-- Main Content Section -->
+<main class="main-content">
+    <section class="content-sections">
+        <aside class="modules">
+            <h3>Modules</h3>
+            <div class="module-list">
+                @if (Model.Modules != null)
+                {
+                    @foreach (var module in Model.Modules.OrderBy(m => m.Title))
+                    {
+                        // Check if the module is marked as completed
+                        var isCompleted = Model.TraineeModuleResults
+                        .FirstOrDefault(tmr => tmr.ModuleId == module.ModuleId)?
+                        .IsCompleted ?? false;
+
+                        <div class="module-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <!-- Button for loading module content -->
+                            <button class="module-title"
+                                    onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')"
+                                    style="flex-grow: 1; text-align: left; border: none; background: none; color: #007bff; cursor: pointer; font-size: 16px;">
+                                @module.Title
+                            </button>
+
+                            <!-- Form for marking as read -->
+                            <form action="@Url.Action("MarkAsRead", "Trainee", new { programId = Model.ProgramId, moduleId = module.ModuleId })"
+                                  method="post"
+                                  style="margin-left: 10px;">
+                                <button type="submit"
+                                        class="fa-button"
+                                        style="background: none; border: none; cursor: pointer; padding: 0;">
+                                    <i class="fa fa-check-circle"
+                                       style="color: @(isCompleted ? "green" : "grey"); font-size: 18px;"
+                                       aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </div>
+                    }
+                }
+
+                <h3>Quizzes</h3>
+                @if (Model.Quizzes != null)
+                {
+                    @foreach (var quiz in Model.Quizzes)
+                    {
+                        // Check if there's a quiz result for the current quiz and user
+                        var enrollmentId = Model.Enrollment.FirstOrDefault(e => e.ProgramId == Model.ProgramId)?.EnrollmentId;
+                        var quizResult = Model.TraineeQuizResults
+                        .FirstOrDefault(result => result.QuizId == quiz.QuizId && result.EnrollmentId == enrollmentId);
+
+                        <div class="quiz-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <!-- Button for opening the quiz or quiz result -->
+                            <button class="quiz-title"
+                                    onclick="location.href='@Url.Action("RedirectToQuizOrResult", "Trainee", new { quizId = quiz.QuizId })'"
+                                    style="flex-grow: 1; text-align: left; border: none; background: none; color: #007bff; cursor: pointer; font-size: 16px;">
+                                @quiz.QuizTitle
+                            </button>
+
+                            <!-- Check icon to show if the quiz result exists -->
+                            @if (quizResult != null)
+                            {
+                                <i class="fa fa-check-circle"
+                                   style="color: green; font-size: 18px; margin-left: 10px;"
+                                   aria-hidden="true"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-check-circle"
+                                   style="color: grey; font-size: 18px; margin-left: 10px; visibility: hidden;"
+                                   aria-hidden="true"></i>
+                            }
+                        </div>
+                    }
+                }
+                <h3>Activities</h3>
+                @if (Model.Activities != null)
+                {
+                    foreach (var activity in Model.Activities)
+                    {
+                        // Check if the activity is completed for the current user
+                        var traineeActivity = activity.TraineeActivities
+                        .FirstOrDefault(ta => ta.EnrollmentId == Model.Enrollment.FirstOrDefault(e => e.ProgramId == Model.ProgramId)?.EnrollmentId && ta.IsCompleted);
+
+                        <div class="activity-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <!-- Button for opening the submit activity modal -->
+                            <button class="activity-title"
+                                    onclick="openSubmitActivityModal(@activity.ActivitiesId, '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore')"
+                                    style="flex-grow: 1; text-align: left; border: none; background: none; color: #007bff; cursor: pointer; font-size: 16px;">
+                                @activity.ActivitiesTitle
+                            </button>
+
+                            <!-- Check icon to show activity completion status -->
+                            @if (traineeActivity != null)
+                            {
+                                <i class="fa fa-check-circle"
+                                   style="color: green; font-size: 18px; margin-left: 10px;"
+                                   aria-hidden="true"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-check-circle"
+                                   style="color: grey; font-size: 18px; margin-left: 10px; visibility: hidden;"
+                                   aria-hidden="true"></i>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </aside>
+        <!-- Submit Activity Modal -->
+        <div class="modal fade" id="submitActivityModal" tabindex="-1" aria-labelledby="submitActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="submitActivityModalLabel">Submit Activity</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="submitActivityForm" asp-controller="Assessment" asp-action="SubmitActivity" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <input type="hidden" id="activityIdInput" name="ActivitiesId" />
+
+                            <!-- Activity Details -->
+                            <div class="form-group">
+                                <label for="activityTitle">Activity Title</label>
+                                <input type="text" id="activityTitle" class="form-control" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label for="activityDirection">Description</label>
+                                <textarea id="activityDirection" class="form-control" rows="3" disabled></textarea>
+                            </div>
+
+                            <!-- Upload or Link Submission -->
+                            <div class="form-group">
+                                <label for="submissionLink">Submission Link (Optional)</label>
+                                <input type="text" id="submissionLink" name="SubmissionLink" class="form-control" placeholder="Paste your link here (Google Drive, YouTube, etc.)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="submissionFile">Upload File (Optional)</label>
+                                <input type="file" id="submissionFile" name="SubmissionFile" class="form-control mt-2" />
+                                <small id="submissionFileDisplay" class="form-text text-muted mt-1">No file uploaded</small>
+                            </div>
+
+
+                            <!-- Score Display -->
+                            <div class="form-group">
+                                <label>Score</label>
+                                <div class="d-flex align-items-center">
+                                    <span id="rawScore">Raw Score: 0</span>
+                                    <span class="mx-2">/</span>
+                                    <span id="totalScore"></span>
+                                    <span class="ms-3">Computed Score: <span id="computedScore">0</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <section class="module-viewer">
+            <div class="module-header">
+                <h3 id="moduleViewerTitle">Module Viewer</h3>
+                <a id="moduleVideoLink" href="#" target="_blank">
+                    <i id="videoIcon" class="fa-regular fa-file-video" title="No Link Available"></i>
+                </a>
+            </div>
+            <div class="viewer-content">
+                <iframe id="moduleContentFrame" class="viewer-content" style="width: 100%; height: 600px;" src=""></iframe>
+            </div>
+            <!-- Add the description section below the content -->
+            <div id="moduleDescription" class="module-description">
+                <!-- Module description will be updated here -->
+            </div>
+        </section>
+    </section>
+</main>
+
+
