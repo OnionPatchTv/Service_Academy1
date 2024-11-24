@@ -17,6 +17,7 @@ using iText.IO.Font.Constants;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf;
+using Service_Academy1.Services;
 
 namespace ServiceAcademy.Controllers
 {
@@ -25,9 +26,11 @@ namespace ServiceAcademy.Controllers
         private readonly ILogger<ProjectLeaderController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
-        public ProjectLeaderController(ILogger<ProjectLeaderController> logger, ApplicationDbContext context, IWebHostEnvironment environment)
+        private readonly EmailService _emailService;
+
+        public ProjectLeaderController(ILogger<ProjectLeaderController> logger, ApplicationDbContext context, IWebHostEnvironment environment, EmailService emailService)
         {
-            (_logger, _context, _environment) = (logger, context, environment);
+            (_logger, _context, _environment, _emailService) = (logger, context, environment, emailService);
 
         }
         #region ProjectLeader Dashboard Management
@@ -368,17 +371,12 @@ namespace ServiceAcademy.Controllers
                 enrollment.StatusDate = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
 
-                string certificatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{enrollment.EnrollmentId}.pdf");
+                string certificateFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "certificates", $"{enrollment.EnrollmentId}.pdf");
 
-                if (System.IO.File.Exists(certificatePath))
+                // Check if the certificate file exists
+                if (!System.IO.File.Exists(certificateFilePath))
                 {
-                    // Return the certificate path to the client
-                    return Json(new { certificatePath = $"/certificates/{enrollment.EnrollmentId}.pdf" });
-                }
-
-                // Generate the certificate if it doesn't exist
-                try
-                {
+                    // Generate the certificate if it doesn't exist
                     string newCertificatePath = await GenerateCertificateAsync(enrollment);
 
                     if (string.IsNullOrEmpty(newCertificatePath))
@@ -386,20 +384,18 @@ namespace ServiceAcademy.Controllers
                         throw new Exception("Certificate generation failed.");
                     }
 
-                    return Json(new { certificatePath = $"/certificates/{enrollment.EnrollmentId}.pdf" });
+                    certificateFilePath = newCertificatePath;
                 }
-                catch (Exception ex)
-                {
-                    return Json(new { certificatePath = string.Empty });
-                }
+
+                // Return both the relative web path and absolute file path
+                string certificateWebPath = $"/certificates/{enrollment.EnrollmentId}.pdf";
+                return Json(new { certificateWebPath, certificateFilePath });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
-
-
 
         private async Task<string> GenerateCertificateAsync(EnrollmentModel enrollment)
         {
@@ -439,6 +435,19 @@ namespace ServiceAcademy.Controllers
                         .ShowText($"Date: {generatedDate:MMMM dd, yyyy}")
                         .EndText();
                 }
+
+                // Create a new CertificateModel to store in the database
+                var certificate = new CertificateModel
+                {
+                    EnrollmentId = enrollment.EnrollmentId,
+                    CertificatePath = outputPath, // Store the path where the certificate was saved
+                    GeneratedDate = generatedDate // Store the date when it was generated
+                };
+
+                // Save the certificate to the database
+                _context.Certificates.Add(certificate);
+                await _context.SaveChangesAsync();
+
             }
             catch (Exception ex)
             {
@@ -448,8 +457,52 @@ namespace ServiceAcademy.Controllers
 
             return outputPath;
         }
+        [HttpPost]
+        public async Task<IActionResult> SendCertificateEmail(int enrollmentId, string certificatePath)
+        {
+            try
+            {
+                var enrollment = await _context.Enrollment
+                    .Include(e => e.CurrentTrainee)
+                    .Include(e => e.ProgramsModel)
+                    .FirstOrDefaultAsync(e => e.EnrollmentId == enrollmentId);
 
+                if (enrollment == null || enrollment.CurrentTrainee == null)
+                {
+                    return Json(new { success = false, message = "Trainee not found." });
+                }
 
+                // Verify the certificate file exists
+                if (!System.IO.File.Exists(certificatePath))
+                {
+                    return Json(new { success = false, message = "Certificate file not found." });
+                }
+
+                // Prepare the email content
+                var traineeEmail = enrollment.CurrentTrainee.Email;
+                var subject = "Your Program Completion Certificate";
+                var body = $"Dear {enrollment.CurrentTrainee.FullName},<br><br>Congratulations on completing the program!<br><br>Your certificate is attached below.<br><br>Best regards,<br>{enrollment.ProgramsModel?.CurrentProjectLeader?.FullName}";
+
+                byte[] certificateContent = System.IO.File.ReadAllBytes(certificatePath);
+                string attachmentFileName = $"{enrollment.ProgramsModel?.Title}_Certificate.pdf";
+
+                // Send the email with the attachment
+                await _emailService.SendEmailWithAttachmentAsync(
+                    traineeEmail,
+                    subject,
+                    body,
+                    null,  // Optional: reply-to email
+                    certificateContent,
+                    attachmentFileName
+                );
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
         [HttpGet]
         public IActionResult GetTraineeActivities(int enrollmentId, int programId)
         {
