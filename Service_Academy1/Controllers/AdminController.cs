@@ -420,44 +420,60 @@ namespace ServiceAcademy.Controllers
 
                 if (user != null)
                 {
-                    // Set the Username to the updated Email
-                    user.UserName = model.Email;  // Make sure Username matches Email
-
-                    // Update other fields
+                    // Update user fields
+                    user.UserName = model.Email;  // Ensure Username matches Email
                     user.Email = model.Email;
                     user.FullName = model.FullName;
 
-                    // Proceed with updating the user
                     var result = await _userManager.UpdateAsync(user);
 
                     if (result.Succeeded)
                     {
-                        // Update user roles if necessary
+                        // Update user roles
                         var currentRoles = await _userManager.GetRolesAsync(user);
-                        await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                        await _userManager.AddToRoleAsync(user, model.Role);
+
+                        // Remove existing roles
+                        if (currentRoles.Any())
+                        {
+                            var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                            if (!removeResult.Succeeded)
+                            {
+                                foreach (var error in removeResult.Errors)
+                                {
+                                    ModelState.AddModelError(string.Empty, error.Description);
+                                }
+                                return View(model);
+                            }
+                        }
+
+                        // Add the new role
+                        var addRoleResult = await _userManager.AddToRoleAsync(user, model.Role);
+                        if (!addRoleResult.Succeeded)
+                        {
+                            foreach (var error in addRoleResult.Errors)
+                            {
+                                ModelState.AddModelError(string.Empty, error.Description);
+                            }
+                            return View(model);
+                        }
 
                         TempData["SuccessMessage"] = "Account updated successfully!";
+                        return RedirectToAction("ManageAccount");
                     }
-                    else
+
+                    foreach (var error in result.Errors)
                     {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
                 else
                 {
                     TempData["ErrorMessage"] = "User not found.";
-                    return NotFound(); // Return NotFound() if the user doesn't exist
+                    return NotFound();
                 }
             }
-            else
-            {
-                TempData["ErrorMessage"] = "Failed to update the account."; // Set error message for validation errors
-            }
 
+            TempData["ErrorMessage"] = "Failed to update the account.";
             return RedirectToAction("ManageAccount");
         }
 

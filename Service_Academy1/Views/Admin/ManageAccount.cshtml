@@ -157,6 +157,9 @@
     <script src="~/js/AdminScript/passwordtoggle.js"></script>
 
     <script>
+        function syncUsernameWithEmail() {
+            document.getElementById("Username").value = document.getElementById("Email").value;
+        }
         // Search/filter accounts
         function filterAccounts() {
             var searchValue = document.getElementById('searchAccount').value.toLowerCase();

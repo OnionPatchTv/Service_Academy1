@@ -120,18 +120,26 @@ function loadModuleContent(filePath, moduleTitle, linkPath, moduleDescription) {
     if (moduleDescription && moduleDescription !== "") {
         modalDescriptionContent.html(moduleDescription); // Use html() to preserve formatting
     } else {
-        modalDescriptionContent.html("No description available.");
+        modalDescriptionContent.html("No Description available.");
     }
 }
 
 // Validate Google Drive or YouTube links
 function validateLink(input) {
     const value = input.value.trim();
+
+    // If the value is "No Link Available", it's valid
+    if (value === "No Link Available") {
+        return true;
+    }
+
+    // Define regex patterns for Google Drive and YouTube links
     const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com)/;
     const youtubePattern = /^https:\/\/(www\.youtube\.com|youtu\.be)/;
 
+    // Validate the link with regex patterns or the "No Link Available" string
     if (value && !googleDrivePattern.test(value) && !youtubePattern.test(value)) {
-        alert('Please enter a valid Google Drive or YouTube link.');
+        alert('Please enter a valid Google Drive or YouTube link or "No Link Available".');
         return false;
     }
     return true;
@@ -175,40 +183,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Toggle the description view
 function toggleDescription(element) {
-    const container = element.closest('.description-container');
-    const isExpanded = element.classList.toggle('expanded');
-    container.style.maxHeight = isExpanded ? `${element.scrollHeight}px` : 0;
+    const container = element.closest('.description-container'); // Get the parent container
+    element.classList.toggle('expanded');
+
+    // Adjust container height after transition (important for smooth collapse)
+    container.style.maxHeight = element.classList.contains('expanded') ? element.scrollHeight + 'px' : 'calc(1.5em * 4)';
 }
 
 // Open the Update Module modal and populate its fields
 function openUpdateModuleModal(moduleId, moduleTitle, currentLinkPath, moduleDescription, currentFilePath) {
-    console.log("Module ID:", moduleId);
-    console.log("Module Title:", moduleTitle);
-    console.log("Link Path:", currentLinkPath);
-    console.log("Module Description:", moduleDescription);
-    console.log("Current File Path:", currentFilePath);
+    // Log to ensure function is being called
+    console.log("openUpdateModuleModal called with data:", moduleId, moduleTitle, currentLinkPath, moduleDescription, currentFilePath);
 
-    // Splitting title
+    // Check if required values are passed
+    if (!moduleId || !moduleTitle) {
+        console.error("Module ID or Title is missing!");
+        return;
+    }
+
+    // Splitting title into prefix and title part
     const [prefix, titleWithoutPrefix] = moduleTitle.split(': ');
 
     // Set modal fields
-    $('#updateModuleModalLabel').text(prefix);
-    $('#moduleIdInput').val(moduleId);
-    $('#moduleTitleInput').val(titleWithoutPrefix);
-    $('#moduleDescriptionInput').val(moduleDescription || '');
-    $('#linkPath').val(currentLinkPath || '');
+    $('#updateModuleModalLabel').text(prefix);  // Set modal title label
+    $('#moduleIdInput').val(moduleId);  // Set module ID hidden input
+    $('#moduleTitleInput').val(titleWithoutPrefix);  // Set module title input
+    $('#moduleDescriptionInput').val(moduleDescription || '');  // Set description input
+    $('#linkPath').val(currentLinkPath || '');  // Set link path input
 
-    // Set current file name text
+    // Display current file name if any, otherwise show 'No file uploaded'
     if (currentFilePath) {
         $('#currentFileName').text(`Current file: ${currentFilePath}`);
     } else {
         $('#currentFileName').text('No file uploaded');
     }
 
-    // Reinitialize modal and show it (Bootstrap's modal requires manual triggering in some cases)
-    $('#updateModuleModal').modal('dispose');  // Dispose of any old modal instances
-    $('#updateModuleModal').modal('show');     // Show the modal
+    // Reinitialize modal (hide it first and then show it)
+    $('#updateModuleModal').modal('hide');  // Hide the modal first
+    $('#updateModuleModal').modal('show');  // Then show the modal
 }
+
 
 
 

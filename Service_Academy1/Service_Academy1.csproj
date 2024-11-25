@@ -36,6 +36,7 @@
     <Folder Include="wwwroot\certificates\" />
     <Folder Include="wwwroot\CreatedImages\" />
     <Folder Include="wwwroot\CreatedImages\" />
+    <Folder Include="wwwroot\Images\" />
     <Folder Include="wwwroot\ModuleUploads\" />
     <Folder Include="wwwroot\ProfileImage\" />
   </ItemGroup>

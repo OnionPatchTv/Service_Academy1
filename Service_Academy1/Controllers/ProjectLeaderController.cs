@@ -679,7 +679,7 @@ namespace ServiceAcademy.Controllers
 
                         var mailMessage = new MailMessage
                         {
-                            From = new MailAddress("your_gmail_email@gmail.com"), // Your Gmail email
+                            From = new MailAddress("Service Academy"), // Your Gmail email
                             Subject = $"Announcement from {programTitle}: {announcement.AnnouncementTitle}",
                             Body = announcement.Content,
                             IsBodyHtml = true // If you're sending HTML content
