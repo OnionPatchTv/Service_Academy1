@@ -80,15 +80,25 @@
                 <label for="CurrentPassword">Current Password</label>
                 <input type="password" id="CurrentPassword" name="CurrentPassword" />
             </div>
+
+            <!-- New Password Field -->
             <div class="form-group">
                 <label for="NewPassword">New Password</label>
-                <input type="password" id="NewPassword" name="NewPassword"
-                       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
-                       title="Must contain at least one number, one uppercase, one lowercase letter, and be at least 6 characters long." />
+                <div class="password-wrapper">
+                    <input type="password" id="NewPassword" name="NewPassword"
+                           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                           title="Must contain at least one number, one uppercase, one lowercase letter, and be at least 6 characters long." />
+                    <i class="fa fa-eye toggle-password" id="toggleNewPassword" onclick="togglePasswordVisibility('NewPassword');"></i>
+                </div>
             </div>
+
+            <!-- Confirm Password Field -->
             <div class="form-group">
                 <label for="ConfirmPassword">Confirm Password</label>
-                <input type="password" id="ConfirmPassword" name="ConfirmPassword"  />
+                <div class="password-wrapper">
+                    <input type="password" id="ConfirmPassword" name="ConfirmPassword" />
+                    <i class="fa fa-eye toggle-password" id="toggleConfirmPassword" onclick="togglePasswordVisibility('ConfirmPassword');"></i>
+                </div>
             </div>
 
             <!-- Update Profile Button inside the form (it will submit the form to the server) -->

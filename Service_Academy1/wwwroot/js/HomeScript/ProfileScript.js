@@ -23,3 +23,17 @@ $("#editProfileButton").click(function () {
         $("input[name='ProfilePath']").val(null);
     }
 });
+function togglePasswordVisibility(fieldId) {
+    const passwordField = document.getElementById(fieldId);
+    const eyeIcon = document.getElementById('toggle' + fieldId);
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text"; // Show password
+        eyeIcon.classList.remove('fa-eye'); // Change to eye open icon
+        eyeIcon.classList.add('fa-eye-slash'); // Use the eye-slash icon
+    } else {
+        passwordField.type = "password"; // Hide password
+        eyeIcon.classList.remove('fa-eye-slash'); // Change back to eye closed icon
+        eyeIcon.classList.add('fa-eye'); // Use the eye icon
+    }
+}

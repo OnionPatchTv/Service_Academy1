@@ -75,31 +75,46 @@ namespace ServiceAcademy.Controllers
         [HttpPost]
         public async Task<IActionResult> SendMessage(string name, string email, string message)
         {
-            // Validate the form data (optional)
+            // Validate the form data
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(message))
             {
-                return Content("Please fill in all fields.");
+                TempData["ErrorMessage"] = "Please fill in all fields.";
+                return RedirectToAction("Contact");
             }
 
             try
             {
+                // Log the sending process
+                Console.WriteLine($"Sending email from {email} with message: {message}");
+
                 // Send email via the email service
                 await _emailService.SendEmailAsync(
                     toEmail: "serviceacademyedu@gmail.com",  // The email address where the form is sent
-                    subject: $"Contact Us - {name}",  // Subject including the sender's name
+                    subject: $"Contact Us - {name}",        // Subject including the sender's name
                     body: $"<h1>Message from {name}</h1><p>{message}</p><p>Reply to: {email}</p>", // Email body
-                    replyToEmail: email // Set the Reply-To header to the user's email address
+                    replyToEmail: email                     // Set the Reply-To header to the user's email address
                 );
 
-                // Provide success message to the user
-                return Content("Your message has been sent successfully. We'll get back to you shortly.");
+                // Log success
+                Console.WriteLine("Email sent successfully.");
+
+                // Store the success message in TempData
+                TempData["SuccessMessage"] = "Your message has been sent successfully. We'll get back to you shortly.";
+
+                // Redirect back to the Contact page
+                return RedirectToAction("Contact");
             }
             catch (Exception ex)
             {
+                // Log the exception
+                Console.WriteLine($"Error occurred while sending email: {ex.Message}");
+
                 // Handle any errors that occur during email sending
-                return Content($"Error: {ex.Message}");
+                TempData["ErrorMessage"] = "There was a problem sending your message. Please try again later.";
+                return RedirectToAction("Contact");
             }
         }
+
         public IActionResult Faqs()
         {
             ViewData["ActivePage"] = "Faqs";

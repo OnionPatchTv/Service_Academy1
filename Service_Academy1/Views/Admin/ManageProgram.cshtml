@@ -18,7 +18,7 @@
             <h2>Program Overview</h2>
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <input type="text" id="searchProgram" class="form-control" placeholder="Search by program name, code, or description..." onkeyup="filterPrograms()">
+                    <input type="text" id="searchProgram" class="form-control" placeholder="Search by program name,status..." onkeyup="filterPrograms()">
                 </div>
             </div>
             <div class="program-list row">
@@ -26,7 +26,7 @@
                 @foreach (var program in Model)
                 {
                     var approvalStatus = program.ProgramManagement.FirstOrDefault()?.IsApproved ?? "Pending";
-                    <div class="col-md-4 mb-4 program-item" data-title="@program.Title">
+                    <div class="col-md-4 mb-4 program-item" data-title="@program.Title" data-code="@program.Agenda" data-description="@approvalStatus">
                         <h3>@program.Title</h3>
                         <p>Project Leader: @program.ProjectLeader</p>
                         <p>Status: @approvalStatus</p>
