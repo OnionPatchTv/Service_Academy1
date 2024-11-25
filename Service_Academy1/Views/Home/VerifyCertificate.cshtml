@@ -32,15 +32,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Verification Result</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" id="closeModalButton" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">
                 <p id="verificationMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -52,14 +49,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="errorModalLabel">Login Failed</h5>
-                <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">×</button>
+                <button type="button" class="close" id="closeModalButton" aria-label="Close">
             </div>
             <div class="modal-body">
                 <img src="/Images/failed.png" alt="Login Failed" class="error-image">  <!-- Added image -->
                 <p>Invalid email or password. Please try again!</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -70,19 +64,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="successModalLabel">Success</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" id="closeModalButton" aria-label="Close">
             </div>
             <div class="modal-body">
                 <img src="/Images/success.png" alt="Success" class="sucsess-image">  <!-- Added image -->
                 <p id="successModalMessage">Email sent successfully!</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+            </div>       
         </div>
     </div>
 </div>
 
 
-
-<!--hindi maimplement yung sa modal nilagay ko nalang mga modal dito di lang nagrereflect sa button.-->

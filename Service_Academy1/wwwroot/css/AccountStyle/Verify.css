@@ -107,3 +107,25 @@ select {
     text-align: center;
     margin-bottom: 15px;
 }
+#verificationResultModal {
+    z-index: 1050 !important; /* Bootstrap's default modal z-index */
+}
+
+#overlay {
+    z-index: 1; /* Ensure the overlay is behind the modal */
+}
+
+.modal-backdrop {
+    z-index: 1040 !important; /* Ensures the backdrop doesn't overlap with the modal */
+}
+#closeModalButton {
+    background: none;
+    border: none;
+    font-size: 1.7rem; /* Adjust size as needed */
+    color: var(--primary-color); /* Use your primary color for consistency */
+    cursor: pointer;
+}
+
+    #closeModalButton:hover {
+        color: darkred; /* Change color on hover for feedback */
+    }
