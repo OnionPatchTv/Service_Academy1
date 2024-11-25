@@ -33,8 +33,8 @@
 <div class="container">
     <div class="breadcrumb">
         <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ? "active" : "")">Dashboard</a>
-        <span class="separator">&gt;</span>
-        <a href="javascript:void(0);" class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")" onclick="location.reload();">Stream</a>
+        <span class="separator" style="border: none;">></span>
+        <span>@Model.Title</span>
     </div>
 
 
