@@ -120,14 +120,13 @@
                     {
                         <button class="dropdown-item" onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')">
                             <div class="button-content">
-                                <div class="module-title-wrapper">
-                                    <span class="module-title-text">@module.Title</span>
-                                    <i class="fa fa-edit update-module-btn"
-                                       onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)', '@module.ModuleDescription', '@module.FilePath'); event.stopPropagation();"
-                                       title="Update">
-                                    </i>
-                                    <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
-                                </div>
+
+                                <span class="module-title-text">@module.Title</span>
+                                <i class="fa fa-edit update-module-btn"
+                                   onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)', '@module.ModuleDescription', '@module.FilePath'); event.stopPropagation();"
+                                   title="Update">
+                                </i>
+                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
                             </div>
                         </button>
                     }

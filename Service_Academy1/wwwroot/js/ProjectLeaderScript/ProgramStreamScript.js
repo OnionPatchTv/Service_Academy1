@@ -259,3 +259,9 @@ $('.close-btn').on('click', function () {
     $('#updateActivityModal').modal('hide');
     $('#deleteActivityModal').modal('hide');
 });
+
+document.querySelectorAll('.update-module-btn, .delete-module-btn').forEach(icon => {
+    icon.addEventListener('click', event => {
+        event.stopPropagation(); // Prevent the icon click from triggering the parent button
+    });
+});
