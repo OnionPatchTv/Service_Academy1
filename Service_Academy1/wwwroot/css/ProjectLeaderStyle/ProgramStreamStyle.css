@@ -235,7 +235,32 @@
         background-color: #a0a0a0; /* Grey color for disabled state */
         cursor: not-allowed; /* Disabled cursor */
     }
+/* Ensure Update buttons remain clickable with long text */
+.module-title-wrapper, .quiz-title-wrapper, .activity-title-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Ensure content is aligned properly */
+    gap: 5px; /* Space between elements */
+    position: relative; /* Allow button overlap without interference */
+}
 
+/* Button positioning to avoid overlap */
+.update-button {
+    position: relative;
+    z-index: 2; /* Ensure button is always on top */
+    cursor: pointer; /* Pointer cursor for feedback */
+    background-color: #28a745; /* Green button */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+    .update-button:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
 /* Adjust widths for modules and module-viewer */
 .modules {
     width: 20%; /* Set width to 20% */
@@ -291,6 +316,7 @@
 }
 
 /* Base styles for the button */
+/* Ensure long titles/descriptions do not interfere with button clicks */
 .module-title, .quiz-title, .activity-title {
     background-color: var(--primary-color);
     color: white;
@@ -301,14 +327,16 @@
     cursor: pointer;
     border-radius: 5px;
     font-size: 1rem;
-    position: relative; /* Positioning for the icons */
+    position: relative; /* Positioning for child elements */
     display: flex;
-    align-items: center; /* Aligning icons and text */
-    justify-content: space-between; /* Ensuring icons are on the right */
+    align-items: center;
+    justify-content: space-between; /* Ensures buttons/icons are on the right */
     overflow: hidden; /* Hide overflowing content */
     text-overflow: ellipsis; /* Add ellipsis (...) */
     white-space: nowrap; /* Prevent text from wrapping */
+    gap: 10px; /* Space between text and icons */
 }
+
 
     /* Adjust icon spacing using nth-child */
     .module-title i:nth-child(1) {
@@ -316,9 +344,11 @@
     }
 
     .module-title i, .quiz-title i, .activity-title i {
-        /* ... other styles ... */
-        position: absolute; /* Absolutely position the icon */
-        right: 15px; /* Position it from the right edge */
+        flex-shrink: 0; /* Prevent icons from shrinking */
+        margin-left: 10px; /* Spacing between text and icons */
+        opacity: 0.6; /* Slightly transparent by default */
+        transition: opacity 0.3s, color 0.3s;
+        cursor: pointer; /* Pointer cursor for icons */
     }
     /* Icon styles */
     .module-title i {
@@ -329,11 +359,10 @@
         transition: opacity 0.3s, color 0.3s;
     }
 
-    /* Hover effect for the module-title button */
-    .module-title:hover {
-        background-color: #2b2b5f; /* Define a hover color for the button */
-    }
-
+    module-title:hover i, .quiz-title:hover i, .activity-title:hover i {
+        opacity: 1; /* Icons become fully visible */
+        color: #ccc; /* Change color on hover */
+        }
         /* Hover effect for icons within the button */
         .module-title:hover i {
             opacity: 1; /* Icons become fully visible */
@@ -511,28 +540,25 @@
     transition: max-height 0.3s ease-in-out;
     cursor: pointer;
 }
-
+/* Description adjustments */
 .description {
-    /* Original styles */
     max-width: 100%;
     line-height: 1.5em;
     font-size: 1rem;
     white-space: normal;
-    /* Initial truncated state (3lines) */
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 3; /* Limits to 3 lines */
     -webkit-box-orient: vertical;
-    overflow: hidden; /* Needed for initial truncation */
-    text-overflow: ellipsis;
-    transition: max-height 0.3s ease; /* Smooth animation */
     overflow: hidden; /* Hide overflowing description */
+    text-overflow: ellipsis;
+    transition: max-height 0.3s ease; /* Smooth transition */
 }
 
+    /* Expanded state */
     .description.expanded {
         -webkit-line-clamp: initial; /* Remove line clamp */
         max-height: max-content; /* Allow full expansion */
-        overflow: visible;
-        text-overflow: initial; /* Show all content */
+        overflow: visible; /* Show full content */
     }
 
 
@@ -544,6 +570,12 @@
     display: flex; /* Makes this a flex container */
     justify-content: flex-end; /* Aligns items to the right end */
     margin-top: 10px; /* Add some space above the button */
+}
+.module-controls {
+    display: flex; /* Makes this a flex container */
+    justify-content: flex-end; /* Aligns items to the right end */
+    gap: 10px; /* Add space between buttons */
+    margin-top: 10px; /* Add space above the button */
 }
 
 #showDescriptionModal {
