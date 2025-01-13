@@ -13,6 +13,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Add session services
+builder.Services.AddDistributedMemoryCache(); // Add this line for caching session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+});
+
 // Register the ArliAIService
 builder.Services.AddHttpClient<ArliAIService>(); // Register HttpClient
 builder.Services.AddSingleton<ArliAIService>(); // Register the custom service
@@ -33,6 +40,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireLowercase = true;
 });
 var app = builder.Build();
+
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

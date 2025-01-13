@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Service_Academy1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250113085009_SeedRolesAndUsers")]
+    [Migration("20250113114325_SeedRolesAndUsers")]
     partial class SeedRolesAndUsers
     {
         /// <inheritdoc />

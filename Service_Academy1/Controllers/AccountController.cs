@@ -102,8 +102,8 @@ namespace ServiceAcademy.Controllers
             await _emailService.SendSystemEmailAsync(user.Email, "Your 2FA PIN", $"Your 2FA PIN is: {pin}");
 
             // Store the PIN temporarily for later verification
-            TempData["Email"] = user.Email;
-            TempData["Pin"] = pin; // Store PIN temporarily to verify later
+            HttpContext.Session.SetString("Pin", pin);
+            HttpContext.Session.SetString("Email", user.Email);
             return RedirectToAction("VerifyTwoFactor", "Account");
         }
 
@@ -121,8 +121,8 @@ namespace ServiceAcademy.Controllers
         [HttpPost]
         public async Task<IActionResult> VerifyTwoFactor(string pin)
         {
-            var email = TempData["Email"]?.ToString();
-            var storedPin = TempData["Pin"]?.ToString();  // Correctly retrieve the PIN
+            var email = HttpContext.Session.GetString("Email");
+            var storedPin = HttpContext.Session.GetString("Pin");
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(storedPin))
             {
