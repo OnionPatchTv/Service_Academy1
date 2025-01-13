@@ -332,6 +332,36 @@ namespace Service_Academy1.Migrations
                     b.ToTable("Certificates");
                 });
 
+            modelBuilder.Entity("Service_Academy1.Models.CommentModel", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CommentId"));
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("Service_Academy1.Models.DepartmentsModel", b =>
                 {
                     b.Property<int>("DepartmentId")
@@ -494,6 +524,41 @@ namespace Service_Academy1.Migrations
                     b.HasIndex("ProgramId");
 
                     b.ToTable("Modules");
+                });
+
+            modelBuilder.Entity("Service_Academy1.Models.PostModel", b =>
+                {
+                    b.Property<int>("PostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PostId"));
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProgramId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("PostId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ProgramId");
+
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.ProgramManagementModel", b =>
@@ -949,6 +1014,23 @@ namespace Service_Academy1.Migrations
                     b.Navigation("Enrollment");
                 });
 
+            modelBuilder.Entity("Service_Academy1.Models.CommentModel", b =>
+                {
+                    b.HasOne("ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("Service_Academy1.Models.PostModel", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("Service_Academy1.Models.EnrollmentModel", b =>
                 {
                     b.HasOne("Service_Academy1.Models.ProgramsModel", "ProgramsModel")
@@ -1005,6 +1087,23 @@ namespace Service_Academy1.Migrations
                         .IsRequired();
 
                     b.Navigation("ProgramsModel");
+                });
+
+            modelBuilder.Entity("Service_Academy1.Models.PostModel", b =>
+                {
+                    b.HasOne("ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("Service_Academy1.Models.ProgramsModel", "Program")
+                        .WithMany()
+                        .HasForeignKey("ProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Program");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.ProgramManagementModel", b =>
@@ -1182,6 +1281,11 @@ namespace Service_Academy1.Migrations
             modelBuilder.Entity("Service_Academy1.Models.EvaluationQuestionModel", b =>
                 {
                     b.Navigation("Responses");
+                });
+
+            modelBuilder.Entity("Service_Academy1.Models.PostModel", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("Service_Academy1.Models.ProgramsModel", b =>

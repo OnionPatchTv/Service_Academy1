@@ -1,0 +1,41 @@
+﻿@model Service_Academy1.Models.PostModel
+@{
+    ViewBag.Title = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+<p>@Model.Content</p>
+<p><small>Posted on @Model.CreatedDate.ToShortDateString()</small></p>
+
+<hr />
+
+<h3>Comments</h3>
+@if (Model.Comments.Any())
+{
+    <ul>
+        @foreach (var comment in Model.Comments)
+        {
+            <li>
+                <strong>@comment.Author.UserName:</strong>
+                <p>@comment.Content</p>
+                <small>@comment.CreatedDate.ToShortDateString()</small>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No comments yet.</p>
+}
+
+@if (User.IsInRole("ProjectLeader") || User.IsInRole("Student"))
+{
+    <form asp-action="AddComment" asp-controller="Discussion" method="post">
+        <input type="hidden" name="PostId" value="@Model.PostId" />
+        <div class="form-group">
+            <label for="Content">Add a Comment</label>
+            <textarea name="Content" class="form-control" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Comment</button>
+    </form>
+}

@@ -8,10 +8,11 @@ public class ProfileController : Controller
     private readonly ILogger<ProfileController> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ApplicationDbContext _context;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public ProfileController(ILogger<ProfileController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+    public ProfileController(ILogger<ProfileController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
     {
-        (_logger, _context, _userManager) = (logger, context, userManager);
+        (_logger, _context, _userManager, _signInManager) = (logger, context, userManager, signInManager);
     }
 
     public async Task<IActionResult> ProfilePage()
@@ -53,18 +54,8 @@ public class ProfileController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateProfile(ProfileViewModel model, IFormFile? profilePicInput)
     {
-        _logger.LogInformation("Starting profile update for user.");
-
         if (!ModelState.IsValid)
         {
-            foreach (var state in ModelState)
-            {
-                foreach (var error in state.Value.Errors)
-                {
-                    _logger.LogWarning("Validation error: {Key} - {Message}", state.Key, error.ErrorMessage);
-                }
-            }
-
             TempData["ProfileUpdateErrorMessage"] = "Invalid input data.";
             return RedirectToAction("ProfilePage");
         }
@@ -74,10 +65,9 @@ public class ProfileController : Controller
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
             {
-                _logger.LogWarning("No user is logged in.");
+                TempData["ProfileUpdateErrorMessage"] = "No user is logged in.";
                 return RedirectToAction("Login", "Account");
             }
-
             // Update Password Logic (if applicable)
             if (!string.IsNullOrWhiteSpace(model.CurrentPassword) &&
                 !string.IsNullOrWhiteSpace(model.NewPassword) &&
@@ -107,61 +97,64 @@ public class ProfileController : Controller
                 TempData["ProfileUpdateSuccessMessage"] = "Password updated successfully.";
             }
 
-            // Update ApplicationUser details
-            currentUser.FullName = model.FullName;
-            currentUser.Email = model.Email;
-            currentUser.PhoneNumber = model.PhoneNumber;
-            var userUpdateResult = await _userManager.UpdateAsync(currentUser);
+            // Update user details
+            if (!string.IsNullOrEmpty(model.FullName))
+                currentUser.FullName = model.FullName;
 
-            if (!userUpdateResult.Succeeded)
+            if (!string.IsNullOrEmpty(model.PhoneNumber))
+                currentUser.PhoneNumber = model.PhoneNumber;
+
+            if (!string.IsNullOrEmpty(model.Email) && currentUser.Email != model.Email)
             {
-                foreach (var error in userUpdateResult.Errors)
+                if (await _userManager.Users.AnyAsync(u => u.Email == model.Email))
                 {
-                    _logger.LogError("Error updating user: {Code} - {Description}", error.Code, error.Description);
+                    TempData["ProfileUpdateErrorMessage"] = "Email is already in use.";
+                    return RedirectToAction("ProfilePage");
                 }
+
+                currentUser.Email = model.Email;
+                currentUser.UserName = model.Email;
+                await _userManager.UpdateSecurityStampAsync(currentUser);
+            }
+
+            var updateResult = await _userManager.UpdateAsync(currentUser);
+            if (!updateResult.Succeeded)
+            {
                 TempData["ProfileUpdateErrorMessage"] = "Error updating user details.";
                 return RedirectToAction("ProfilePage");
             }
 
-            // Update or Create UserDemographics
+            // Update demographics
             var userDemographics = await _context.UserDemographics
-                .FirstOrDefaultAsync(d => d.Id == model.UserDemographicsId && d.ApplicationUserId == currentUser.Id);
+                .FirstOrDefaultAsync(d => d.ApplicationUserId == currentUser.Id);
 
             if (userDemographics == null)
             {
-                _logger.LogInformation("No UserDemographics found. Creating a new one.");
                 userDemographics = new UserDemographicsModel
                 {
                     ApplicationUserId = currentUser.Id,
-                    Address = model.Address,
-                    About = model.About,
-                    DateOfBirth = model.DateOfBirth.HasValue
-                        ? DateTime.SpecifyKind(model.DateOfBirth.Value, DateTimeKind.Utc)
-                        : DateTime.UtcNow,
+                    Address = model.Address ?? string.Empty,
+                    About = model.About ?? "No Description",
+                    DateOfBirth = model.DateOfBirth?.ToUniversalTime() ?? DateTime.UtcNow
                 };
-                _context.UserDemographics.Add(userDemographics);
+                await _context.UserDemographics.AddAsync(userDemographics);
             }
             else
             {
-                _logger.LogInformation("Updating existing UserDemographics for user.");
-                userDemographics.Address = model.Address;
-                userDemographics.About = model.About;
+                if (!string.IsNullOrEmpty(model.Address))
+                    userDemographics.Address = model.Address;
 
-                // Ensure DateOfBirth is converted to UTC
-                userDemographics.DateOfBirth = model.DateOfBirth.HasValue
-                    ? DateTime.SpecifyKind(model.DateOfBirth.Value, DateTimeKind.Utc)
-                    : userDemographics.DateOfBirth;
+                if (!string.IsNullOrEmpty(model.About))
+                    userDemographics.About = model.About;
+
+                if (model.DateOfBirth.HasValue)
+                    userDemographics.DateOfBirth = model.DateOfBirth?.ToUniversalTime() ?? DateTime.UtcNow;
             }
 
-            // Handle Profile Picture Upload (Optional)
             if (profilePicInput != null && profilePicInput.Length > 0)
             {
-                _logger.LogInformation("Processing uploaded profile picture.");
                 var profileImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProfileImage");
-                if (!Directory.Exists(profileImagePath))
-                {
-                    Directory.CreateDirectory(profileImagePath);
-                }
+                Directory.CreateDirectory(profileImagePath);
 
                 var fileName = Guid.NewGuid() + Path.GetExtension(profilePicInput.FileName);
                 var filePath = Path.Combine(profileImagePath, fileName);
@@ -171,24 +164,19 @@ public class ProfileController : Controller
                 }
                 userDemographics.ProfilePath = "/ProfileImage/" + fileName;
             }
-            else
-            {
-                _logger.LogInformation("No profile picture uploaded, keeping existing profile picture.");
-            }
 
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Profile updated successfully for user: {UserId}", currentUser.Id);
+            await _signInManager.RefreshSignInAsync(currentUser);
 
             TempData["ProfileUpdateSuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction("ProfilePage");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating profile.");
-            TempData["ProfileUpdateErrorMessage"] = "An unexpected error occurred while updating your profile.";
+            _logger.LogError(ex, "Unexpected error during profile update.");
+            TempData["ProfileUpdateErrorMessage"] = "An unexpected error occurred.";
             return RedirectToAction("ProfilePage");
         }
     }
-
 
 }

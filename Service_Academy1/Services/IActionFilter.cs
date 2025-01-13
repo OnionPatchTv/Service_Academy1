@@ -16,10 +16,12 @@ public class ProfileImageActionFilter : IActionFilter
         var controller = context.Controller as Controller;
         if (controller != null && controller.User.Identity.IsAuthenticated)
         {
+            // Fetch the latest profile path from the database
             string profilePath = GetProfileImagePathForUser(controller.User.Identity.Name);
             controller.ViewData["ProfilePath"] = profilePath;
         }
     }
+
 
     public void OnActionExecuted(ActionExecutedContext context) { }
 

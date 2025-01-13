@@ -31,6 +31,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SystemUsageLogModel> SystemUsageLogs { get; set; }
     public DbSet<UserDemographicsModel> UserDemographics { get; set; }
     public DbSet<CertificateModel> Certificates { get; set; }
+    public DbSet<PostModel> Posts { get; set; }
+    public DbSet<CommentModel> Comments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

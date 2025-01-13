@@ -27,7 +27,7 @@ public class ArliAIService
         },
             Content = new StringContent(JsonConvert.SerializeObject(new
             {
-                model = "Meta-Llama-3.1-8B-Instruct", // Replace with the desired model
+                model = "Llama-3.3-70B-Instruct", 
                 messages = new[]
                 {
                 new { role = "system", content = "You are a helpful business analyst." },
@@ -62,7 +62,7 @@ public class ArliAIService
         },
             Content = new StringContent(JsonConvert.SerializeObject(new
             {
-                model = "Meta-Llama-3.1-8B-Instruct", // Replace with the desired model
+                model = "Llama-3.3-70B-Instruct", // Replace with the desired model
                 messages = new[]
                 {
                 new { role = "system", content = "You are an expert data analyst specializing in educational program evaluations." },
@@ -99,7 +99,7 @@ public class ArliAIService
         },
             Content = new StringContent(JsonConvert.SerializeObject(new
             {
-                model = "Meta-Llama-3.1-8B-Instruct", // Replace with the desired model
+                model = "Llama-3.3-70B-Instruct", // Replace with the desired model
                 messages = new[]
                 {
                 new { role = "system", content = "You are an expert data analyst specializing in impact assessments using descriptive analytics. You analyze past data to identify trends, summarize key metrics, and provide insights into the effectiveness of programs based on historical performance." },

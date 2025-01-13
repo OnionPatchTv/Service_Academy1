@@ -166,8 +166,13 @@
                 </div>
             </div>
             <div class="sidebar-section">
-                <button class="dropdown-btn" onclick="location.href='@Url.Action("EvaluationResults", "Evaluation", new { programId = Model.ProgramId })'">
+                <button class="dropdown-btn" onclick="location.href='@Url.Action("DiscussionForum", "Discussion", new { programId = Model.ProgramId })'">
                     Evaluation Result
+                </button>
+            </div>
+            <div class="sidebar-section">
+                <button class="dropdown-btn" onclick="location.href='@Url.Action("DiscussionForum", "Discussion", new { programId = Model.ProgramId })'">
+                    Discussion  Forum
                 </button>
             </div>
         </aside>

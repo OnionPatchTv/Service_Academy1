@@ -90,7 +90,7 @@
                     <a class="dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @if (ViewData["ProfilePath"] != null && !string.IsNullOrEmpty(ViewData["ProfilePath"].ToString()))
                         {
-                            <img src="@(Url.Content(ViewData["ProfilePath"].ToString()))" alt="Profile" class="profile-img" />
+                            <img src="@(Url.Content(ViewData["ProfilePath"]?.ToString() + "?v=" + DateTime.UtcNow.Ticks))" alt="Profile" class="profile-img" />
                         }
                         else
                         {

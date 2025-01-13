@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Service_Academy1.Models.PostModel>
+@{
+    ViewBag.Title = "Discussion Forum";
+    int programId = ViewBag.ProgramId;
+}
+
+<h2>Discussion Forum</h2>
+
+@if (User.IsInRole("ProjectLeader") || User.IsInRole("Student"))
+{
+    <a href="@Url.Action("CreatePost", "Discussion", new { programId })" class="btn btn-primary">Add a Post</a>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Created Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <td>
+                    <a href="@Url.Action("PostPage", "Discussion", new { postId = post.PostId })">
+                        @post.Title
+                    </a>
+                </td>
+                <td>@post.CreatedDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
