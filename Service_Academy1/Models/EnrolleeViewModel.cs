@@ -11,6 +11,7 @@ namespace Service_Academy1.Models
         public string TraineeName { get; set; } = string.Empty;
         public string EnrollmentStatus { get; set; } = string.Empty;
         public string ProgramStatus { get; set; } = string.Empty;
+        public string? ProfilePath { get; set; }
     }
 
 }

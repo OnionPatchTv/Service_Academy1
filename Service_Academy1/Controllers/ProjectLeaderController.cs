@@ -361,16 +361,18 @@ namespace ServiceAcademy.Controllers
         {
             _logger.LogInformation("Fetching enrolled trainees for Program ID: {ProgramId}", programId);
 
-            // Fetch enrolled trainees for the specified program ID with a pending or approved status
             var enrolledTrainees = _context.Enrollment
-                .Where(e => e.ProgramId == programId &&
-                            (e.EnrollmentStatus == "Approved" || e.EnrollmentStatus == "Pending"))
+                .Where(e => e.ProgramId == programId && (e.EnrollmentStatus == "Approved" || e.EnrollmentStatus == "Pending"))
+                .Include(e => e.CurrentTrainee) // Ensure CurrentTrainee is loaded
+                .ThenInclude(ct => ct.UserDemographics) // Include user demographics
                 .Select(e => new EnrolleeViewModel
                 {
                     EnrollmentId = e.EnrollmentId,
                     TraineeName = e.CurrentTrainee != null ? e.CurrentTrainee.FullName : "Unknown",
                     EnrollmentStatus = e.EnrollmentStatus,
-                    ProgramStatus = e.ProgramStatus
+                    ProgramStatus = e.ProgramStatus,
+                    // Get the ProfilePath from UserDemographics, use null-conditional operator to handle null cases.
+                    ProfilePath = e.CurrentTrainee != null ? e.CurrentTrainee.UserDemographics.ProfilePath : null
                 })
                 .ToList();
 
@@ -383,9 +385,7 @@ namespace ServiceAcademy.Controllers
                 _logger.LogInformation("Found {Count} enrolled trainees for Program ID: {ProgramId}", enrolledTrainees.Count, programId);
             }
 
-            // Pass the ProgramId to the view (via ViewBag or ViewModel)
             ViewBag.ProgramId = programId;
-
             return View(enrolledTrainees);
         }
         [HttpPost]

@@ -232,3 +232,9 @@ a.active {
 #successModalMessage {
     text-align: center; /* Center the message text */
 }
+.profile-picture {
+    width: 40px; /* Adjust as needed */
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
