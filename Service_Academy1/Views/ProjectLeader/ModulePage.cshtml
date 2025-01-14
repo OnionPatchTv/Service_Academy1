@@ -1,0 +1,181 @@
+﻿@model ProgramsModel
+@using Service_Academy1.Utilities
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Program Stream Page";
+    bool isManagePage = HttpContextAccessor.HttpContext.Request.Query.ContainsKey("manage");
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/ProjectLeaderScript/ProgramStreamScript.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
+}
+@if (TempData["ProgramStreamSuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["ProgramStreamSuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ProgramStreamErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ProgramStreamErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(ViewContext.RouteData.Values["action"].ToString() == "ProjectLeaderDashboard" && ViewContext.RouteData.Values["controller"].ToString() == "ProjectLeader" ? "active" : "")">Dashboard</a>
+    <span class="separator">></span>
+    <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = Model.ProgramId })" class="@(ViewContext.RouteData.Values["action"].ToString() == "ProgramStream" && ViewContext.RouteData.Values["controller"].ToString() == "ProjectLeader" ? "active" : "")">Stream</a>
+    <span class="separator">></span>
+    <span class="active">Module Management</span>
+</div>
+
+<div class="container">
+    <h2 class="mt-4 mb-4">Module Management</h2>
+    @if (isManagePage)
+    {
+        // List and Update/Delete Modules 
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Manage Modules</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>File Path</th>
+                            <th>Video Link</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var module in Model.Modules.OrderBy(m => m.Title))
+                        {
+                            <tr>
+                                <td>@module.Title</td>
+                                <td>@module.ModuleDescription</td>
+                                <td>@module.FilePath</td>
+                                <td>@module.LinkPath</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)', '@module.ModuleDescription', '@module.FilePath')">
+                                        Update
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title')">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Back</a>
+    }
+    else
+    {
+        //Add Module Form
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Add New Module</h3>
+                <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadModule", "ProjectLeader", new { programId = Model.ProgramId })">
+                    <div class="form-group">
+                        <label for="title">Module Title</label>
+                        <input type="text" class="form-control" name="title" placeholder="Enter title (e.g., Introduction)" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="moduleDescription">Module Description</label>
+                        <textarea class="form-control" name="moduleDescription" rows="5"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file">Upload File (Optional)</label>
+                        <input type="file" class="form-control" name="file" accept=".pdf,.pptx" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="linkPath">Video Link (Optional)</label>
+                        <input type="text" class="form-control" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add Module</button>
+                    <a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    }
+    <hr />
+
+    <div class="modal fade" id="updateModuleModal" tabindex="-1" aria-labelledby="updateModuleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div id="modalForm" class="modal-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateModuleModalLabel"></h5>
+                        <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">×</button>
+                    </div>
+                    <form asp-action="UpdateModule" asp-controller="ProjectLeader" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <input type="hidden" id="moduleIdInput" name="moduleId" />
+                            <div class="form-group">
+                                <label for="moduleTitleInput">Module Title</label>
+                                <input type="text" id="moduleTitleInput" class="form-control" name="moduleTitle" />
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleDescriptionInput">Module Description</label>
+                                <textarea id="moduleDescriptionInput" class="form-control" name="moduleDescription" rows="5"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="fileInput">Upload New File (Optional)</label>
+                                <input type="file" id="fileInput" class="form-control" name="file" accept=".pdf,.pptx" />
+                                <small id="currentFileName" class="form-text text-muted"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="linkPath">Video Link (Optional)</label>
+                                <input type="text" class="form-control" id="linkPath" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btnYes">Update Module</button>
+                            <button type="button" class="btnNo" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="deleteModuleModal" tabindex="-1" aria-labelledby="deleteModuleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="modalForm" class="modal-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModuleModalLabel">Delete Module</h5>
+                        <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">×</button>
+                    </div>
+                    <form method="post" action="@Url.Action("DeleteModule", "ProjectLeader")">
+                        <input type="hidden" name="moduleId" />
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this module? Once deleted, you cannot undo this action.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btnYes">Yes</button>
+                            <button type="button" class="btnNo" data-bs-dismiss="modal">No</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

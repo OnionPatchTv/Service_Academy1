@@ -2,7 +2,22 @@
 
 @{
     ViewData["Title"] = "View Activity";
+    int programId = ViewBag.ProgramId;
 }
+
+<div class="breadcrumb">
+    <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")"
+       class="@(ViewContext.RouteData.Values["action"].ToString() == "ProjectLeaderDashboard" && ViewContext.RouteData.Values["controller"].ToString() == "ProjectLeader" ? "active" : "")">
+        Dashboard
+    </a>
+    <span class="separator">></span>
+    <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = programId })"
+       class="@(ViewContext.RouteData.Values["action"].ToString() == "ProgramStream" && ViewContext.RouteData.Values["controller"].ToString() == "ProjectLeader" ? "active" : "")">
+        Stream
+    </a>
+    <span class="separator">></span>
+    <span class="active">@Model.Activity.ActivitiesTitle</span>
+</div>
 
 <h2>@Model.Activity.ActivitiesTitle</h2>
 

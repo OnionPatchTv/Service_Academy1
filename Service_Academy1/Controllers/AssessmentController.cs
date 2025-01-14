@@ -402,6 +402,44 @@ namespace ServiceAcademy.Controllers
         #endregion
 
         #region Activiy Management
+        public IActionResult ActivityPage(int programId)
+        {
+            var program = _context.Programs
+                .Include(p => p.Activities)
+                .FirstOrDefault(p => p.ProgramId == programId);
+
+            if (program == null)
+            {
+                return NotFound(); //Or handle as you see fit
+            }
+            return View(program);
+        }
+        public IActionResult ViewActivity(int activitiesId)
+        {
+            // Fetch the activity along with the enrolled trainees' activities
+            var activity = _context.Activities
+                .Include(a => a.TraineeActivities)
+                .ThenInclude(ta => ta.Enrollment)
+                .ThenInclude(e => e.CurrentTrainee)
+                .FirstOrDefault(a => a.ActivitiesId == activitiesId);
+
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            // Create a ViewModel to pass the data to the view
+            var viewModel = new ActivityViewModel
+            {
+                Activity = activity,
+                TraineeActivities = activity.TraineeActivities.ToList()
+            };
+
+            // Pass the ProgramId to the view
+            ViewBag.ProgramId = activity.ProgramId;
+
+            return View(viewModel);
+        }
         [HttpPost]
         public IActionResult CreateActivity(ActivitiesModel activityModel, int ProgramId)
         {
@@ -432,31 +470,7 @@ namespace ServiceAcademy.Controllers
             _context.SaveChanges();
 
             TempData["ProgramStreamSuccessMessage"] = "Successfully created an Activity.";
-            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = ProgramId });
-        }
-
-        public IActionResult ViewActivity(int activitiesId)
-        {
-            // Fetch the activity along with the enrolled trainees' activities
-            var activity = _context.Activities
-                .Include(a => a.TraineeActivities)
-                .ThenInclude(ta => ta.Enrollment)
-                .ThenInclude(e => e.CurrentTrainee)
-                .FirstOrDefault(a => a.ActivitiesId == activitiesId);
-
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            // Create a ViewModel to pass the data to the view
-            var viewModel = new ActivityViewModel
-            {
-                Activity = activity,
-                TraineeActivities = activity.TraineeActivities.ToList()
-            };
-
-            return View(viewModel);
+            return RedirectToAction("ActivityPage", "Assessment", new { programId = ProgramId });
         }
         [HttpPost]
         public async Task<IActionResult> UpdateActivity(int activitiesId, string activitiesTitle, string activityDirection, int totalScore)
@@ -465,7 +479,7 @@ namespace ServiceAcademy.Controllers
             if (activity == null)
             {
                 TempData["ProgramStreamErrorMessage"] = "Activity not found.";
-                return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+                return RedirectToAction("ActivityPage", "Assessment", new { programId = activity.ProgramId, manage = true });
             }
 
             // Update activity details
@@ -476,19 +490,19 @@ namespace ServiceAcademy.Controllers
             await _context.SaveChangesAsync();
 
             TempData["ProgramStreamSuccessMessage"] = "Activity updated successfully.";
-            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+            return RedirectToAction("ActivityPage", "Assessment", new { programId = activity.ProgramId, manage = true });
         }
         [HttpPost]
         public async Task<IActionResult> DeleteActivity(int activitiesId)
         {
             var activity = await _context.Activities
-                          .Include(a => a.TraineeActivities)
-                           .FirstOrDefaultAsync(a => a.ActivitiesId == activitiesId);
+                        .Include(a => a.TraineeActivities)
+                         .FirstOrDefaultAsync(a => a.ActivitiesId == activitiesId);
 
             if (activity == null)
             {
                 TempData["ProgramStreamErrorMessage"] = "Activity not found.";
-                return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+                return RedirectToAction("ActivityPage", "Assessment", new { programId = activity.ProgramId, manage = true });
             }
 
             // Delete the activity
@@ -496,9 +510,8 @@ namespace ServiceAcademy.Controllers
             await _context.SaveChangesAsync();
 
             TempData["ProgramStreamSuccessMessage"] = "Activity and its corresponding data are deleted successfully.";
-            return RedirectToAction("ProgramStream", "ProjectLeader", new { programId = activity.ProgramId });
+            return RedirectToAction("ActivityPage", "Assessment", new { programId = activity.ProgramId, manage = true });
         }
-
         #endregion
 
         #region Student Activity Management

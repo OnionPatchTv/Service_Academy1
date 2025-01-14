@@ -265,3 +265,11 @@ document.querySelectorAll('.update-module-btn, .delete-module-btn').forEach(icon
         event.stopPropagation(); // Prevent the icon click from triggering the parent button
     });
 });
+$(document).ready(function () {
+    $('.close-btn').on('click', function () {
+        $('#updateModuleModal').modal('hide');
+        $('#deleteModuleModal').modal('hide');
+        $('#updateActivityModal').modal('hide');
+        $('#deleteActivityModal').modal('hide');
+    });
+});

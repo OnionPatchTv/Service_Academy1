@@ -223,13 +223,25 @@ namespace ServiceAcademy.Controllers
             return View(viewModel);
         }
         #region Module Management
+        public IActionResult ModulePage(int programId)
+        {
+            var program = _context.Programs
+                .Include(p => p.Modules)
+                .FirstOrDefault(p => p.ProgramId == programId);
+
+            if (program == null)
+            {
+                return NotFound(); //Or handle as you see fit
+            }
+            return View(program);
+        }
         [HttpPost]
         public async Task<IActionResult> UploadModule(int programId, string title, IFormFile file, string moduleDescription, string linkPath = "No Link Available")
         {
             if (file == null || file.Length == 0)
             {
                 TempData["ProgramStreamErrorMessage"] = "No file selected";
-                return RedirectToAction("ProgramStream", new { programId });
+                return RedirectToAction("ModulePage", new { programId });
             }
             if (title.Length > 255)
             {
@@ -262,7 +274,7 @@ namespace ServiceAcademy.Controllers
             _context.Modules.Add(module);
             await _context.SaveChangesAsync();
             TempData["ProgramStreamSuccessMessage"] = "Module uploaded successfully.";
-            return RedirectToAction("ProgramStream", new { programId });
+            return RedirectToAction("ModulePage", new { programId });
         }
 
         [HttpPost]
@@ -281,7 +293,7 @@ namespace ServiceAcademy.Controllers
             if (module == null)
             {
                 TempData["ProgramStreamErrorMessage"] = "Module not found.";
-                return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
+                return RedirectToAction("ModulePage", new { programId = module.ProgramId, manage = true });
             }
 
             var moduleNumberPrefix = module.Title.Split(':')[0];
@@ -308,7 +320,7 @@ namespace ServiceAcademy.Controllers
 
             await _context.SaveChangesAsync();
             TempData["ProgramStreamSuccessMessage"] = "Module updated successfully.";
-            return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
+            return RedirectToAction("ModulePage", new { programId = module.ProgramId, manage = true });
         }
 
         [HttpPost]
@@ -318,7 +330,7 @@ namespace ServiceAcademy.Controllers
             if (module == null)
             {
                 TempData["ProgramStreamErrorMessage"] = "Module not found.";
-                return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
+                return RedirectToAction("ModulePage", new { programId = module.ProgramId, manage = true });
             }
 
             // Delete the module
@@ -339,7 +351,7 @@ namespace ServiceAcademy.Controllers
             await _context.SaveChangesAsync();
 
             TempData["ProgramStreamSuccessMessage"] = "Module deleted and renumbered successfully.";
-            return RedirectToAction("ProgramStream", new { programId = module.ProgramId });
+            return RedirectToAction("ModulePage", new { programId = module.ProgramId, manage = true });
         }
         #endregion
         #endregion

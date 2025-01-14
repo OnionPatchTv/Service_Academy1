@@ -16,21 +16,6 @@
     <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
 }
 
-@if (TempData["ProgramStreamSuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["ProgramStreamSuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-@if (TempData["ProgramStreamErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ProgramStreamErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
 <div class="container">
     <div class="breadcrumb">
         <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
@@ -120,19 +105,13 @@
                     {
                         <button class="dropdown-item" onclick="loadModuleContent('@module.FilePath', '@module.Title', '@module.LinkPath', '@module.ModuleDescription')">
                             <div class="button-content">
-
                                 <span class="module-title-text">@module.Title</span>
-                                <i class="fa fa-edit update-module-btn"
-                                   onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)', '@module.ModuleDescription', '@module.FilePath'); event.stopPropagation();"
-                                   title="Update">
-                                </i>
-                                <i class="fa fa-trash delete-module-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title'); event.stopPropagation();" title="Delete"></i>
                             </div>
                         </button>
                     }
-                    <button class="add-item-btn" data-toggle="modal" data-target="#uploadModuleModal">Add Module</button>
+                    <a href="@Url.Action("ModulePage", "ProjectLeader", new { programId = Model.ProgramId, manage = true })" class="add-item-btn">Manage Modules</a>
+                    <a href="@Url.Action("ModulePage", "ProjectLeader", new { programId = Model.ProgramId })" class="add-item-btn">Add Module</a>
                 </div>
-            </div>
 
             <div class="sidebar-section">
                 <button class="dropdown-btn">Quizzes</button>
@@ -148,25 +127,23 @@
                     <button class="add-item-btn" data-toggle="modal" data-target="#createAssessmentModal">Add Quiz</button>
                 </div>
             </div>
-
             <div class="sidebar-section">
-                <button class="dropdown-btn">Activities</button>
-                <div class="dropdown-content">
-                    @foreach (var activity in Model.Activities)
-                    {
-                        <button class="dropdown-item activities" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
-                            <div class="button-content">
-                                <span class="activities-title-text">@activity.ActivitiesTitle</span>
-                                <i class="fa fa-edit" onclick="openUpdateActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle', '@activity.ActivityDirection', '@activity.TotalScore'); event.stopPropagation();" title="Update"></i>
-                                <i class="fa fa-trash" onclick="openDeleteActivityModal('@activity.ActivitiesId', '@activity.ActivitiesTitle'); event.stopPropagation();" title="Delete"></i>
-                            </div>
-                        </button>
-                    }
-                    <button class="add-item-btn" data-toggle="modal" data-target="#createActivityModal">Add Activity</button>
-                </div>
+                    <button class="dropdown-btn">Activities</button>
+                    <div class="dropdown-content">
+                        @foreach (var activity in Model.Activities)
+                        {
+                            <button class="dropdown-item activities" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
+                                <div class="button-content">
+                                    <span class="activities-title-text">@activity.ActivitiesTitle</span>
+                                </div>
+                            </button>
+                        }
+                        <a href="@Url.Action("ActivityPage", "Assessment", new { programId = Model.ProgramId, manage = true })" class="add-item-btn">Manage Activities</a>
+                        <a href="@Url.Action("ActivityPage", "Assessment", new { programId = Model.ProgramId })" class="add-item-btn">Add Activity</a>
+                    </div>
             </div>
             <div class="sidebar-section">
-                <button class="dropdown-btn" onclick="location.href='@Url.Action("DiscussionForum", "Discussion", new { programId = Model.ProgramId })'">
+                <button class="dropdown-btn" onclick="location.href='@Url.Action("EvaluationResults", "Evaluation", new { programId = Model.ProgramId })'">
                     Evaluation Result
                 </button>
             </div>
@@ -207,111 +184,15 @@
                 </div>
             </div>
         </div>
-        <!-- Upload Module Modal -->
-        <div class="modal fade" id="uploadModuleModal" tabindex="-1" aria-labelledby="uploadModuleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div id="modalForm" class="modal-form">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="uploadModuleModalLabel">
-                                Upload Module @(Model.Modules.Count + 1)
-                            </h5>
-                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
-                        </div>
-                        <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadModule", "ProjectLeader", new { programId = Model.ProgramId })">
-                            <div class="modal-body">
-                                <label for="title">Module Title</label>
-                                <input type="text" class="form-control" name="title" placeholder="Enter title (e.g., Introduction)" required />
-
-                                <label for="moduleDescriptionInput">Module Description</label>
-                                <textarea id="moduleDescriptionInput" class="form-control" name="moduleDescription"></textarea>
-
-                                <label for="fileInput">Upload New File (Optional)</label>
-                                <input type="file" id="fileInput" class="form-control" name="file" accept=".pdf,.pptx" required />
-
-                                <label for="linkPath">Video Link (Optional)</label>
-                                <input type="text" class="form-control" id="linkPath" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btnYes">Upload Module</button>
-                                <button type="button" class="btnNo" data-dismiss="modal">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Update Module Modal -->
-        <div class="modal fade" id="updateModuleModal" tabindex="-1" aria-labelledby="updateModuleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div id="modalForm" class="modal-form">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="updateModuleModalLabel"></h5>
-                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
-                        </div>
-                        <form asp-action="UpdateModule" asp-controller="ProjectLeader" method="post" enctype="multipart/form-data">
-                            <div class="modal-body">
-                                <input type="hidden" id="moduleIdInput" name="moduleId" />
-                                <div class="form-group">
-                                    <label for="moduleTitleInput">Module Title</label>
-                                    <input type="text" id="moduleTitleInput" class="form-control" name="moduleTitle" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="moduleDescriptionInput">Module Description</label>
-                                    <textarea id="moduleDescriptionInput" class="form-control" name="moduleDescription"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fileInput">Upload New File (Optional)</label>
-                                    <input type="file" id="fileInput" class="form-control" name="file" accept=".pdf,.pptx" />
-                                    <small id="currentFileName" class="form-text text-muted"></small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="linkPath">Video Link (Optional)</label>
-                                    <input type="text" class="form-control" id="linkPath" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btnYes">Update Module</button>
-                                <button type="button" class="btnNo" data-bs-dismiss="modal">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Delete Module Modal -->
-        <div class="modal fade" id="deleteModuleModal" tabindex="-1" aria-labelledby="deleteModuleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div id="modalForm" class="modal-form">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModuleModalLabel">Delete Module</h5>
-                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
-                        </div>
-                        <form method="post" action="@Url.Action("DeleteModule", "ProjectLeader")">
-                            <input type="hidden" name="moduleId" />
-                            <div class="modal-body">
-                                <p>Are you sure you want to delete this module? Once deleted, you cannot undo this action.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btnYes">Yes</button>
-                                <button type="button" class="btnNo" data-bs-dismiss="modal">No</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+      
         <!-- Create Assessment Modal -->
         <div class="modal fade" id="createAssessmentModal" tabindex="-1" aria-labelledby="createAssessmentModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div id="modalForm" class="modal-form">
                         <div class="modal-header">
                             <h5 class="modal-title" id="createAssessmentModalLabel">Create Assessment</h5>
-                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
+                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">×</button>
                         </div>
                         <form id="createAssessmentForm" asp-action="CreateQuiz" asp-controller="Assessment" method="post">
                             <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
@@ -322,7 +203,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="quizDescription">Quiz Description</label>
-                                    <textarea class="form-control" id="quizDescription" name="QuizDirection" required></textarea>
+                                    <textarea class="form-control" id="quizDescription" name="QuizDirection" required rows="5"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="numberOfQuestions">Number of Questions</label>
@@ -338,99 +219,6 @@
                 </div>
             </div>
         </div>
-        <!-- Create Activity Modal -->
-        <div class="modal fade" id="createActivityModal" tabindex="-1" aria-labelledby="createActivityModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div id="modalForm" class="modal-form">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="createActivityModalLabel">Create Activity</h5>
-                            <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
-                        </div>
-                        <form id="createActivityForm" asp-action="CreateActivity" asp-controller="Assessment" method="post">
-                            <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="activityTitle">Activity Title</label>
-                                    <input type="text" class="form-control" id="activityTitle" name="ActivitiesTitle" placeholder="Enter activity title" required />
-                                </div>
-                                <div class="form-group">
-                                    <label for="activityDirection">Activity Direction</label>
-                                    <textarea class="form-control" id="activityDirection" name="ActivityDirection" placeholder="Provide directions for the activity" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="totalScore">Total Score</label>
-                                    <input type="number" class="form-control" id="totalScore" name="TotalScore" placeholder="Set the total score" min="1" required />
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btnYes btn btn-primary">Save Activity</button>
-                                <button type="button" class="btnNo btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Update Activity Modal -->
-        <div class="modal fade" id="updateActivityModal" tabindex="-1" aria-labelledby="updateActivityModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div id="modalForm" class="modal-form">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="updateActivityModalLabel">Update Activity</h5>
-                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
-                        </div>
-                        <form asp-action="UpdateActivity" asp-controller="Assessment" method="post">
-                            <div class="modal-body">
-                                <input type="hidden" id="activitiesIdInput" name="activitiesId" />
-                                <div class="form-group">
-                                    <label for="activityTitleInput">Activity Title</label>
-                                    <input type="text" class="form-control" id="activityTitleInput" name="ActivitiesTitle" placeholder="Enter activity title" required />
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="activityDescriptionInput">Activity Description</label>
-                                    <textarea class="form-control" id="activityDescriptionInput" name="ActivityDirection" placeholder="Provide directions for the activity" required></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="activityScoreInput">Total Score</label>
-                                    <input type="number" class="form-control" id="activityScoreInput" name="TotalScore" placeholder="Set the total score" min="1" required />
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btnYes btn btn-primary">Update Activity</button>
-                                <button type="button" class="btnNo btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Delete Activity Modal -->
-        <div class="modal fade" id="deleteActivityModal" tabindex="-1" aria-labelledby="deleteActivityModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div id="modalForm" class="modal-form">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteActivityModalLabel">Delete Activity</h5>
-                            <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
-                        </div>
-                        <form method="post" action="@Url.Action("DeleteActivity", "Assessment")">
-                            <input type="hidden" name="activitiesId" />
-                            <div class="modal-body">
-                                <p>Are you sure you want to delete this activity? Once deleted, you cannot undo this action.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btnYes btn btn-danger">Yes</button>
-                                <button type="button" class="btnNo btn btn-secondary" data-bs-dismiss="modal">No</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+     
     </section>
 </div>
