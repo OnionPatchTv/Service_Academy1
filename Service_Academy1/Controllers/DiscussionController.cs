@@ -25,6 +25,7 @@ namespace Service_Academy1.Controllers
             }
 
             var posts = await _context.Posts
+                .Include(p => p.Author) // Include author for the post
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.Author) // Include author for each comment
                 .Where(p => p.ProgramId == programId)

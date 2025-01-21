@@ -1,51 +1,66 @@
-﻿/* Add styles for forum */
-body {
-    font-family: Arial, sans-serif;
+﻿.discussion-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #0047ab;
 }
 
-h1, h2, h3 {
-    color: #333;
-}
-
-form {
-    margin-top: 10px;
-}
-
-textarea, input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-}
-
-button {
-    background-color: #007BFF;
-    color: #FFF;
-    border: none;
+.add-post-btn {
+    display: inline-block;
+    margin-bottom: 15px;
     padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    border: none;
     cursor: pointer;
 }
 
-    button:hover {
+    .add-post-btn:hover {
         background-color: #0056b3;
     }
 
-.table {
+.discussion-table {
     width: 100%;
-    margin: 20px 0;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-primary {
-    margin-bottom: 20px;
+    .discussion-table thead {
+        background-color: #f4f4f4;
+        text-align: left;
+    }
+
+    .discussion-table th,
+    .discussion-table td {
+        padding: 10px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .discussion-table th {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .discussion-table td {
+        font-size: 13px;
+    }
+
+    .discussion-table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+.post-title {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-    ul li {
-        margin-bottom: 10px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+    .post-title:hover {
+        text-decoration: underline;
     }

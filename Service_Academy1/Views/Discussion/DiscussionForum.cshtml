@@ -4,18 +4,24 @@
     int programId = ViewBag.ProgramId;
 }
 
-<h2>Discussion Forum</h2>
+@section Styles {
+    <link rel="stylesheet" href="~/css/DiscussionStyle/DiscussionForumStyle.css">
+}
+
+<h2 class="discussion-title">Discussion Forum</h2>
 
 @if (User.IsInRole("ProjectLeader") || User.IsInRole("Student"))
 {
-    <a href="@Url.Action("CreatePost", "Discussion", new { programId })" class="btn btn-primary">Add a Post</a>
+    <a href="@Url.Action("CreatePost", "Discussion", new { programId })" class="add-post-btn">Add a Post</a>
 }
 
-<table class="table">
+<table class="discussion-table">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Created Date</th>
+            <th>Topic</th>
+            <th>Created By</th>
+            <th>Msgs</th>
+            <th>Last Post</th>
         </tr>
     </thead>
     <tbody>
@@ -23,11 +29,13 @@
         {
             <tr>
                 <td>
-                    <a href="@Url.Action("PostPage", "Discussion", new { postId = post.PostId })">
+                    <a href="@Url.Action("PostPage", "Discussion", new { postId = post.PostId })" class="post-title">
                         @post.Title
                     </a>
                 </td>
-                <td>@post.CreatedDate.ToShortDateString()</td>
+                <td>@post.Author?.UserName</td>
+                <td>@post.Comments.Count()</td>
+                <td>@post.CreatedDate.ToString("M/d h:mm tt")</td>
             </tr>
         }
     </tbody>
