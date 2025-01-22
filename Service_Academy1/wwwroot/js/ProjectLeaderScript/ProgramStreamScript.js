@@ -273,3 +273,15 @@ $(document).ready(function () {
         $('#deleteActivityModal').modal('hide');
     });
 });
+
+function previewModuleFile(event) {
+    const file = event.target.files[0];
+    const previewFrame = document.getElementById('modulePreviewFrame');
+
+    if (file) {
+        const fileUrl = URL.createObjectURL(file);
+        previewFrame.src = fileUrl;
+    } else {
+        previewFrame.src = "about:blank";
+    }
+}

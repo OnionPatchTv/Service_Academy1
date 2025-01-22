@@ -14,7 +14,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ActivityPageStyle.css">
 }
 @if (TempData["ProgramStreamSuccessMessage"] != null)
 {
@@ -46,7 +46,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h3>Manage Activities</h3>
-                <table class="table">
+                <table class="activity-table">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -76,14 +76,14 @@
                 </table>
             </div>
         </div>
-        <a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Back</a>
+        //<a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Back</a>
     }
     else
     {
         <!-- Create Activity Form -->
         <div class="row">
             <div class="col-md-12">
-                <h3>Add New Activity</h3>
+                <div id="programForm">
                 <form id="createActivityForm" asp-action="CreateActivity" asp-controller="Assessment" method="post">
                     <input type="hidden" name="ProgramId" value="@Model.ProgramId" />
                     <div class="form-group">
@@ -101,6 +101,7 @@
                     <button type="submit" class="btn btn-primary">Create Activity</button>
                     <a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Cancel</a>
                 </form>
+                </div>
             </div>
         </div>
     }

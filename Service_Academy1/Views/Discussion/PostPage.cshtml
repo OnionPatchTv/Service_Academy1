@@ -1,7 +1,21 @@
 ﻿@model Service_Academy1.Models.PostModel
+@using Service_Academy1.Utilities
+
 @{
     ViewBag.Title = Model.Title;
 }
+@section Styles {
+    <link rel="stylesheet" href="~/css/DiscussionStyle/PostPageStyle.css">
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
+    <span class="separator">></span>
+    <a href="@Url.Action("DiscussionForum", "Discussion", new { programId = Model.ProgramId })" class="@(Html.IsActive("DiscussionForum", "Discussion") ? "active" : "")">Discussion Forum</a>
+    <span class="separator">></span>
+    <span>Manage</span>
+</div>
+
 
 <h2>@Model.Title</h2>
 <p>@Model.Content</p>

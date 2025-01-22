@@ -8,6 +8,13 @@
     <link rel="stylesheet" href="~/css/DiscussionStyle/DiscussionForumStyle.css">
 }
 
+<div class="breadcrumb">
+    <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = ViewBag.ProgramId })" class="breadcrumb-link"> Program Stream </a>
+    <span class="separator">></span>
+    <span>Discussion Forum</span>
+</div>
+
+
 <h2 class="discussion-title">Discussion Forum</h2>
 
 @if (User.IsInRole("ProjectLeader") || User.IsInRole("Student"))

@@ -14,7 +14,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ProgramStreamStyle.css">
+    <link rel="stylesheet" href="~/css/ProjectLeaderStyle/ModulePageStyle.css">
 }
 @if (TempData["ProgramStreamSuccessMessage"] != null)
 {
@@ -43,11 +43,10 @@
     <h2 class="mt-4 mb-4">Module Management</h2>
     @if (isManagePage)
     {
-        // List and Update/Delete Modules 
+        // List and Update/Delete Modules
         <div class="row">
             <div class="col-md-12">
-                <h3>Manage Modules</h3>
-                <table class="table">
+                <table class="module-table">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -66,10 +65,10 @@
                                 <td>@module.FilePath</td>
                                 <td>@module.LinkPath</td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)', '@module.ModuleDescription', '@module.FilePath')">
+                                    <button class="action-btn update-btn" onclick="openUpdateModuleModal('@module.ModuleId', '@module.Title', '@(string.IsNullOrEmpty(module.LinkPath) ? "" : module.LinkPath)', '@module.ModuleDescription', '@module.FilePath')">
                                         Update
                                     </button>
-                                    <button class="btn btn-sm btn-danger" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title')">
+                                    <button class="action-btn delete-btn" onclick="openDeleteModuleModal('@module.ModuleId', '@module.Title')">
                                         Delete
                                     </button>
                                 </td>
@@ -79,38 +78,41 @@
                 </table>
             </div>
         </div>
-        <a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Back</a>
+        //<a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Back</a>
     }
     else
     {
         //Add Module Form
         <div class="row">
             <div class="col-md-12">
-                <h3>Add New Module</h3>
-                <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadModule", "ProjectLeader", new { programId = Model.ProgramId })">
-                    <div class="form-group">
-                        <label for="title">Module Title</label>
-                        <input type="text" class="form-control" name="title" placeholder="Enter title (e.g., Introduction)" required />
+                <div id="programForm">
+                    <div class="module-preview">
+                        <iframe id="modulePreviewFrame" src="about:blank"></iframe>
+                        <p>Uploaded file preview will appear here.</p>
                     </div>
-
-                    <div class="form-group">
-                        <label for="moduleDescription">Module Description</label>
-                        <textarea class="form-control" name="moduleDescription" rows="5"></textarea>
+                    <div class="form-content">
+                        <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadModule", "ProjectLeader", new { programId = Model.ProgramId })">
+                            <div class="form-group">
+                                <label for="title">Module Title</label>
+                                <input type="text" class="form-control" name="title" placeholder="Enter title (e.g., Introduction)" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleDescription">Module Description</label>
+                                <textarea class="form-control" name="moduleDescription" rows="5"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="file">Upload File (Optional)</label>
+                                <input type="file" class="form-control" id="fileInput" name="file" accept=".pdf,.pptx" required onchange="previewModuleFile(event)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="linkPath">Video Link (Optional)</label>
+                                <input type="text" class="form-control" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Module</button>
+                            <a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Cancel</a>
+                        </form>
                     </div>
-
-                    <div class="form-group">
-                        <label for="file">Upload File (Optional)</label>
-                        <input type="file" class="form-control" name="file" accept=".pdf,.pptx" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="linkPath">Video Link (Optional)</label>
-                        <input type="text" class="form-control" name="linkPath" placeholder="Enter new link (e.g., YouTube URL)" />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Add Module</button>
-                    <a asp-action="ProgramStream" asp-controller="ProjectLeader" asp-route-programId="@Model.ProgramId" class="btn btn-secondary">Cancel</a>
-                </form>
+                </div>
             </div>
         </div>
     }
