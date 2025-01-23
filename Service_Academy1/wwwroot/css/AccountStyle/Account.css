@@ -44,7 +44,19 @@ body {
     position: relative;
     margin: 0 auto; /*Center the form*/
 }
-
+#resetPasswordForm {
+    position: absolute; /* Use absolute positioning */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Ensure exact centering */
+    z-index: 2; /* Higher z-index to place it above the overlay */
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 400px;
+}
 .title {
     text-align: center;
     font-size: 24px;
