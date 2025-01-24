@@ -9,12 +9,23 @@
 }
 
 <div class="breadcrumb">
-    <a href="@Url.Action("ProjectLeaderDashboard", "ProjectLeader")" class="@(Html.IsActive("ProjectLeaderDashboard", "ProjectLeader") ? "active" : "")">Dashboard</a>
+    @if (User.IsInRole("ProjectLeader"))
+    {
+        <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = Model.ProgramId })"
+           class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")">Program Stream</a>
+    }
+    else if (User.IsInRole("Student"))
+    {
+        <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = Model.ProgramId })"
+           class="@(Html.IsActive("MyLearningStream", "Trainee") ? "active" : "")">Program Stream</a>
+    }
     <span class="separator">></span>
-    <a href="@Url.Action("DiscussionForum", "Discussion", new { programId = Model.ProgramId })" class="@(Html.IsActive("DiscussionForum", "Discussion") ? "active" : "")">Discussion Forum</a>
+    <a href="@Url.Action("DiscussionForum", "Discussion", new { programId = Model.ProgramId })"
+       class="@(Html.IsActive("DiscussionForum", "Discussion") ? "active" : "")">Discussion Forum</a>
     <span class="separator">></span>
     <span>Manage</span>
 </div>
+
 
 
 <h2>@Model.Title</h2>

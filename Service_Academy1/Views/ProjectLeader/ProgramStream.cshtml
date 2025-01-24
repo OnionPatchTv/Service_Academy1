@@ -112,7 +112,7 @@
                     <a href="@Url.Action("ModulePage", "ProjectLeader", new { programId = Model.ProgramId, manage = true })" class="add-item-btn">Manage Modules</a>
                     <a href="@Url.Action("ModulePage", "ProjectLeader", new { programId = Model.ProgramId })" class="add-item-btn">Add Module</a>
                 </div>
-
+            </div>
             <div class="sidebar-section">
                 <button class="dropdown-btn">Quizzes</button>
                 <div class="dropdown-content">
@@ -128,19 +128,19 @@
                 </div>
             </div>
             <div class="sidebar-section">
-                    <button class="dropdown-btn">Activities</button>
-                    <div class="dropdown-content">
-                        @foreach (var activity in Model.Activities)
-                        {
-                            <button class="dropdown-item activities" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
-                                <div class="button-content">
-                                    <span class="activities-title-text">@activity.ActivitiesTitle</span>
-                                </div>
-                            </button>
-                        }
-                        <a href="@Url.Action("ActivityPage", "Assessment", new { programId = Model.ProgramId, manage = true })" class="add-item-btn">Manage Activities</a>
-                        <a href="@Url.Action("ActivityPage", "Assessment", new { programId = Model.ProgramId })" class="add-item-btn">Add Activity</a>
-                    </div>
+                <button class="dropdown-btn">Activities</button>
+                <div class="dropdown-content">
+                    @foreach (var activity in Model.Activities)
+                    {
+                        <button class="dropdown-item activities" onclick="location.href='@Url.Action("ViewActivity", "Assessment", new { activitiesId = activity.ActivitiesId })'">
+                            <div class="button-content">
+                                <span class="activities-title-text">@activity.ActivitiesTitle</span>
+                            </div>
+                        </button>
+                    }
+                    <a href="@Url.Action("ActivityPage", "Assessment", new { programId = Model.ProgramId, manage = true })" class="add-item-btn">Manage Activities</a>
+                    <a href="@Url.Action("ActivityPage", "Assessment", new { programId = Model.ProgramId })" class="add-item-btn">Add Activity</a>
+                </div>
             </div>
             <div class="sidebar-section">
                 <button class="dropdown-btn" onclick="location.href='@Url.Action("EvaluationResults", "Evaluation", new { programId = Model.ProgramId })'">
@@ -184,7 +184,7 @@
                 </div>
             </div>
         </div>
-      
+
         <!-- Create Assessment Modal -->
         <div class="modal fade" id="createAssessmentModal" tabindex="-1" aria-labelledby="createAssessmentModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -219,6 +219,6 @@
                 </div>
             </div>
         </div>
-     
+
     </section>
 </div>

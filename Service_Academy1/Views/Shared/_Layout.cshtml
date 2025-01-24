@@ -69,6 +69,9 @@
                     <a href="@Url.Action("MyLearning", "Trainee")" class="@(Html.IsActive("MyLearning", "Trainee") ||
                   ViewContext.RouteData.Values["action"]?.ToString() == "StudentQuizView" ||
                   ViewContext.RouteData.Values["action"]?.ToString() == "QuizResult" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "DiscussionForum" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "PostPage" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "CreatePost" ||
                   ViewContext.RouteData.Values["action"]?.ToString() == "MyLearningStream" ? "active" : "")">My Learning</a>
                 }
                 else if (User.IsInRole("ProjectLeader"))
@@ -80,6 +83,9 @@
                   ViewContext.RouteData.Values["action"]?.ToString() == "CreateAssessment" ||
                   ViewContext.RouteData.Values["action"]?.ToString() == "ViewActivity" ||
                   ViewContext.RouteData.Values["action"]?.ToString() == "EvaluationResults" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "DiscussionForum" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "PostPage" ||
+                  ViewContext.RouteData.Values["action"]?.ToString() == "CreatePost" ||
                   ViewContext.RouteData.Values["action"]?.ToString() == "ViewQuiz" ? "active" : "")">My Teaching</a>
                 }
                 else if (User.IsInRole("Admin"))

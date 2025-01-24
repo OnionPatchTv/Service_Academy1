@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<Service_Academy1.Models.PostModel>
+@using Service_Academy1.Utilities
+
 @{
     ViewBag.Title = "Discussion Forum";
     int programId = ViewBag.ProgramId;
@@ -9,11 +11,20 @@
 }
 
 <div class="breadcrumb">
-    <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = ViewBag.ProgramId })" class="breadcrumb-link"> Program Stream </a>
+    @if (User.IsInRole("ProjectLeader"))
+    {
+        <a href="@Url.Action("ProgramStream", "ProjectLeader", new { programId = ViewBag.ProgramId })"
+           class="@(Html.IsActive("ProgramStream", "ProjectLeader") ? "active" : "")">Program Stream</a>
+    }
+    else if (User.IsInRole("Student"))
+    {
+        <a href="@Url.Action("MyLearningStream", "Trainee", new { programId = ViewBag.ProgramId })"
+           class="@(Html.IsActive("MyLearningStream", "Trainee") ? "active" : "")">Program Stream</a>
+    }
     <span class="separator">></span>
-    <span>Discussion Forum</span>
+    <a href="@Url.Action("DiscussionForum", "Discussion", new { programId = ViewBag.ProgramId })"
+       class="@(Html.IsActive("DiscussionForum", "Discussion") ? "active" : "")">Discussion Forum</a>
 </div>
-
 
 <h2 class="discussion-title">Discussion Forum</h2>
 
