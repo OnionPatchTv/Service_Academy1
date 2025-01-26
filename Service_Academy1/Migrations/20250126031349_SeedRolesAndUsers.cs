@@ -26,6 +26,8 @@ namespace Service_Academy1.Migrations
         private const string projectLeaderUserId4 = "USER_PROJECTLEADER_4"; // Added for scalability
         private const string projectLeaderUserId5 = "USER_PROJECTLEADER_5"; // Added for scalability
         private const string projectLeaderUserId6 = "USER_PROJECTLEADER_6"; // Added for scalability
+        private const string projectLeaderUserId7 = "USER_PROJECTLEADER_5"; // Added for scalability
+        private const string projectLeaderUserId8 = "USER_PROJECTLEADER_6"; // Added for scalability
         private const string studentUserId1 = "USER_STUDENT_1";
         private const string studentUserId2 = "USER_STUDENT_2";
         private const string studentUserId3 = "USER_STUDENT_3";
